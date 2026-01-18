@@ -7,5 +7,4 @@ namespace App\UI\Backend\Admin;
 
 class RolesPresenter
 {
-
 }
