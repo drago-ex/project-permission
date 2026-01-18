@@ -1,0 +1,25 @@
+{templateType App\Core\Permission\RolesTemplate}
+
+{embed '../Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
+    {block title}{_'Offcanvas'}{/block}
+    {block body}
+        {snippet offcanvas}
+            {embed '../Widget/@form.latte', name: 'roles', type: 'select', najaHistory: 'off'}
+                {import '../Widget/@form-tom-select.latte'}
+                {block form}
+                    {var string $selectTom = 'select-tom'}
+                    {include selectTom, name: 'user_id', columns: 12, class: $selectTom}
+                    {include selectTom, name: 'role_id', columns: 12, class: $selectTom}
+                    <div class="d-block">
+                        {include submit, name: 'send'}
+                    </div>
+                {/block}
+            {/embed}
+        {/snippet}
+    {/block}
+{/embed}
+
+<a n:href="edit!, id: 1" class="ajax" data-naja-history="off">Edit</a>
+<a n:href="openOffcanvas!" class="btn btn-sm btn-secondary ajax" data-naja-history="off">
+    {_'Open Offcanvas'}
+</a>

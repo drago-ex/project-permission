@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * Drago Extension
+ * Package built on Nette Framework
+ */
+
+declare(strict_types=1);
+
+namespace App\Core\Permission;
+
+use Dibi\Connection;
+use Drago\Attr\AttributeDetectionException;
+use Drago\Attr\Table;
+use Drago\Database\Database;
+
+
+#[Table(RolesEntity::Table, RolesEntity::PrimaryKey, class: RolesEntity::class)]
+class RolesRepository
+{
+	use Database;
+
+	public function __construct(
+		private readonly Connection $connection,
+	) {
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 */
+	public function getAllRoles(): array
+	{
+		return $this->read('*')
+			->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnName);
+	}
+}

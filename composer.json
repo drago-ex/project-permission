@@ -1,0 +1,40 @@
+{
+	"name": "drago-ex/project-permission",
+	"type": "drago-project-resource",
+	"description": "Component for managing user permissions in a Drago project",
+	"license": ["MIT"],
+	"require": {
+		"php": ">=8.3 <9",
+		"nette/robot-loader": "^4.1",
+		"nette/security": "^3.1",
+		"nette/application": "^3.1",
+		"nette/di": "^3.1",
+		"drago-ex/component": "^1.0",
+		"drago-ex/database": "^2.0",
+		"drago-ex/utils": "^1.0",
+		"drago-ex/application": "^1.0",
+		"drago-ex/form": "^1.0"
+	},
+	"extra": {
+		"drago-project": {
+			"install": {
+				"copy": {
+					"resources/Permision": "app/Core/Permission",
+					"app/UI/Backend": "app/UI/Backend"
+				}
+			}
+		}
+	},
+	"require-dev": {
+		"phpstan/phpstan-nette": "^1.2.9"
+	},
+	"scripts": {
+		"phpstan": "phpstan analyse --level 5 --configuration phpstan.neon resources/Permission",
+		"post-install-cmd": [
+			"php dev.copy.php"
+		],
+		"post-update-cmd": [
+			"php dev.copy.php"
+		]
+	}
+}
