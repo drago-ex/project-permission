@@ -1,7 +1,7 @@
 {
 	"name": "drago-ex/project-permission",
 	"type": "drago-project-resource",
-	"description": "Component for managing user permissions in a Drago project",
+	"description": "Component for managing user permissions in a Drago project.",
 	"license": ["MIT"],
 	"require": {
 		"php": ">=8.3 <9",
