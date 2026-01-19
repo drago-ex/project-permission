@@ -1,17 +1,18 @@
-{templateType App\Core\Permission\RolesTemplate}
-
-{embed '../Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
+{templateType App\Core\Permission\BaseTemplate}
+{embed '../../Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
     {block title}{_'Offcanvas'}{/block}
     {block body}
         {snippet offcanvas}
-            {embed '../Widget/@form.latte', name: 'roles', type: 'select', najaHistory: 'off'}
-                {import '../Widget/@form-tom-select.latte'}
+            {embed '../../Widget/@form.latte', name: 'roles', type: 'select', najaHistory: 'off'}
+                {import '../../Widget/@form-tom-select.latte'}
+                {import '../../Widget/@dismiss.button.latte'}
                 {block form}
                     {var string $selectTom = 'select-tom'}
                     {include selectTom, name: 'user_id', columns: 12, class: $selectTom}
                     {include selectTom, name: 'role_id', columns: 12, class: $selectTom}
                     <div class="d-block">
                         {include submit, name: 'send'}
+                        {include buttonDismiss, type: 'offcanvas'}
                     </div>
                 {/block}
             {/embed}

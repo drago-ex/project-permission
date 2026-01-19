@@ -7,27 +7,29 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permission;
+namespace App\Core\Permission\Users;
 
+use App\Core\Permission\BaseControl;
+use App\Core\Permission\BaseTemplate;
+use App\Core\Permission\Control;
+use App\Core\Permission\Factory;
+use App\Core\Permission\Roles\RolesRepository;
 use Dibi\DriverException;
 use Dibi\Exception;
-use Drago\Application\UI\ExtraControl;
+use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Component\Component;
+use Drago\Component\ModalHandle;
 use Drago\Component\OffcanvasHandle;
-use Drago\Form\Forms;
 use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 
 
 /**
- * @property-read  RolesTemplate $template
+ * @property-read  BaseTemplate $template
  */
-class RolesControl extends ExtraControl implements OffcanvasHandle
+class UsersControl extends BaseControl implements Control, OffcanvasHandle, ModalHandle
 {
-	use Component;
-
 	#[Parameter]
 	public int $id = 0;
 
@@ -36,6 +38,7 @@ class RolesControl extends ExtraControl implements OffcanvasHandle
 		private readonly UserRepository $userRepository,
 		private readonly UserRolesRepository $userRolesRepository,
 		private readonly RolesRepository $rolesRepository,
+		private readonly Factory $factory,
 	) {
 	}
 
@@ -43,17 +46,10 @@ class RolesControl extends ExtraControl implements OffcanvasHandle
 	public function render(): void
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/Roles.latte');
+		$template->setFile(__DIR__ . '/Users.latte');
 		$template->setTranslator($this->translator);
 		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
 		$template->render();
-	}
-
-
-	private function offCanvas(): void
-	{
-		$this->offCanvasComponent(self::Offcanvas);
-		$this->redrawControl();
 	}
 
 
@@ -62,16 +58,15 @@ class RolesControl extends ExtraControl implements OffcanvasHandle
 	 */
 	public function createComponentRoles(): Form
 	{
-		$form = new Forms;
-		$form->setTranslator($this->translator);
+		$form = $this->factory->create();
 		$users = $this->userRepository->getAllUsers();
 
-		$form->addSelect(RolesValues::UserId, 'Name', $users)
+		$form->addSelect(UsersValues::UserId, 'Name', $users)
 			->setRequired('Please enter name.')
 			->setPrompt('Select user');
 
 		$roles = $this->rolesRepository->getAllRoles();
-		$form->addMultiSelect(RolesValues::RoleId, 'Role', $roles)
+		$form->addMultiSelect(UsersValues::RoleId, 'Role', $roles)
 			->setRequired('Please enter permissions.')
 			->setHtmlAttribute('placeholder', 'Select role');
 
@@ -87,7 +82,7 @@ class RolesControl extends ExtraControl implements OffcanvasHandle
 	/**
 	 * @throws DriverException
 	 */
-	public function success(Form $form, RolesValues $values): void
+	public function success(Form $form, UsersValues $values): void
 	{
 		$repository = $this->userRolesRepository;
 
@@ -106,8 +101,7 @@ class RolesControl extends ExtraControl implements OffcanvasHandle
 
 			$repository->commit();
 			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
-			$this->getPresenter()->flashMessage($message);
-			$this->getPresenter()->redrawControl('message');
+			$this->redrawFlashMessage($message, Alert::Success);
 
 			$form->reset();
 			$this->closeComponent();
@@ -120,37 +114,49 @@ class RolesControl extends ExtraControl implements OffcanvasHandle
 
 
 	/**
-	 * @throws Exception
 	 * @throws AttributeDetectionException
+	 * @throws Exception
 	 */
-	#[Requires(ajax: true)]
 	public function handleEdit(int $id): void
 	{
 		$items = $this->userRolesRepository->getUserRoles($id);
 		$items ?: $this->error();
 
-		$roleId = RolesValues::RoleId;
+		$roleId = UsersValues::RoleId;
 		$rolesIdList = array_column($items, $roleId, $roleId);
 
 		$factory = $this->getComponent('roles');
 		$factory->setDefaults([
-			RolesValues::UserId => $items[0]->user_id,
-			RolesValues::RoleId => $rolesIdList,
+			UsersValues::UserId => $items[0]->user_id,
+			UsersValues::RoleId => $rolesIdList,
 		]);
 
 		$this->getFormComponent($factory, 'send')
 			->setCaption('Edit roles');
 
-		$this->getFormComponent($factory, RolesValues::UserId)
+		$this->getFormComponent($factory, UsersValues::UserId)
 			->setHtmlAttribute('data-locked');
 
-		$this->offCanvas();
+		$this->redrawOffCanvas();
+	}
+
+
+	public function handleDelete(int $id): void
+	{
+		// TODO: Implement handleDelete() method.
+	}
+
+
+	#[Requires(ajax: true)]
+	public function handleOpenModal(): void
+	{
+		// TODO: Implement handleOpenModal() method.
 	}
 
 
 	#[Requires(ajax: true)]
 	public function handleOpenOffcanvas(): void
 	{
-		$this->offCanvas();
+		$this->redrawOffCanvas();
 	}
 }

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Drago Extension
- * Package built on Nette Framework
- */
-
 declare(strict_types=1);
 
 namespace App\Core\Permission;
@@ -12,7 +7,8 @@ namespace App\Core\Permission;
 use Drago\Application\UI\ExtraTemplate;
 
 
-class RolesTemplate extends ExtraTemplate
+class BaseTemplate extends ExtraTemplate
 {
 	public string $offcanvasId;
+	public string $modalId;
 }

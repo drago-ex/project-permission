@@ -7,12 +7,12 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permission;
+namespace App\Core\Permission\Users;
 
 use Drago\Utils\ExtraArrayHash;
 
 
-class RolesValues extends ExtraArrayHash
+class UsersValues extends ExtraArrayHash
 {
 	public const string
 		UserId = 'user_id',

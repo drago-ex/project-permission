@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permission;
+namespace App\Core\Permission\Users;
 
 use Dibi\Connection;
 use Drago\Attr\AttributeDetectionException;
@@ -15,8 +15,8 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-#[Table(RolesEntity::Table, RolesEntity::PrimaryKey, class: RolesEntity::class)]
-class RolesRepository
+#[Table(UsersEntity::Table)]
+class UserRepository
 {
 	use Database;
 
@@ -29,9 +29,9 @@ class RolesRepository
 	/**
 	 * @throws AttributeDetectionException
 	 */
-	public function getAllRoles(): array
+	public function getAllUsers(): array
 	{
 		return $this->read('*')
-			->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnName);
+			->fetchPairs(UsersEntity::PrimaryKey, UsersEntity::ColumnUsername);
 	}
 }
