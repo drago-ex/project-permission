@@ -18,7 +18,6 @@ class UsersValues extends ExtraArrayHash
 		UserId = 'user_id',
 		RoleId = 'role_id';
 
-	public ?int $id = null;
 	public int $user_id;
 	public array $role_id;
 }

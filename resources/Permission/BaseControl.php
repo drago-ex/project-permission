@@ -13,6 +13,7 @@ class BaseControl extends ExtraControl
 	use Component;
 
 	protected string $snippetMessage = 'message';
+	public ?string $deleteTitle = null;
 
 
 	public function redrawOffCanvas(): void
@@ -24,7 +25,7 @@ class BaseControl extends ExtraControl
 
 	public function redrawModal(): void
 	{
-		$this->offCanvasComponent(self::Modal);
+		$this->modalComponent(self::Modal);
 		$this->redrawControl();
 	}
 

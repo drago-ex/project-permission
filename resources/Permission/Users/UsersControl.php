@@ -31,7 +31,7 @@ use Nette\Application\UI\Form;
 class UsersControl extends BaseControl implements Control, OffcanvasHandle, ModalHandle
 {
 	#[Parameter]
-	public ?int $id = null;
+	public int $id = 0;
 
 
 	public function __construct(
@@ -49,6 +49,8 @@ class UsersControl extends BaseControl implements Control, OffcanvasHandle, Moda
 		$template->setFile(__DIR__ . '/Users.latte');
 		$template->setTranslator($this->translator);
 		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
+		$template->modalId = $this->getUniqueIdComponent(self::Modal);
+		$template->deleteTitle = $this->deleteTitle;
 		$template->render();
 	}
 
@@ -56,7 +58,7 @@ class UsersControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	/**
 	 * @throws AttributeDetectionException
 	 */
-	public function createComponentUsers(): Form
+	protected function createComponentUsers(): Form
 	{
 		$form = $this->factory->create();
 		$users = $this->userRepository->getAllUsers();
@@ -82,7 +84,7 @@ class UsersControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	/**
 	 * @throws DriverException
 	 */
-	public function success(Form $form, UsersValues $values): void
+	private function success(Form $form, UsersValues $values): void
 	{
 		$repository = $this->userRolesRepository;
 
@@ -143,16 +145,55 @@ class UsersControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	}
 
 
+	protected function createComponentDelete(): Form
+	{
+		$form = $this->factory->createDelete($this->id);
+		$form->addSubmit('confirm', 'Confirm')
+			->onClick[] = $this->delete(...);
+		return $form;
+	}
+
+
+	private function delete(Form $form): void
+	{
+		try {
+			$id = $form->getValues()['id'];
+			Debugger::barDump($id);
+			//$this->userRolesRepository->delete(UsersRolesEntity::ColumnUserId, $id);
+			$this->closeComponent();
+			$this->redrawControl();
+
+		} catch (\Throwable $e) {
+			$message = 'Unknown status code.';
+			$this->redrawFlashMessage($message, Alert::Warning);
+		}
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
 	public function handleDelete(int $id): void
 	{
-		// TODO: Implement handleDelete() method.
+		$items = $this->rolesRepository->get($id)->record();
+		$items ?: $this->error();
+
+		try {
+			$this->deleteTitle = $items->description;
+			$this->redrawModal();
+
+		} catch (\Throwable $e) {
+			$message = 'Unknown status code.';
+			Debugger::barDump($message);
+		}
 	}
 
 
 	#[Requires(ajax: true)]
 	public function handleOpenModal(): void
 	{
-		// TODO: Implement handleOpenModal() method.
+		$this->redrawModal();
 	}
 
 

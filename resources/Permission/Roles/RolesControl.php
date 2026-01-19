@@ -18,6 +18,7 @@ use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Utils\Strings;
+use Tracy\Debugger;
 
 
 /**
@@ -47,7 +48,7 @@ class RolesControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	}
 
 
-	public function createComponentRoles(): Form
+	protected function createComponentRoles(): Form
 	{
 		$form = $this->factory->create();
 		$form->addTextInput(RolesValues::Description, 'Description role')
@@ -65,11 +66,13 @@ class RolesControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	}
 
 
-	public function success(Form $form, RolesValues $values): void
+	private function success(Form $form, RolesValues $values): void
 	{
 		try {
 			$values->name = Strings::webalize($values->description);
 			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
+
+			Debugger::barDump($values);
 
 			$this->rolesRepository->save($values);
 			$this->redrawFlashMessage($message, Alert::Success);

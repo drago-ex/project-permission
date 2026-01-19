@@ -20,7 +20,32 @@
     {/block}
 {/embed}
 
+
+{embed ../../Widget/@modal.latte, modalId: $modalId}
+    {block title}{_'Delete item'}{/block}
+    {block body}
+        {snippet modal}
+            <p n:if="$deleteTitle">
+                <em>{_'Are you sure you want to delete the item: '}{$deleteTitle}?</em>
+            </p>
+            {embed ../../Widget/@form.latte, name: 'delete', class: 'ajax'}
+                {block form}
+                    <div class="d-block">
+                        {include submit, name: 'confirm'}
+                    </div>
+                {/block}
+            {/embed}
+        {/snippet}
+    {/block}
+    {block footer}
+        {import '../../Widget/@dismiss.button.latte'}
+        {include buttonDismiss, type: 'modal'}
+    {/block}
+{/embed}
+
 <a n:href="edit!, id: 1" class="ajax" data-naja-history="off">Edit</a>
+<a n:href="delete!, id: 1" class="ajax" data-naja-history="off">Modal</a>
 <a n:href="openOffcanvas!" class="btn btn-sm btn-secondary ajax" data-naja-history="off">
     {_'Open Offcanvas'}
 </a>
+
