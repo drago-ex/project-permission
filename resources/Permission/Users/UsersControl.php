@@ -31,7 +31,7 @@ use Nette\Application\UI\Form;
 class UsersControl extends BaseControl implements Control, OffcanvasHandle, ModalHandle
 {
 	#[Parameter]
-	public int $id = 0;
+	public ?int $id = null;
 
 
 	public function __construct(

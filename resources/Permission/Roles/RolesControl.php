@@ -18,7 +18,6 @@ use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Utils\Strings;
-use Tracy\Debugger;
 
 
 /**
@@ -71,8 +70,6 @@ class RolesControl extends BaseControl implements Control, OffcanvasHandle, Moda
 		try {
 			$values->name = Strings::webalize($values->description);
 			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
-
-			Debugger::barDump($values);
 
 			$this->rolesRepository->save($values);
 			$this->redrawFlashMessage($message, Alert::Success);
