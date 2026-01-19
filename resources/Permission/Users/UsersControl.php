@@ -56,7 +56,7 @@ class UsersControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	/**
 	 * @throws AttributeDetectionException
 	 */
-	public function createComponentRoles(): Form
+	public function createComponentUsers(): Form
 	{
 		$form = $this->factory->create();
 		$users = $this->userRepository->getAllUsers();
@@ -125,11 +125,13 @@ class UsersControl extends BaseControl implements Control, OffcanvasHandle, Moda
 		$roleId = UsersValues::RoleId;
 		$rolesIdList = array_column($items, $roleId, $roleId);
 
-		$factory = $this->getComponent('roles');
-		$factory->setDefaults([
-			UsersValues::UserId => $items[0]->user_id,
-			UsersValues::RoleId => $rolesIdList,
-		]);
+		$factory = $this->getComponent('users');
+		if ($factory instanceof Form) {
+			$factory->setDefaults([
+				UsersValues::UserId => $items[0]->user_id,
+				UsersValues::RoleId => $rolesIdList,
+			]);
+		}
 
 		$this->getFormComponent($factory, 'send')
 			->setCaption('Edit roles');

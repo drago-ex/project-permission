@@ -32,6 +32,6 @@ class BaseControl extends ExtraControl
 	public function redrawFlashMessage(string $message, string $type = 'info'): void
 	{
 		$this->getPresenter()->flashMessage($message, $type);
-		$this->redrawControl($this->snippetMessage);
+		$this->getPresenter()->redrawControl($this->snippetMessage);
 	}
 }

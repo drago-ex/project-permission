@@ -18,7 +18,7 @@ class RolesEntity extends Drago\Database\Entity
 		Table = 'roles',
 		PrimaryKey = 'id',
 		ColumnName = 'name',
-		ColumnRole = 'role';
+		ColumnDescription = 'description';
 
 	/**
 	 * Primary key
@@ -30,5 +30,5 @@ class RolesEntity extends Drago\Database\Entity
 	public string $name;
 
 	/** Column size 40 */
-	public string $role;
+	public string $description;
 }

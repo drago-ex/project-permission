@@ -1,1 +1,23 @@
 {templateType App\Core\Permission\BaseTemplate}
+{embed '../../Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
+    {block title}{_'Offcanvas'}{/block}
+    {block body}
+        {snippet offcanvas}
+            {embed '../../Widget/@form.latte', class: 'ajax', name: 'roles', najaHistory: 'off'}
+                {import '../../Widget/@dismiss.button.latte'}
+                {block form}
+                    {include input, name: 'description', columns: 12}
+                    <div class="d-block">
+                        {include submit, name: 'send'}
+                        {include buttonDismiss, type: 'offcanvas'}
+                    </div>
+                {/block}
+            {/embed}
+        {/snippet}
+    {/block}
+{/embed}
+
+<a n:href="edit!, id: 1" class="ajax" data-naja-history="off">Edit</a>
+<a n:href="openOffcanvas!" class="btn btn-sm btn-secondary ajax" data-naja-history="off">
+    {_'Open Offcanvas'}
+</a>

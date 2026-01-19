@@ -32,6 +32,6 @@ class RolesRepository
 	public function getAllRoles(): array
 	{
 		return $this->read('*')
-			->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnName);
+			->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnDescription);
 	}
 }

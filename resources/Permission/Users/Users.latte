@@ -3,7 +3,7 @@
     {block title}{_'Offcanvas'}{/block}
     {block body}
         {snippet offcanvas}
-            {embed '../../Widget/@form.latte', name: 'roles', type: 'select', najaHistory: 'off'}
+            {embed '../../Widget/@form.latte', class: 'ajax', name: 'users', najaHistory: 'off'}
                 {import '../../Widget/@form-tom-select.latte'}
                 {import '../../Widget/@dismiss.button.latte'}
                 {block form}
