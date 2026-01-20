@@ -15,6 +15,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/** @extends Database<RolesEntity> */
 #[Table(RolesEntity::Table, RolesEntity::PrimaryKey, class: RolesEntity::class)]
 class RolesRepository
 {

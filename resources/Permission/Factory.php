@@ -38,11 +38,12 @@ readonly class Factory
 	/**
 	 * Creates a delete form with a hidden ID field.
 	 */
-	public function createDelete(int $id): Form
+	public function createDelete(?int $id = null): Form
 	{
 		$form = $this->create();
 		$form->addHidden('id', $id)
-			->addRule($form::Integer);
+			->addRule($form::Integer)
+			->setNullable();
 
 		return $form;
 	}

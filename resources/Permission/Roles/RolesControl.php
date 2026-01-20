@@ -5,45 +5,35 @@ declare(strict_types=1);
 namespace App\Core\Permission\Roles;
 
 use App\Core\Permission\BaseControl;
-use App\Core\Permission\BaseTemplate;
-use App\Core\Permission\Control;
 use App\Core\Permission\Factory;
 use Dibi\Exception;
+use Dibi\Result;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Component\ModalHandle;
-use Drago\Component\OffcanvasHandle;
 use Drago\Form\Autocomplete;
 use Nette\Application\Attributes\Parameter;
-use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Utils\Strings;
-use Tracy\Debugger;
 
 
-/**
- * @property-read BaseTemplate $template
- */
-class RolesControl extends BaseControl implements Control, OffcanvasHandle, ModalHandle
+class RolesControl extends BaseControl
 {
 	#[Parameter]
 	public ?int $id = null;
 
 
 	public function __construct(
-		private readonly Factory $factory,
+		public Factory $factory,
 		private readonly RolesRepository $rolesRepository,
 	) {
-
+		parent::__construct($this->factory);
 	}
 
 
 	public function render(): void
 	{
-		$template = $this->template;
+		$template = $this->createRender();
 		$template->setFile(__DIR__ . '/Roles.latte');
-		$template->setTranslator($this->translator);
-		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
 		$template->render();
 	}
 
@@ -71,8 +61,6 @@ class RolesControl extends BaseControl implements Control, OffcanvasHandle, Moda
 		try {
 			$values->name = Strings::webalize($values->description);
 			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
-
-			Debugger::barDump($values);
 
 			$this->rolesRepository->save($values);
 			$this->redrawFlashMessage($message, Alert::Success);
@@ -115,22 +103,24 @@ class RolesControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	}
 
 
-	public function handleDelete(int $id): void
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	protected function getResultRepository(int $id): Result|int|null
 	{
-		// TODO: Implement handleDelete() method.
+		return $this->rolesRepository->delete(RolesEntity::PrimaryKey, $id)
+			->execute();
 	}
 
 
-	#[Requires(ajax: true)]
-	public function handleOpenModal(): void
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	protected function getItemRepository(int $id): string|null
 	{
-		// TODO: Implement handleOpenModal() method.
-	}
-
-
-	#[Requires(ajax: true)]
-	public function handleOpenOffcanvas(): void
-	{
-		$this->redrawOffCanvas();
+		return $this->rolesRepository->get($id)
+			->record()?->description;
 	}
 }

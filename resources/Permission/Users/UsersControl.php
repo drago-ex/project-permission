@@ -10,47 +10,32 @@ declare(strict_types=1);
 namespace App\Core\Permission\Users;
 
 use App\Core\Permission\BaseControl;
-use App\Core\Permission\BaseTemplate;
-use App\Core\Permission\Control;
 use App\Core\Permission\Factory;
 use App\Core\Permission\Roles\RolesRepository;
 use Dibi\DriverException;
 use Dibi\Exception;
+use Dibi\Result;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Component\ModalHandle;
-use Drago\Component\OffcanvasHandle;
-use Nette\Application\Attributes\Parameter;
-use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 
 
-/**
- * @property-read  BaseTemplate $template
- */
-class UsersControl extends BaseControl implements Control, OffcanvasHandle, ModalHandle
+class UsersControl extends BaseControl
 {
-	#[Parameter]
-	public int $id = 0;
-
-
 	public function __construct(
+		public Factory $factory,
 		private readonly UserRepository $userRepository,
 		private readonly UserRolesRepository $userRolesRepository,
 		private readonly RolesRepository $rolesRepository,
-		private readonly Factory $factory,
 	) {
+		parent::__construct($this->factory);
 	}
 
 
 	public function render(): void
 	{
-		$template = $this->template;
+		$template = $this->createRender();
 		$template->setFile(__DIR__ . '/Users.latte');
-		$template->setTranslator($this->translator);
-		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
-		$template->modalId = $this->getUniqueIdComponent(self::Modal);
-		$template->deleteTitle = $this->deleteTitle;
 		$template->render();
 	}
 
@@ -145,61 +130,14 @@ class UsersControl extends BaseControl implements Control, OffcanvasHandle, Moda
 	}
 
 
-	protected function createComponentDelete(): Form
+	protected function getResultRepository(int $id): Result|int|null
 	{
-		$form = $this->factory->createDelete($this->id);
-		$form->addSubmit('confirm', 'Confirm')
-			->onClick[] = $this->delete(...);
-		return $form;
+		// TODO: Implement getResultRepository() method.
 	}
 
 
-	private function delete(Form $form): void
+	protected function getItemRepository(int $id): string|null
 	{
-		try {
-			$id = $form->getValues()['id'];
-			Debugger::barDump($id);
-			//$this->userRolesRepository->delete(UsersRolesEntity::ColumnUserId, $id);
-			$this->closeComponent();
-			$this->redrawControl();
-
-		} catch (\Throwable $e) {
-			$message = 'Unknown status code.';
-			$this->redrawFlashMessage($message, Alert::Warning);
-		}
-	}
-
-
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
-	public function handleDelete(int $id): void
-	{
-		$items = $this->rolesRepository->get($id)->record();
-		$items ?: $this->error();
-
-		try {
-			$this->deleteTitle = $items->description;
-			$this->redrawModal();
-
-		} catch (\Throwable $e) {
-			$message = 'Unknown status code.';
-			Debugger::barDump($message);
-		}
-	}
-
-
-	#[Requires(ajax: true)]
-	public function handleOpenModal(): void
-	{
-		$this->redrawModal();
-	}
-
-
-	#[Requires(ajax: true)]
-	public function handleOpenOffcanvas(): void
-	{
-		$this->redrawOffCanvas();
+		// TODO: Implement getItemRepository() method.
 	}
 }

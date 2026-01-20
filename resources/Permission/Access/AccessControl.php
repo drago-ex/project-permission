@@ -6,16 +6,14 @@ namespace App\Core\Permission\Access;
 
 use App\Core\Permission\BaseControl;
 use App\Core\Permission\BaseTemplate;
-use App\Core\Permission\Control;
-use Drago\Component\ModalHandle;
-use Drago\Component\OffcanvasHandle;
+use Dibi\Result;
 use Nette\Application\Attributes\Requires;
 
 
 /**
  * @property-read BaseTemplate $template
  */
-class AccessControl extends BaseControl implements Control, OffcanvasHandle, ModalHandle
+class AccessControl extends BaseControl
 {
 	public function render(): void
 	{
@@ -46,5 +44,17 @@ class AccessControl extends BaseControl implements Control, OffcanvasHandle, Mod
 	public function handleOpenOffcanvas(): void
 	{
 		// TODO: Implement handleOpenOffcanvas() method.
+	}
+
+
+	protected function getResultRepository(int $id): Result|int|null
+	{
+		// TODO: Implement getDeleteRepository() method.
+	}
+
+
+	protected function getItemRepository(int $id): string
+	{
+		// TODO: Implement getItemRepository() method.
 	}
 }

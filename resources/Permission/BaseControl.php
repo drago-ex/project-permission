@@ -4,16 +4,79 @@ declare(strict_types=1);
 
 namespace App\Core\Permission;
 
+use Dibi\Result;
+use Drago\Application\UI\Alert;
 use Drago\Application\UI\ExtraControl;
 use Drago\Component\Component;
+use Drago\Component\ModalHandle;
+use Drago\Component\OffcanvasHandle;
+use Nette\Application\Attributes\Parameter;
+use Nette\Application\Attributes\Requires;
+use Nette\Application\UI\Form;
+use Nette\Application\UI\Template;
 
 
-class BaseControl extends ExtraControl
+/**
+ * @property-read BaseTemplate $template
+ */
+abstract class BaseControl extends ExtraControl implements OffcanvasHandle, ModalHandle
 {
 	use Component;
 
-	protected string $snippetMessage = 'message';
+	#[Parameter]
+	public ?int $id = null;
+
 	public ?string $deleteTitle = null;
+	protected string $snippetMessage = 'message';
+
+
+	abstract protected function getResultRepository(int $id): Result|int|null;
+
+
+	abstract protected function getItemRepository(int $id): string|null;
+
+
+	public function __construct(
+		public Factory $factory,
+	) {
+	}
+
+
+	public function createRender(): Template
+	{
+		$template = $this->template;
+		$template->setTranslator($this->translator);
+		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
+		$template->modalId = $this->getUniqueIdComponent(self::Modal);
+		$template->deleteTitle = $this->deleteTitle;
+		return $template;
+	}
+
+
+	#[Requires(ajax: true)]
+	public function handleOpenModal(): void
+	{
+		$this->redrawModal();
+	}
+
+
+	#[Requires(ajax: true)]
+	public function handleOpenOffcanvas(): void
+	{
+		$this->redrawOffCanvas();
+	}
+
+
+	#[Requires(ajax: true)]
+	public function handleDelete(int $id): void
+	{
+		$item = $this->getItemRepository($id);
+		$item ?: $this->error();
+
+		$this->deleteTitle = $item;
+		$this->redrawControl('title');
+		$this->redrawModal();
+	}
 
 
 	public function redrawOffCanvas(): void
@@ -34,5 +97,40 @@ class BaseControl extends ExtraControl
 	{
 		$this->getPresenter()->flashMessage($message, $type);
 		$this->getPresenter()->redrawControl($this->snippetMessage);
+	}
+
+
+	/**
+	 * Factory delete item.
+	 */
+	protected function createComponentDelete(): Form
+	{
+		$form = $this->factory->createDelete($this->id);
+		$form->addSubmit('confirm', 'Confirm')
+			->onClick[] = $this->delete(...);
+
+		return $form;
+	}
+
+
+	/**
+	 * Delete record from modal dialog.
+	 */
+	private function delete(Form $form): void
+	{
+		try {
+			$id = $form->getValues()['id'];
+			$this->getResultRepository($id);
+
+			$message = 'Delete successful.';
+			$this->redrawFlashMessage($message, Alert::Success);
+
+			$this->closeComponent();
+			$this->redrawControl();
+
+		} catch (\Throwable $e) {
+			$message = 'Unknown status code.';
+			$this->redrawFlashMessage($message, Alert::Warning);
+		}
 	}
 }
