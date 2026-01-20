@@ -12,6 +12,7 @@ use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Form\Autocomplete;
 use Nette\Application\Attributes\Parameter;
+use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Utils\Strings;
 
@@ -86,6 +87,7 @@ class RolesControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
+	#[Requires(ajax: true)]
 	public function handleEdit(int $id): void
 	{
 		$items = $this->rolesRepository->get($id)->record();

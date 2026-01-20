@@ -17,6 +17,7 @@ use Dibi\Exception;
 use Dibi\Result;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
+use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 
 
@@ -101,9 +102,10 @@ class UsersControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
+	#[Requires(ajax: true)]
 	public function handleEdit(int $id): void
 	{
 		$items = $this->userRolesRepository->getUserRoles($id);
