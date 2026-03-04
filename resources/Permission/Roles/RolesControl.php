@@ -46,10 +46,12 @@ class RolesControl extends BaseControl
 			->setNaturalSort();
 
 		$grid->addAction('Edit', 'edit!', 'ajax btn btn-xs btn btn-primary',
-			callback: fn(int $id) => $this->handleEdit($id));
+			callback: fn(int $id) => $this->handleEdit($id)
+		);
 
 		$grid->addAction('Delete', 'delete!', 'ajax btn btn-xs btn-danger',
-			callback: fn(int $id) => $this->handleDelete($id));
+			callback: fn(int $id) => $this->handleDelete($id)
+		);
 
 		return $grid;
 	}
