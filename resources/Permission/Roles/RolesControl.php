@@ -45,8 +45,19 @@ class RolesControl extends BaseControl
 			->setFilterText()
 			->setNaturalSort();
 
-		$grid->addAction('Edit', 'edit!', 'ajax btn btn-xs btn btn-primary', fn(int $id) => $this->handleEdit($id));
-		$grid->addAction('Delete', 'delete!', 'ajax btn btn-xs btn-danger', fn(int $id) => $this->handleDelete($id));
+		$grid->addAction(
+			label: 'Edit',
+			signal: 'edit!',
+			class: 'ajax btn btn-xs btn btn-primary',
+			callback: fn(int $id) => $this->handleEdit($id),
+		);
+
+		$grid->addAction(
+			label: 'Delete',
+			signal: 'delete!',
+			class: 'ajax btn btn-xs btn-danger',
+			callback: fn(int $id) => $this->handleDelete($id),
+		);
 
 		return $grid;
 	}
