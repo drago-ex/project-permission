@@ -34,7 +34,7 @@ class RolesControl extends BaseControl
 	 */
 	protected function createComponentDataGrid(): DataGrid
 	{
-		$grid = new DataGrid;
+		$grid = new DataGrid();
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
@@ -46,12 +46,10 @@ class RolesControl extends BaseControl
 			->setNaturalSort();
 
 		$grid->addAction('Edit', 'edit!', 'ajax btn btn-xs btn btn-primary',
-			fn(int $id) => $this->handleEdit($id),
-		);
+			fn(int $id) => $this->handleEdit($id));
 
 		$grid->addAction('Delete', 'delete!', 'ajax btn btn-xs btn-danger',
-			fn(int $id) => $this->handleDelete($id),
-		);
+			fn(int $id) => $this->handleDelete($id));
 
 		return $grid;
 	}
