@@ -10,8 +10,9 @@ use Dibi\Exception;
 use Dibi\Result;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
+use Drago\Datagrid\DataGrid;
+use Drago\Datagrid\Exception\InvalidColumnException;
 use Drago\Form\Autocomplete;
-use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Utils\Strings;
@@ -19,15 +20,38 @@ use Nette\Utils\Strings;
 
 class RolesControl extends BaseControl
 {
-	#[Parameter]
-	public ?int $id = null;
-
-
 	public function __construct(
 		public Factory $factory,
 		private readonly RolesRepository $rolesRepository,
 	) {
 		parent::__construct($this->factory);
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws InvalidColumnException
+	 */
+	protected function createComponentDataGrid(): DataGrid
+	{
+		$grid = new DataGrid();
+		$grid->setDataSource($this->rolesRepository->getRolesFluent())
+			->setPrimaryKey('id');
+
+		$grid->addColumnText('id', 'ID')
+			->setFilterText();
+
+		$grid->addColumnText('description', 'Description')
+			->setFilterText()
+			->setNaturalSort();
+
+		$grid->addAction('Edit', 'edit!', 'ajax btn btn-xs btn btn-primary',
+			callback: fn(int $id) => $this->handleEdit($id));
+
+		$grid->addAction('Delete', 'delete!', 'ajax btn btn-xs btn-danger',
+			callback: fn(int $id) => $this->handleDelete($id));
+
+		return $grid;
 	}
 
 
