@@ -50,15 +50,12 @@ class UserRolesRepository
 	{
 		return $this->read('ur.user_id id, u.username, GROUP_CONCAT(r.description SEPARATOR ", ") roles')
 			->as('ur')
-
 			->innerJoin(UsersEntity::Table)
 			->as('u')
 			->on('ur.user_id = u.id')
-
 			->innerJoin(RolesEntity::Table)
 			->as('r')
 			->on('ur.role_id = r.id')
-
 			->groupBy('u.id, u.username');
 	}
 }
