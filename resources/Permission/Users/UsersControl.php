@@ -17,6 +17,8 @@ use Dibi\Exception;
 use Dibi\Result;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
+use Drago\Datagrid\DataGrid;
+use Drago\Datagrid\Exception\InvalidColumnException;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 
@@ -30,6 +32,40 @@ class UsersControl extends BaseControl
 		private readonly RolesRepository $rolesRepository,
 	) {
 		parent::__construct($this->factory);
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws InvalidColumnException
+	 */
+	protected function createComponentDataGrid(): DataGrid
+	{
+		$grid = new DataGrid;
+		$grid->setDataSource($this->userRolesRepository->getAllUserRoles())
+			->setPrimaryKey('id');
+
+		$grid->addColumnText('username', 'User')
+			->setFilterText();
+
+		$grid->addColumnText('roles', 'Roles')
+			->setFilterText();
+
+		$grid->addAction(
+			label: 'Edit',
+			signal: 'edit!',
+			class: 'ajax btn btn-xs btn btn-primary',
+			callback: fn(int $id) => $this->handleEdit($id),
+		);
+
+		$grid->addAction(
+			label: 'Delete',
+			signal: 'delete!',
+			class: 'ajax btn btn-xs btn-danger',
+			callback: fn(int $id) => $this->handleDelete($id),
+		);
+
+		return $grid;
 	}
 
 
@@ -94,6 +130,7 @@ class UsersControl extends BaseControl
 			$form->reset();
 			$this->closeComponent();
 			$this->redrawControl();
+			$this['dataGrid']->redrawDataGrid();
 
 		} catch (\Throwable $e) {
 			$repository->rollBack();
@@ -132,14 +169,35 @@ class UsersControl extends BaseControl
 	}
 
 
+	/**
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
 	protected function getResultRepository(int $id): Result|int|null
 	{
-		// TODO: Implement getResultRepository() method.
+		return $this->userRolesRepository
+			->delete(UsersRolesEntity::ColumnUserId, $id)
+			->execute();
 	}
 
 
+	/**
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
 	protected function getItemRepository(int $id): string|null
 	{
-		// TODO: Implement getItemRepository() method.
+		$userId = $this->userRolesRepository->get($id)
+			->record()->user_id;
+
+		$user = null;
+		if ($userId !== null) {
+			$user = $this->userRepository
+				->get($userId)
+				->record()
+				->username;
+		}
+
+		return $user;
 	}
 }

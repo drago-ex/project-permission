@@ -10,6 +10,7 @@ use Drago\Application\UI\ExtraControl;
 use Drago\Component\Component;
 use Drago\Component\ModalHandle;
 use Drago\Component\OffcanvasHandle;
+use Drago\Datagrid\DataGrid;
 use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
@@ -70,6 +71,7 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	#[Requires(ajax: true)]
 	public function handleDelete(int $id): void
 	{
+		$this->id = $id;
 		$item = $this->getItemRepository($id);
 		$item ?: $this->error();
 
@@ -127,6 +129,11 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 
 			$this->closeComponent();
 			$this->redrawControl();
+
+			$dataGrid = $this->getComponent('dataGrid');
+			if ($dataGrid instanceof DataGrid) {
+				$dataGrid->redrawDataGrid();
+			}
 
 		} catch (\Throwable $e) {
 			$message = 'Unknown status code.';

@@ -15,7 +15,8 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-#[Table(UsersEntity::Table)]
+/** @extends Database<UsersEntity> */
+#[Table(UsersEntity::Table, UsersEntity::PrimaryKey, class: UsersEntity::class)]
 class UserRepository
 {
 	use Database;

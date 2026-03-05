@@ -13,6 +13,7 @@ use Dibi\Connection;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Attr\Table;
 use Drago\Database\Database;
+use Drago\Database\ExtraFluent;
 
 
 /** @extends Database<RolesEntity> */
@@ -34,5 +35,14 @@ class RolesRepository
 	{
 		return $this->read('*')
 			->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnDescription);
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 */
+	public function getRolesFluent(): ExtraFluent
+	{
+		return $this->read('*');
 	}
 }

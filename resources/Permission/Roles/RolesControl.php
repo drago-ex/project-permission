@@ -42,8 +42,7 @@ class RolesControl extends BaseControl
 			->setFilterText();
 
 		$grid->addColumnText('description', 'Description')
-			->setFilterText()
-			->setNaturalSort();
+			->setFilterText();
 
 		$grid->addAction(
 			label: 'Edit',
@@ -101,6 +100,7 @@ class RolesControl extends BaseControl
 			$form->reset();
 			$this->closeComponent();
 			$this->redrawControl();
+			$this['dataGrid']->redrawDataGrid();
 
 		} catch (\Throwable $e) {
 			$message = match ($e->getCode()) {
@@ -143,7 +143,8 @@ class RolesControl extends BaseControl
 	 */
 	protected function getResultRepository(int $id): Result|int|null
 	{
-		return $this->rolesRepository->delete(RolesEntity::PrimaryKey, $id)
+		return $this->rolesRepository
+			->delete(RolesEntity::PrimaryKey, $id)
 			->execute();
 	}
 
