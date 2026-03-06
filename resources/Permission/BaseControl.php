@@ -76,7 +76,7 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 		$item ?: $this->error();
 
 		$this->deleteTitle = $item;
-		$this->redrawControl('title');
+		$this->redrawControl('content');
 		$this->redrawModal();
 	}
 
