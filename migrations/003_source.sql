@@ -1,7 +1,7 @@
 --
---  Database permissions
--- ---------------------
-CREATE TABLE permissions (
+--  Database source
+-- ----------------
+CREATE TABLE source (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     resource VARCHAR(100) NOT NULL,
     privilege VARCHAR(100) NOT NULL,

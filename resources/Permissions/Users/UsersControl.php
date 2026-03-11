@@ -1,17 +1,12 @@
 <?php
 
-/**
- * Drago Extension
- * Package built on Nette Framework
- */
-
 declare(strict_types=1);
 
-namespace App\Core\Permission\Users;
+namespace App\Core\Permissions\Users;
 
-use App\Core\Permission\BaseControl;
-use App\Core\Permission\Factory;
-use App\Core\Permission\Roles\RolesRepository;
+use App\Core\Permissions\BaseControl;
+use App\Core\Permissions\Factory;
+use App\Core\Permissions\Roles\RolesRepository;
 use Dibi\DriverException;
 use Dibi\Exception;
 use Dibi\Result;
@@ -45,11 +40,8 @@ class UsersControl extends BaseControl
 		$grid->setDataSource($this->userRolesRepository->getAllUserRoles())
 			->setPrimaryKey('id');
 
-		$grid->addColumnText('username', 'User')
-			->setFilterText();
-
-		$grid->addColumnText('roles', 'Roles')
-			->setFilterText();
+		$grid->addColumnText('username', 'User');
+		$grid->addColumnText('roles', 'Roles');
 
 		$grid->addAction(
 			label: 'Edit',
@@ -73,6 +65,7 @@ class UsersControl extends BaseControl
 	{
 		$template = $this->createRender();
 		$template->setFile(__DIR__ . '/Users.latte');
+		$template->setTranslator($this->translator);
 		$template->render();
 	}
 
@@ -86,12 +79,12 @@ class UsersControl extends BaseControl
 		$users = $this->userRepository->getAllUsers();
 
 		$form->addSelect(UsersValues::UserId, 'Name', $users)
-			->setRequired('Please enter name.')
+			->setRequired('Please select a user.')
 			->setPrompt('Select user');
 
 		$roles = $this->rolesRepository->getAllRoles();
 		$form->addMultiSelect(UsersValues::RoleId, 'Role', $roles)
-			->setRequired('Please enter permissions.')
+			->setRequired('Please select a role.')
 			->setHtmlAttribute('placeholder', 'Select role');
 
 		$form->addHidden('id', $this->id)

@@ -1,13 +1,8 @@
 <?php
 
-/**
- * Drago Extension
- * Package built on Nette Framework
- */
-
 declare(strict_types=1);
 
-namespace App\Core\Permission\Users;
+namespace App\Core\Permissions\Users;
 
 use Dibi\Connection;
 use Drago\Attr\AttributeDetectionException;

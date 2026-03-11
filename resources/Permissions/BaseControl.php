@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permission;
+namespace App\Core\Permissions;
 
 use Dibi\Result;
 use Drago\Application\UI\Alert;

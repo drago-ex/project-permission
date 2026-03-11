@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permission\Roles;
+namespace App\Core\Permissions\Roles;
 
-use App\Core\Permission\BaseControl;
-use App\Core\Permission\Factory;
+use App\Core\Permissions\BaseControl;
+use App\Core\Permissions\Factory;
 use Dibi\Exception;
 use Dibi\Result;
 use Drago\Application\UI\Alert;
@@ -38,9 +38,7 @@ class RolesControl extends BaseControl
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
-		$grid->addColumnText('id', 'ID')
-			->setFilterText();
-
+		$grid->addColumnText('id', 'ID');
 		$grid->addColumnText('description', 'Description')
 			->setFilterText();
 
@@ -66,6 +64,7 @@ class RolesControl extends BaseControl
 	{
 		$template = $this->createRender();
 		$template->setFile(__DIR__ . '/Roles.latte');
+		$template->setTranslator($this->translator);
 		$template->render();
 	}
 

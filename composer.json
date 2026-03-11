@@ -32,7 +32,7 @@
 		"phpstan/phpstan-nette": "^1.2.9"
 	},
 	"scripts": {
-		"phpstan": "phpstan analyse --level 5 --configuration phpstan.neon resources/Permission",
+		"phpstan": "phpstan analyse --level 5 --configuration phpstan.neon resources/Permissions",
 		"post-install-cmd": [
 			"php dev.copy.php"
 		],

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permission\Roles;
+namespace App\Core\Permissions\Roles;
 
 use Drago\Utils\ExtraArrayHash;
 

@@ -1,15 +1,16 @@
-{templateType App\Core\Permission\BaseTemplate}
+{templateType App\Core\Permissions\BaseTemplate}
 {embed '../../Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
     {block title}{_'Offcanvas'}{/block}
     {block body}
         {snippet offcanvas}
-            {embed '../../Widget/@form.latte', class: 'ajax', name: 'users', najaHistory: 'off'}
+            {embed '../../Widget/@form.latte', class: 'ajax', name: 'authorization', najaHistory: 'off'}
                 {import '../../Widget/@form-tom-select.latte'}
                 {import '../../Widget/@dismiss.button.latte'}
                 {block form}
                     {var string $selectTom = 'select-tom'}
-                    {include selectTom, name: 'user_id', columns: 12, class: $selectTom}
                     {include selectTom, name: 'role_id', columns: 12, class: $selectTom}
+                    {include selectTom, name: 'permission_id', columns: 12, class: $selectTom}
+                    {include selectTom, name: 'effect', columns: 12, class: $selectTom}
                     <div class="d-block">
                         {include buttonDismiss, type: 'offcanvas'}
                         {include submit, name: 'send'}
@@ -20,18 +21,5 @@
     {/block}
 {/embed}
 
-{embed ../../Widget/@modal.latte, modalId: $modalId, options: [header: 'danger']}
-    {block title}{_'Confirm delete'}{/block}
-    {block body}
-        {snippet content}
-            {include '../@modal.body.latte'}
-        {/snippet}
-    {/block}
-    {block footer}
-        {snippet modal}
-            {include '../@modal.footer.latte'}
-        {/snippet}
-    {/block}
-{/embed}
 
-{control dataGrid}
+<a href="{link openOffcanvas!}" class="ajax">Open</a>

@@ -1,21 +1,24 @@
 --
---  Database role_permission
---  ------------------------
-CREATE TABLE role_permission (
+--  Database access
+--  ---------------
+CREATE TABLE access (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     role_id INT UNSIGNED NOT NULL,
-    permission_id INT UNSIGNED NOT NULL,
+    source_id INT UNSIGNED NOT NULL,
     effect ENUM('allow', 'deny') NOT NULL DEFAULT 'allow',
-    PRIMARY KEY (role_id, permission_id),
 
-    CONSTRAINT fk_role_permission_role
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_access_role_source (role_id, source_id),
+
+    CONSTRAINT fk_access_role
         FOREIGN KEY (role_id)
             REFERENCES roles(id)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
 
-    CONSTRAINT fk_role_permission_permission
-        FOREIGN KEY (permission_id)
-            REFERENCES permissions(id)
+    CONSTRAINT fk_access_source
+        FOREIGN KEY (source_id)
+            REFERENCES source(id)
             ON DELETE CASCADE
             ON UPDATE CASCADE
 )
