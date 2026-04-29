@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Access;
+namespace App\Core\Permissions\Authorization;
 
 use Dibi\Connection;
 use Dibi\Fluent;
@@ -11,9 +11,9 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/** @extends Database<SourceEntity> */
-#[Table(SourceEntity::Table, SourceEntity::PrimaryKey, class: SourceEntity::class)]
-class SourceRepository
+/** @extends Database<ResourcesEntity> */
+#[Table(ResourcesEntity::Table, ResourcesEntity::PrimaryKey, class: ResourcesEntity::class)]
+class ResourcesRepository
 {
 	use Database;
 
@@ -32,12 +32,12 @@ class SourceRepository
 	/**
 	 * @throws AttributeDetectionException
 	 */
-	public function getAllSource(): array
+	public function getAllResources(): array
 	{
 		return $this->read('*')
 			->fetchPairs(
-				SourceEntity::PrimaryKey,
-				SourceEntity::ColumnDescription,
+				ResourcesEntity::PrimaryKey,
+				ResourcesEntity::ColumnDescription,
 			);
 	}
 }

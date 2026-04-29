@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Access;
+namespace App\Core\Permissions\Authorization;
 
 use App\Core\Permissions\BaseControl;
 use App\Core\Permissions\BaseTemplate;
@@ -20,13 +20,13 @@ use Tracy\Debugger;
 /**
  * @property-read BaseTemplate $template
  */
-class AccessControl extends BaseControl
+class AuthorizationControl extends BaseControl
 {
 	public function __construct(
 		public Factory $factory,
-		private readonly SourceRepository $sourceRepository,
+		private readonly ResourcesRepository $resourcesRepository,
 		private readonly RolesRepository $rolesRepository,
-		private readonly AccessRepository $authorizationRepository,
+		private readonly AuthorizationRepository $authorizationRepository,
 	) {
 		parent::__construct($this->factory);
 	}
@@ -80,27 +80,27 @@ class AccessControl extends BaseControl
 	{
 		$form = $this->factory->create();
 		$roles = $this->rolesRepository->getAllRoles();
-		$form->addSelect(AccessValues::RoleId, 'Role', $roles)
+		$form->addSelect(AuthorizationValues::RoleId, 'Role', $roles)
 			->setRequired('Please select a role.')
 			->setPrompt('Select role');
 
-		$source = $this->sourceRepository->getAllSource();
-		$form->addSelect(AccessValues::SourceId, 'Source', $source)
-			->setRequired('Please select a source.')
-			->setPrompt('Select source');
+		$resources = $this->resourcesRepository->getAllResources();
+		$form->addSelect(AuthorizationValues::ResourceId, 'Resource', $resources)
+			->setRequired('Please select a resource.')
+			->setPrompt('Select resource');
 
-		$effect = [
+		$access = [
 			'allow' => 'allow',
 			'deny' => 'deny',
 		];
 
-		$form->addSelect(AccessValues::Effect, 'Effect', $effect)
-			->setDefaultValue($effect['allow'])
-			->setRequired('Please select effect.')
-			->setPrompt('Select effect');
+		$form->addSelect(AuthorizationValues::Access, 'Access', $access)
+			->setDefaultValue($access['allow'])
+			->setRequired('Please select access.')
+			->setPrompt('Select access');
 
 		$form->addSubmit('send', 'Send');
-		$form->onSuccess[] = function (Form $form, AccessValues $values): void {
+		$form->onSuccess[] = function (Form $form, AuthorizationValues $values): void {
 			Debugger::barDump($values);
 		};
 		return $form;
@@ -135,7 +135,7 @@ class AccessControl extends BaseControl
 	protected function getResultRepository(int $id): Result|int|null
 	{
 		return $this->authorizationRepository
-			->delete(SourceEntity::PrimaryKey, $id)
+			->delete(ResourcesEntity::PrimaryKey, $id)
 			->execute();
 	}
 

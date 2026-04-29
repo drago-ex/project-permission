@@ -1,0 +1,27 @@
+--
+--  Database authorization
+--  ----------------------
+CREATE TABLE authorization (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    role_id INT UNSIGNED NOT NULL,
+    resources_id INT UNSIGNED NOT NULL,
+    access ENUM('allow', 'deny') NOT NULL DEFAULT 'allow',
+
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_authorization_role_resources (role_id, resources_id),
+
+    CONSTRAINT fk_authorization_role
+        FOREIGN KEY (role_id)
+            REFERENCES roles(id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+
+    CONSTRAINT fk_authorization_resources
+        FOREIGN KEY (resources_id)
+            REFERENCES resources(id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;

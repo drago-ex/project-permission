@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Access;
+namespace App\Core\Permissions\Authorization;
 
 use Drago\Database\Entity;
 
 
-class SourceEntity extends Entity
+class ResourcesEntity extends Entity
 {
 	public const string
-		Table = 'source',
+		Table = 'resources',
 		PrimaryKey = 'id',
 		ColumnResource = 'resource',
 		ColumnPrivilege = 'privilege',

@@ -1,12 +1,12 @@
 --
---  Database source
--- ----------------
-CREATE TABLE source (
+--  Database resources
+-- -------------------
+CREATE TABLE resources (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     resource VARCHAR(100) NOT NULL,
     privilege VARCHAR(100) NOT NULL,
     description VARCHAR(255) NULL,
-    UNIQUE KEY uq_resource_privilege (resource, privilege)
+    UNIQUE KEY uq_resources (resource, privilege)
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4
