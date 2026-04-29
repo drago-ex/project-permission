@@ -4,11 +4,11 @@
 CREATE TABLE authorization (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     role_id INT UNSIGNED NOT NULL,
-    resources_id INT UNSIGNED NOT NULL,
+    resource_id INT UNSIGNED NOT NULL,
     access ENUM('allow', 'deny') NOT NULL DEFAULT 'allow',
 
     PRIMARY KEY (id),
-    UNIQUE KEY uq_authorization_role_resources (role_id, resources_id),
+    UNIQUE KEY uq_authorization_role_resource (role_id, resource_id),
 
     CONSTRAINT fk_authorization_role
         FOREIGN KEY (role_id)
@@ -17,7 +17,7 @@ CREATE TABLE authorization (
             ON UPDATE CASCADE,
 
     CONSTRAINT fk_authorization_resources
-        FOREIGN KEY (resources_id)
+        FOREIGN KEY (resource_id)
             REFERENCES resources(id)
             ON DELETE CASCADE
             ON UPDATE CASCADE
