@@ -9,7 +9,6 @@ use App\Core\Permissions\BaseTemplate;
 
 class AuthorizationTemplate extends BaseTemplate
 {
-	public array $rolePermissions = [];
 	public array $groupedPermissions = [];
 	public array $roles = [];
 	public string $roleName = '';

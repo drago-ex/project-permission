@@ -1,5 +1,5 @@
 {templateType App\Core\Permissions\Authorization\AuthorizationTemplate}
-{varType App\Core\Permissions\Authorization\ResourcesEntity[] $rolePermissions}
+{varType array $groupedPermissions}
 
 {snippet permissions}
 	<div class="card border-0 shadow-sm mt-3">
@@ -36,7 +36,7 @@
 					<span class="badge text-bg-success-subtle border border-success-subtle text-success px-3 py-2">
 						({$allowedCount}) {_'Allowed'}
 					</span>
-					<span class="badge text-bg-light border text-body-secondary px-3 py-2">
+					<span class="badge text-bg-light border border-secondary-subtle text-secondary-emphasis px-3 py-2">
 						({$deniedCount}) {_'Denied'}
 					</span>
 				</div>
@@ -46,11 +46,12 @@
 		<div class="card-body bg-body-tertiary p-3">
 			<div class="d-flex flex-column gap-3">
 				{foreach $groupedPermissions as $resource => $items}
+					{varType App\Core\Permissions\Authorization\ResourcesEntity[] $items}
 					<div class="bg-white border rounded-3 overflow-hidden">
-						<div class="px-4 py-3 border-bottom bg-light-subtle">
+						<div class="px-4 py-2 border-bottom bg-light">
 							<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
 								<div>
-									<div class="fw-semibold text-dark">{$resource}</div>
+									<div class="small fw-semibold text-dark">{$resource}</div>
 									<div class="small text-body-secondary">
 										{count($items)} {_'permissions'}
 									</div>
@@ -60,13 +61,14 @@
 
 						<div class="list-group list-group-flush">
 							{foreach $items as $item}
+								{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
 								{do $inputId = "permission-{$roleId}-{$item->id}"}
-								<div class="list-group-item px-4 py-3">
-									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+								<div class="list-group-item px-4 py-2">
+									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
 										<div class="min-w-0">
 											<div class="d-flex flex-wrap align-items-center gap-2">
-												<span class="badge text-bg-light border text-body-secondary">{$item->privilege}</span>
-												<div class="fw-semibold text-dark">
+												<span class="badge small text-bg-light border border-secondary-subtle text-secondary-emphasis px-2 py-1">{$item->privilege}</span>
+												<div class="small fw-semibold text-dark">
 													{if $item->description}
 														{$item->description}
 													{else}
@@ -76,7 +78,7 @@
 											</div>
 										</div>
 
-										<div class="d-flex align-items-center gap-3 flex-shrink-0">
+										<div class="d-flex align-items-center gap-2 flex-shrink-0">
 											<input
 													type="checkbox"
 													class="btn-check js-permission-toggle"
@@ -88,7 +90,7 @@
 											>
 
 											<label
-													class="btn btn-xs px-3 rounded-pill {if $item->effective_access === 'allow'}btn-success{else}btn-outline-secondary{/if}"
+													class="btn btn-xs px-3 fw-semibold rounded-pill {if $item->effective_access === 'allow'}btn-success{else}bg-light border border-secondary-subtle text-secondary-emphasis{/if}"
 													for="{$inputId}"
 											>
 												{if $item->effective_access === 'allow'}

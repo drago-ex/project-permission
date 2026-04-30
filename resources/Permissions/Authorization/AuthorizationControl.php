@@ -47,16 +47,15 @@ class AuthorizationControl extends BaseControl
 			$template->roleId = $this->roleId;
 
 			if ($this->roleId !== null) {
-				$template->rolePermissions = $this->authorizationRepository
-					->getRolePermissions($this->roleId);
-				$template->groupedPermissions = $this->groupPermissionsByResource($template->rolePermissions);
+				$rolePermissions = $this->authorizationRepository->getRolePermissions($this->roleId);
+				$template->groupedPermissions = $this->groupPermissionsByResource($rolePermissions);
 
 				$template->allowedCount = count(array_filter(
-					$template->rolePermissions,
+					$rolePermissions,
 					static fn(object $item): bool => $item->effective_access === 'allow',
 				));
 
-				$template->deniedCount = count($template->rolePermissions) - $template->allowedCount;
+				$template->deniedCount = count($rolePermissions) - $template->allowedCount;
 				$template->roleName = $this->rolesRepository->get($this->roleId)
 					->record()->description;
 			}
