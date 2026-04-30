@@ -12,6 +12,7 @@ use Dibi\Result;
 use Drago\Attr\AttributeDetectionException;
 use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
+use Nette\Application\UI\Form;
 
 
 /**
@@ -43,6 +44,7 @@ class AuthorizationControl extends BaseControl
 		$template->setTranslator($this->translator);
 
 		if ($template instanceof AuthorizationTemplate) {
+			$template->roles = $this->rolesRepository->getAllRoles();
 			$template->roleId = $this->roleId;
 
 			if ($this->roleId !== null) {
@@ -61,6 +63,35 @@ class AuthorizationControl extends BaseControl
 		}
 
 		$template->render();
+	}
+
+
+	protected function createComponentRoleSwitch(): Form
+	{
+		$form = $this->factory->create();
+		$form->addSelect('role_id', 'Role', $this->rolesRepository->getAllRoles());
+		$form->addSubmit('send');
+		$form->onAnchor[] = function () use ($form): void {
+			$form->setDefaults([
+				'role_id' => $this->roleId,
+			]);
+		};
+		$form->onSuccess[] = function (Form $form): void {
+			$values = $form->getValues('array');
+			$roleId = (int) $values['role_id'];
+			$this->roleId = $roleId;
+
+			if ($this->getPresenter()->isAjax()) {
+				$this->redrawControl('permissions');
+				return;
+			}
+
+			$this->getPresenter()->redirect('this', [
+				'authorization-roleId' => $roleId,
+			]);
+		};
+
+		return $form;
 	}
 
 
