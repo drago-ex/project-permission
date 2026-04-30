@@ -49,6 +49,7 @@ class AuthorizationControl extends BaseControl
 			if ($this->roleId !== null) {
 				$template->rolePermissions = $this->authorizationRepository
 					->getRolePermissions($this->roleId);
+				$template->groupedPermissions = $this->groupPermissionsByResource($template->rolePermissions);
 
 				$template->allowedCount = count(array_filter(
 					$template->rolePermissions,
@@ -62,6 +63,17 @@ class AuthorizationControl extends BaseControl
 		}
 
 		$template->render();
+	}
+
+
+	private function groupPermissionsByResource(array $permissions): array
+	{
+		$groupedPermissions = [];
+		foreach ($permissions as $permission) {
+			$groupedPermissions[$permission->resource][] = $permission;
+		}
+
+		return $groupedPermissions;
 	}
 
 

@@ -34,60 +34,77 @@
 						</select>
 					</form>
 					<span class="badge text-bg-success-subtle border border-success-subtle text-success px-3 py-2">
-						{$allowedCount} {_'Allowed'}
+						({$allowedCount}) {_'Allowed'}
 					</span>
 					<span class="badge text-bg-light border text-body-secondary px-3 py-2">
-						{$deniedCount} {_'Denied'}
+						({$deniedCount}) {_'Denied'}
 					</span>
 				</div>
 			</div>
 		</div>
 
-		<div class="card-body p-0">
-			<div class="list-group list-group-flush">
-				{foreach $rolePermissions as $item}
-					{do $inputId = "permission-{$roleId}-{$item->id}"}
-					<div class="list-group-item px-4 py-3">
-						<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-							<div class="min-w-0">
-								<div class="fw-semibold text-dark">
-									{if $item->description}
-										{$item->description}
-									{else}
-										{_'No description'}
-									{/if}
-								</div>
-								<div class="small mt-1 text-body-secondary">
-									{$item->resource} &rarr; {$item->privilege}
+		<div class="card-body bg-body-tertiary p-3">
+			<div class="d-flex flex-column gap-3">
+				{foreach $groupedPermissions as $resource => $items}
+					<div class="bg-white border rounded-3 overflow-hidden">
+						<div class="px-4 py-3 border-bottom bg-light-subtle">
+							<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+								<div>
+									<div class="fw-semibold text-dark">{$resource}</div>
+									<div class="small text-body-secondary">
+										{count($items)} {_'permissions'}
+									</div>
 								</div>
 							</div>
+						</div>
 
-							<div class="d-flex align-items-center gap-3 flex-shrink-0">
-								<input
-										type="checkbox"
-										class="btn-check js-permission-toggle"
-										id="{$inputId}"
-										data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
-										data-naja-history="off"
-										{if $item->effective_access === 'allow'}checked{/if}
-										autocomplete="off"
-								>
+						<div class="list-group list-group-flush">
+							{foreach $items as $item}
+								{do $inputId = "permission-{$roleId}-{$item->id}"}
+								<div class="list-group-item px-4 py-3">
+									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+										<div class="min-w-0">
+											<div class="d-flex flex-wrap align-items-center gap-2">
+												<span class="badge text-bg-light border text-body-secondary">{$item->privilege}</span>
+												<div class="fw-semibold text-dark">
+													{if $item->description}
+														{$item->description}
+													{else}
+														{_'No description'}
+													{/if}
+												</div>
+											</div>
+										</div>
 
-								<label
-										class="btn btn-xs px-3 rounded-pill {if $item->effective_access === 'allow'}btn-success{else}btn-outline-secondary{/if}"
-										for="{$inputId}"
-								>
-									{if $item->effective_access === 'allow'}
-										<i class="fa-solid fa-check"></i>
-									{else}
-										<i class="fa-solid fa-minus"></i>
-									{/if}
-								</label>
-							</div>
+										<div class="d-flex align-items-center gap-3 flex-shrink-0">
+											<input
+													type="checkbox"
+													class="btn-check js-permission-toggle"
+													id="{$inputId}"
+													data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
+													data-naja-history="off"
+													{if $item->effective_access === 'allow'}checked{/if}
+													autocomplete="off"
+											>
+
+											<label
+													class="btn btn-xs px-3 rounded-pill {if $item->effective_access === 'allow'}btn-success{else}btn-outline-secondary{/if}"
+													for="{$inputId}"
+											>
+												{if $item->effective_access === 'allow'}
+													{_'Allowed'}
+												{else}
+													{_'Denied'}
+												{/if}
+											</label>
+										</div>
+									</div>
+								</div>
+							{/foreach}
 						</div>
 					</div>
 				{else}
-					<div class="px-4 py-5 text-center text-body-secondary">
+					<div class="px-4 py-5 text-center text-body-secondary bg-white border rounded-3">
 						{_'No permissions found'}
 					</div>
 				{/foreach}
