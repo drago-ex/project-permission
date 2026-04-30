@@ -10,12 +10,12 @@ use Drago\Database\Entity;
 class AuthorizationEntity extends Entity
 {
 	public const string
-		Table = 'access',
+		Table = 'authorization',
+		PrimaryKey = 'id',
 		ColumnRoleId = 'role_id',
-		ColumnResourceId = 'resource_id',
-		ColumnAccess = 'access';
+		ColumnResourceId = 'resource_id';
 
+	public int $id;
 	public int $role_id;
 	public int $resource_id;
-	public string $access;
 }

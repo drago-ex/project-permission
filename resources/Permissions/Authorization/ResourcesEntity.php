@@ -20,4 +20,5 @@ class ResourcesEntity extends Entity
 	public string $resource;
 	public string $privilege;
 	public string $description;
+	public ?string $effective_access = null;
 }

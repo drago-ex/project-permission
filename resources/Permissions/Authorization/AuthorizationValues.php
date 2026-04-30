@@ -11,10 +11,8 @@ class AuthorizationValues extends ExtraArrayHash
 {
 	public const string
 		RoleId = 'role_id',
-		ResourceId = 'resource_id',
-		Access = 'access';
+		ResourceId = 'resource_id';
 
 	public int $role_id;
 	public int $resource_id;
-	public string $access;
 }

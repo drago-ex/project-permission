@@ -38,9 +38,7 @@ class RolesControl extends BaseControl
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
-		$grid->addColumnText('id', 'ID');
-		$grid->addColumnText('description', 'Description')
-			->setFilterText();
+		$grid->addColumnText('description', 'Role description');
 
 		$grid->addAction(
 			label: 'Edit',
@@ -54,6 +52,13 @@ class RolesControl extends BaseControl
 			signal: 'delete!',
 			class: 'ajax btn btn-xs btn-danger',
 			callback: fn(int $id) => $this->handleDelete($id),
+		);
+
+		$grid->addAction(
+			label: 'Permissions',
+			signal: 'permissions!',
+			class: 'btn btn-xs btn-secondary',
+			callback: fn(int $id) => $this->handlePermissions($id),
 		);
 
 		return $grid;
@@ -111,6 +116,14 @@ class RolesControl extends BaseControl
 			$form->addError($message);
 			$this->redrawOffCanvas();
 		}
+	}
+
+
+	public function handlePermissions(int $id): void
+	{
+		$this->getPresenter()->redirect('permissions', [
+			'authorization-roleId' => $id,
+		]);
 	}
 
 
