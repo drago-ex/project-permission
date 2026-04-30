@@ -33,10 +33,10 @@
 							{/foreach}
 						</select>
 					</form>
-					<span class="badge text-bg-success-subtle border border-success-subtle text-success px-3 py-2">
+					<span class="badge border border-success-subtle text-success px-3 py-2">
 						({$allowedCount}) {_'Allowed'}
 					</span>
-					<span class="badge text-bg-light border border-secondary-subtle text-secondary-emphasis px-3 py-2">
+					<span class="badge border border-danger-subtle text-danger px-3 py-2">
 						({$deniedCount}) {_'Denied'}
 					</span>
 				</div>
@@ -63,11 +63,11 @@
 							{foreach $items as $item}
 								{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
 								{do $inputId = "permission-{$roleId}-{$item->id}"}
-								<div class="list-group-item px-4 py-2">
+								<div class="list-group-item px-4 py-3">
 									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
 										<div class="min-w-0">
 											<div class="d-flex flex-wrap align-items-center gap-2">
-												<span class="badge small text-bg-light border border-secondary-subtle text-secondary-emphasis px-2 py-1">{$item->privilege}</span>
+												<span class="badge small text-bg-light border border-secondary-subtle text-secondary px-2 py-1">{$item->privilege}</span>
 												<div class="small fw-semibold text-dark">
 													{if $item->description}
 														{$item->description}
@@ -90,7 +90,7 @@
 											>
 
 											<label
-													class="btn btn-xs px-3 fw-semibold rounded-pill {if $item->effective_access === 'allow'}btn-success{else}bg-light border border-secondary-subtle text-secondary-emphasis{/if}"
+													class="btn btn-xs px-3 fw-semibold rounded-pill {if $item->effective_access === 'allow'}btn-success{else}btn-danger{/if}"
 													for="{$inputId}"
 											>
 												{if $item->effective_access === 'allow'}
