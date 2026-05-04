@@ -1,6 +1,7 @@
 services:
 	permissionFactory:
-		class: Drago\Permission\PermissionFactory
-		arguments: [tagged(PermisionTag)]
+		class: App\Core\Permissions\PermissionFactory
+		arguments:
+			initializers: tagged(PermisionTag)
 
 	- @permissionFactory::create

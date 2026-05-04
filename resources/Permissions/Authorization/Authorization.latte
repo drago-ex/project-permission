@@ -1,5 +1,6 @@
 {templateType App\Core\Permissions\Authorization\AuthorizationTemplate}
 {varType array $groupedPermissions}
+{varType bool $isAdminRole}
 
 {snippet permissions}
 	<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-bottom pb-2 mb-3">
@@ -38,12 +39,19 @@
 		</div>
 	</div>
 
+	{if $isAdminRole}
+		<div class="alert alert-warning d-flex align-items-center gap-2 py-2 px-3 mb-3 small">
+			<i class="fa fa-shield-halved"></i>
+			{_'Administrator role has full access granted by default. These settings have no effect.'}
+		</div>
+	{/if}
+
 	<div class="card-body">
 		<div class="d-flex flex-column gap-3">
 			{foreach $groupedPermissions as $resource => $items}
 				{varType App\Core\Permissions\Authorization\ResourcesEntity[] $items}
-				<div class="bg-white border overflow-hidden">
-					<div class="px-4 py-2 border-bottom bg-light">
+				<div class="bg-white overflow-hidden">
+					<div class="px-4 py-2 bg-light rounded">
 						<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
 							<div>
 								<div class="fw-semibold text-dark">{$resource}</div>
@@ -76,19 +84,20 @@
 									<div class="d-flex align-items-center gap-2 flex-shrink-0">
 										<input
 												type="checkbox"
-												class="btn-check js-permission-toggle"
+												class="btn-check{if !$isAdminRole} js-permission-toggle{/if}"
 												id="{$inputId}"
 												data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
 												data-naja-history="off"
-												{if $item->effective_access === 'allow'}{_'checked'}{/if}
+												{if $isAdminRole || $item->effective_access === 'allow'}checked{/if}
+												{if $isAdminRole}disabled{/if}
 												autocomplete="off"
 										>
 
 										<label
-												class="btn btn-sm px-3 fw-semibold rounded-pill {if $item->effective_access === 'allow'}btn-success{else}btn-danger{/if}"
+												class="btn btn-sm px-3 fw-semibold rounded-pill {if $isAdminRole || $item->effective_access === 'allow'}btn-success{else}btn-danger{/if}"
 												for="{$inputId}"
 										>
-											{if $item->effective_access === 'allow'}
+											{if $isAdminRole || $item->effective_access === 'allow'}
 												{_'Allowed'}
 											{else}
 												{_'Denied'}

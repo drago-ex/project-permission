@@ -15,4 +15,5 @@ class AuthorizationTemplate extends BaseTemplate
 	public int $roleId = 0;
 	public int $allowedCount = 0;
 	public int $deniedCount = 0;
+	public bool $isAdminRole = false;
 }

@@ -72,8 +72,8 @@ class AuthorizationRepository
 	public function deny(int $roleId, int $resourceId): void
 	{
 		$this->connection->delete(AuthorizationEntity::Table)
-			->where('%n = %i', AuthorizationEntity::ColumnRoleId, $roleId)
-			->where('%n = %i', AuthorizationEntity::ColumnResourceId, $resourceId)
+			->where('%n = ?', AuthorizationEntity::ColumnRoleId, $roleId)
+			->where('%n = ?', AuthorizationEntity::ColumnResourceId, $resourceId)
 			->execute();
 	}
 }

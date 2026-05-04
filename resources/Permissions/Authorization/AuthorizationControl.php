@@ -10,6 +10,7 @@ use App\Core\Permissions\Roles\RolesRepository;
 use Dibi\Exception;
 use Dibi\Result;
 use Drago\Attr\AttributeDetectionException;
+use Drago\Permission\Role;
 use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 
@@ -47,17 +48,25 @@ class AuthorizationControl extends BaseControl
 			$template->roleId = $this->roleId;
 
 			if ($this->roleId !== null) {
+				$role = $this->rolesRepository->get($this->roleId)->record();
+
+				$isAdminRole =  $role->name === Role::RoleAdmin;
+				$template->roleName = $role->description;
+				$template->isAdminRole = $isAdminRole;
+
 				$rolePermissions = $this->authorizationRepository->getRolePermissions($this->roleId);
 				$template->groupedPermissions = $this->groupPermissionsByResource($rolePermissions);
 
-				$template->allowedCount = count(array_filter(
-					$rolePermissions,
-					static fn(object $item): bool => $item->effective_access === 'allow',
-				));
-
-				$template->deniedCount = count($rolePermissions) - $template->allowedCount;
-				$template->roleName = $this->rolesRepository->get($this->roleId)
-					->record()->description;
+				if ($isAdminRole) {
+					$template->allowedCount = count($rolePermissions);
+					$template->deniedCount = 0;
+				} else {
+					$template->allowedCount = count(array_filter(
+						$rolePermissions,
+						static fn(object $item): bool => $item->effective_access === 'allow',
+					));
+					$template->deniedCount = count($rolePermissions) - $template->allowedCount;
+				}
 			}
 		}
 

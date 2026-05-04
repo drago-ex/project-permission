@@ -1,0 +1,92 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Core\Permissions;
+
+use App\Core\Permissions\Authorization\AuthorizationEntity;
+use App\Core\Permissions\Authorization\ResourcesEntity;
+use App\Core\Permissions\Roles\RolesEntity;
+use Dibi\Connection;
+use Dibi\DriverException;
+use Drago\Permission\Provider;
+use Drago\Permission\Role;
+use LogicException;
+use Nette\Security\Authorizator;
+use Nette\Security\Permission;
+
+
+class PermissionFactory
+{
+	/** @var iterable<Provider> */
+	private iterable $initializers;
+
+
+	public function __construct(
+		private readonly Connection $connection,
+		iterable $initializers = [],
+	) {
+		foreach ($initializers as $initializer) {
+			if (!$initializer instanceof Provider) {
+				throw new LogicException(sprintf('%s must implement Provider', $initializer::class));
+			}
+		}
+		$this->initializers = $initializers;
+	}
+
+
+	public function create(): Permission
+	{
+		$acl = new Permission;
+		$acl->addRole(Role::RoleGuest);
+		$acl->addRole(Role::RoleMember, Role::RoleGuest);
+		$acl->addRole(Role::RoleAdmin, Role::RoleMember);
+
+		foreach ($this->initializers as $initializer) {
+			$initializer->register($acl);
+		}
+
+		try {
+
+			/** @var RolesEntity[] $roles */
+			$roles = $this->connection
+				->select('*')
+				->from(RolesEntity::Table)
+				->fetchAll();
+
+			foreach ($roles as $role) {
+				if (!$acl->hasRole($role->name)) {
+					$acl->addRole($role->name);
+				}
+			}
+
+			/** @var ResourcesEntity[] $resources */
+			$resources = $this->connection
+				->select('*')
+				->from(ResourcesEntity::Table)
+				->fetchAll();
+
+			foreach ($resources as $resource) {
+				if (!$acl->hasResource($resource->resource)) {
+					$acl->addResource($resource->resource);
+				}
+			}
+
+			$permissions = $this->connection
+				->select('r.name AS role, res.resource, res.privilege')
+				->from(AuthorizationEntity::Table)->as('a')
+				->innerJoin(RolesEntity::Table)->as('r')->on('a.role_id = r.id')
+				->innerJoin(ResourcesEntity::Table)->as('res')->on('a.resource_id = res.id')
+				->fetchAll();
+
+			foreach ($permissions as $row) {
+				$privilege = $row->privilege === 'all' ? Authorizator::All : $row->privilege;
+				$acl->allow($row->role, $row->resource, $privilege);
+			}
+		} catch (DriverException) {
+			// Not implemented.
+		}
+
+		return $acl;
+	}
+}

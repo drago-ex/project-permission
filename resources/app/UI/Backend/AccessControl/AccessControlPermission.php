@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\UI\Backend\Admin;
+
+use Drago\Permission\Provider;
+use Drago\Permission\Role;
+use Nette\Security\Permission;
+
+
+class AccessControlPermission implements Provider
+{
+	private const string Resource = 'Backend:AccessControl';
+
+	public function register(Permission $acl): void
+	{
+		$acl->addResource(self::Resource);
+		$acl->allow(Role::RoleAdmin);
+	}
+}
