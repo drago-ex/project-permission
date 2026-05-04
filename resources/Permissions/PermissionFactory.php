@@ -72,6 +72,7 @@ class PermissionFactory
 				}
 			}
 
+			/** @var PermissionEntity[] $permissions */
 			$permissions = $this->connection
 				->select('r.name AS role, res.resource, res.privilege')
 				->from(AuthorizationEntity::Table)->as('a')
