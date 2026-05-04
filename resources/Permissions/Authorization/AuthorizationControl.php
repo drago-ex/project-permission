@@ -50,7 +50,7 @@ class AuthorizationControl extends BaseControl
 			if ($this->roleId !== null) {
 				$role = $this->rolesRepository->get($this->roleId)->record();
 
-				$isAdminRole =  $role->name === Role::RoleAdmin;
+				$isAdminRole = $role->name === Role::RoleAdmin;
 				$template->roleName = $role->description;
 				$template->isAdminRole = $isAdminRole;
 
