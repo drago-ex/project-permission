@@ -13,6 +13,7 @@ class AccessControlPermission implements Provider
 {
 	private const string Resource = 'Backend:AccessControl';
 
+
 	public function register(Permission $acl): void
 	{
 		$acl->addResource(self::Resource);
