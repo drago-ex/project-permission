@@ -2,116 +2,109 @@
 {varType array $groupedPermissions}
 
 {snippet permissions}
-	<div class="card border-0 shadow-sm mt-3">
-		<div class="card-header bg-white border-bottom py-3 px-4">
-			<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-				<div>
-					<h5 class="mb-1">
-						<i class="fa-solid fa-shield-halved pe-1"></i>
-						{_'Role permissions'}
-					</h5>
-					<div class="text-body-secondary small">
-						{_'Setting access for the selected role'}
-					</div>
-				</div>
-
-				<div class="d-flex align-items-center gap-2">
-					<form action="{plink this}" method="get" class="d-flex align-items-center gap-2 mb-0">
-						<label for="authorization-role-switch" class="small text-body-secondary">
-							{_'Role'}
-						</label>
-						<select
-								name="authorization-roleId"
-								id="authorization-role-switch"
-								class="form-select form-select-sm"
-								onchange="this.form.submit()"
-						>
-							{foreach $roles as $id => $name}
-								<option value="{$id}" {if $id === $roleId}selected{/if}>
-									{$name}
-								</option>
-							{/foreach}
-						</select>
-					</form>
-					<span class="badge border border-success-subtle text-success px-3 py-2">
-						({$allowedCount}) {_'Allowed'}
-					</span>
-					<span class="badge border border-danger-subtle text-danger px-3 py-2">
-						({$deniedCount}) {_'Denied'}
-					</span>
-				</div>
-			</div>
+	<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-bottom pb-2 mb-3">
+		<div>
+			<h5>{_'Role permissions'}</h5>
+			<p class="text-body-secondary small m-0">
+				{_'Setting access for the selected role'}
+			</p>
 		</div>
 
-		<div class="card-body bg-body-tertiary p-3">
-			<div class="d-flex flex-column gap-3">
-				{foreach $groupedPermissions as $resource => $items}
-					{varType App\Core\Permissions\Authorization\ResourcesEntity[] $items}
-					<div class="bg-white border rounded-3 overflow-hidden">
-						<div class="px-4 py-2 border-bottom bg-light">
-							<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-								<div>
-									<div class="fw-semibold text-dark">{$resource}</div>
-									<div class="small text-body-secondary">
-										{count($items)} {_'permissions'}
-									</div>
+		<div class="d-flex align-items-center gap-2">
+			<form action="{plink this}" method="get" class="d-flex align-items-center gap-2 mb-0">
+				<label for="authorization-role-switch" class="small text-body-secondary">
+					{_'Role'}
+				</label>
+				<select
+						name="authorization-roleId"
+						id="authorization-role-switch"
+						class="form-select form-select-sm"
+						onchange="this.form.submit()"
+				>
+					{foreach $roles as $id => $name}
+						<option value="{$id}" {if $id === $roleId}selected{/if}>
+							{$name}
+						</option>
+					{/foreach}
+				</select>
+				<button type="submit" class="visually-hidden">{_'Apply'}</button>
+			</form>
+			<span class="badge border border-success-subtle text-success px-3 py-2">
+				({$allowedCount}) {_'Allowed'}
+			</span>
+			<span class="badge border border-danger-subtle text-danger px-3 py-2">
+				({$deniedCount}) {_'Denied'}
+			</span>
+		</div>
+	</div>
+
+	<div class="card-body">
+		<div class="d-flex flex-column gap-3">
+			{foreach $groupedPermissions as $resource => $items}
+				{varType App\Core\Permissions\Authorization\ResourcesEntity[] $items}
+				<div class="bg-white border overflow-hidden">
+					<div class="px-4 py-2 border-bottom bg-light">
+						<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+							<div>
+								<div class="fw-semibold text-dark">{$resource}</div>
+								<div class="small text-body-secondary">
+									{count($items)} {_'permissions'}
 								</div>
 							</div>
 						</div>
+					</div>
 
-						<div class="list-group list-group-flush">
-							{foreach $items as $item}
-								{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
-								{do $inputId = "permission-{$roleId}-{$item->id}"}
-								<div class="list-group-item px-4 py-3">
-									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
-										<div class="min-w-0">
-											<div class="d-flex flex-wrap align-items-center gap-2">
-												<span class="text-secondary">&angrt;</span>
-												<span class="badge small text-bg-light border border-secondary-subtle text-secondary px-2 py-1">{$item->privilege}</span>
-												<div class="small fw-semibold text-dark">
-													{if $item->description}
-														{$item->description}
-													{else}
-														{_'No description'}
-													{/if}
-												</div>
+					<div class="list-group list-group-flush">
+						{foreach $items as $item}
+							{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
+							{do $inputId = "permission-{$roleId}-{$item->id}"}
+							<div class="list-group-item px-3 py-3">
+								<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+									<div class="min-w-0">
+										<div class="d-flex flex-wrap align-items-center gap-2">
+											<span class="badge rounded-pill small text-bg-light border border-secondary-subtle text-secondary px-3 py-1">{$item->privilege}</span>
+											<div class="small fw-semibold text-dark">
+												{if $item->description}
+													{$item->description}
+												{else}
+													{_'No description'}
+												{/if}
 											</div>
 										</div>
+									</div>
 
-										<div class="d-flex align-items-center gap-2 flex-shrink-0">
-											<input
-													type="checkbox"
-													class="btn-check js-permission-toggle"
-													id="{$inputId}"
-													data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
-													data-naja-history="off"
-													{if $item->effective_access === 'allow'}checked{/if}
-													autocomplete="off"
-											>
+									<div class="d-flex align-items-center gap-2 flex-shrink-0">
+										<input
+												type="checkbox"
+												class="btn-check js-permission-toggle"
+												id="{$inputId}"
+												data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
+												data-naja-history="off"
+												{if $item->effective_access === 'allow'}{_'checked'}{/if}
+												autocomplete="off"
+										>
 
-											<label
-													class="btn btn-xs px-3 fw-semibold rounded-pill {if $item->effective_access === 'allow'}btn-success{else}btn-danger{/if}"
-													for="{$inputId}"
-											>
-												{if $item->effective_access === 'allow'}
-													{_'Allowed'}
-												{else}
-													{_'Denied'}
-												{/if}
-											</label>
-										</div>
+										<label
+												class="btn btn-sm px-3 fw-semibold rounded-pill {if $item->effective_access === 'allow'}btn-success{else}btn-danger{/if}"
+												for="{$inputId}"
+										>
+											{if $item->effective_access === 'allow'}
+												{_'Allowed'}
+											{else}
+												{_'Denied'}
+											{/if}
+										</label>
 									</div>
 								</div>
-							{/foreach}
-						</div>
+							</div>
+						{/foreach}
 					</div>
-				{else}
-					<div class="px-4 py-5 text-center text-body-secondary bg-white border rounded-3">
-						{_'No permissions found'}
-					</div>
-				{/foreach}
-			</div>
+				</div>
+			{else}
+				<div class="px-4 py-5 text-center text-body-secondary bg-white border rounded-3">
+					{_'No permissions found'}
+				</div>
+			{/foreach}
 		</div>
 	</div>
 {/snippet}

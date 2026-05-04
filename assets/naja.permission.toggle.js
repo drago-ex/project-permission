@@ -1,4 +1,4 @@
-export default class PermissionToggle {
+export default class NajaPermissionToggle {
 	initialize(naja) {
 		const init = (doc) => {
 			if (!doc) {
