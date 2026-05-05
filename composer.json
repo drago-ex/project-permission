@@ -36,10 +36,10 @@
 	"scripts": {
 		"phpstan": "phpstan analyse --level 5 --configuration phpstan.neon resources/Permissions",
 		"post-install-cmd": [
-			"php dev.copy.php"
+			"php dev-copy.php"
 		],
 		"post-update-cmd": [
-			"php dev.copy.php"
+			"php dev-copy.php"
 		]
 	}
 }
