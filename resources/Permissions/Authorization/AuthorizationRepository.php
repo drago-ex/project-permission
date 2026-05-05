@@ -43,7 +43,7 @@ class AuthorizationRepository
 				CASE
 					WHEN a.role_id IS NULL THEN 'deny'
 					ELSE 'allow'
-				END AS effective_access
+				END AS access
 			")
 			->from(ResourcesEntity::Table)->as('r')
 			->leftJoin(AuthorizationEntity::Table)->as('a')

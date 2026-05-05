@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\UI\Backend\Admin;
+namespace App\UI\Backend\AccessControl;
 
 use App\Core\Permissions\Authorization\AuthorizationControl;
 use App\Core\Permissions\Roles\RolesControl;

@@ -3,7 +3,11 @@
 {varType bool $isAdminRole}
 
 {snippet permissions}
+
+	{* header *}
 	<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-bottom pb-2 mb-3">
+
+		{* title *}
 		<div>
 			<h5>{_'Role permissions'}</h5>
 			<p class="text-body-secondary small m-0">
@@ -12,33 +16,39 @@
 		</div>
 
 		<div class="d-flex align-items-center gap-2">
+
+			{* role switch *}
 			<form action="{plink this}" method="get" class="d-flex align-items-center gap-2 mb-0">
-				<label for="authorization-role-switch" class="small text-body-secondary">
+				<label for="role-switch" class="small text-body-secondary">
 					{_'Role'}
 				</label>
-				<select
-						name="authorization-roleId"
-						id="authorization-role-switch"
-						class="form-select form-select-sm"
-						onchange="this.form.submit()"
-				>
+
+				<select name="authorization-roleId" id="role-switch" class="form-select form-select-sm" onchange="this.form.submit()">
 					{foreach $roles as $id => $name}
-						<option value="{$id}" {if $id === $roleId}selected{/if}>
+						<option n:attr="value: $id, selected: $id === $roleId">
 							{$name}
 						</option>
 					{/foreach}
 				</select>
-				<button type="submit" class="visually-hidden">{_'Apply'}</button>
+
+				{* hidden submit — triggers form on select change *}
+				<button type="submit" class="visually-hidden">
+					{_'Apply'}
+				</button>
 			</form>
+
+			{* permission counters *}
 			<span class="badge border border-success-subtle text-success px-3 py-2">
 				({$allowedCount}) {_'Allowed'}
 			</span>
 			<span class="badge border border-danger-subtle text-danger px-3 py-2">
 				({$deniedCount}) {_'Denied'}
 			</span>
+
 		</div>
 	</div>
 
+	{* admin notice *}
 	{if $isAdminRole}
 		<div class="alert alert-warning d-flex align-items-center gap-2 py-2 px-3 mb-3 small">
 			<i class="fa fa-shield-halved"></i>
@@ -46,74 +56,91 @@
 		</div>
 	{/if}
 
+	{* permissions list *}
 	<div class="card-body">
 		<div class="d-flex flex-column gap-3">
 			{foreach $groupedPermissions as $resource => $items}
 				{varType App\Core\Permissions\Authorization\ResourcesEntity[] $items}
+
+				{* resource group *}
 				<div class="bg-white overflow-hidden">
+
+					{* resource header *}
 					<div class="px-4 py-2 bg-light rounded">
-						<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-							<div>
-								<div class="fw-semibold text-dark">{$resource}</div>
-								<div class="small text-body-secondary">
-									{count($items)} {_'permissions'}
-								</div>
-							</div>
+						<div class="fw-semibold text-dark">{$resource}</div>
+						<div class="small text-body-secondary">
+							{count($items)} {_'permissions'}
 						</div>
 					</div>
 
+					{* permission items *}
 					<div class="list-group list-group-flush">
 						{foreach $items as $item}
 							{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
 							{do $inputId = "permission-{$roleId}-{$item->id}"}
+							{do $isAllowed = $isAdminRole || $item->access === 'allow'}
+
 							<div class="list-group-item px-3 py-3">
 								<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+
+									{* privilege info *}
 									<div class="min-w-0">
 										<div class="d-flex flex-wrap align-items-center gap-2">
-											<span class="badge rounded-pill small text-bg-light border border-secondary-subtle text-secondary px-3 py-1">{$item->privilege}</span>
+											<span class="badge rounded-pill small text-bg-light border border-secondary-subtle text-secondary px-3 py-1">
+												{$item->privilege}
+											</span>
 											<div class="small fw-semibold text-dark">
-												{if $item->description}
-													{$item->description}
-												{else}
-													{_'No description'}
-												{/if}
+												{$item->description ?? 'No description'}
 											</div>
 										</div>
 									</div>
 
+									{* permission toggle *}
 									<div class="d-flex align-items-center gap-2 flex-shrink-0">
 										<input
 												type="checkbox"
-												class="btn-check{if !$isAdminRole} js-permission-toggle{/if}"
 												id="{$inputId}"
-												data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
 												data-naja-history="off"
-												{if $isAdminRole || $item->effective_access === 'allow'}checked{/if}
-												{if $isAdminRole}disabled{/if}
 												autocomplete="off"
-										>
+												data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
+												n:attr="
+													class: [
+														'btn-check',
+														'js-permission-toggle' => !$isAdminRole,
+													],
+													checked: $isAllowed,
+													disabled: $isAdminRole,
+												">
 
-										<label
-												class="btn btn-sm px-3 fw-semibold rounded-pill {if $isAdminRole || $item->effective_access === 'allow'}btn-success{else}btn-danger{/if}"
-												for="{$inputId}"
-										>
-											{if $isAdminRole || $item->effective_access === 'allow'}
-												{_'Allowed'}
-											{else}
-												{_'Denied'}
-											{/if}
+										<label for="{$inputId}" n:attr="class: [
+											'btn',
+											'btn-sm',
+											'px-3',
+											'fw-semibold',
+											'rounded-pill',
+											'btn-success' => $isAllowed,
+											'btn-danger' => !$isAllowed,
+										]">
+											{$isAllowed ? 'Allowed' : 'Denied'}
 										</label>
 									</div>
+
 								</div>
 							</div>
 						{/foreach}
 					</div>
+
 				</div>
+
 			{else}
+
+				{* empty state *}
 				<div class="px-4 py-5 text-center text-body-secondary bg-white border rounded-3">
 					{_'No permissions found'}
 				</div>
+
 			{/foreach}
 		</div>
 	</div>
+
 {/snippet}

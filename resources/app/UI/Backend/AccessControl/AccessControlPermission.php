@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\UI\Backend\Admin;
+namespace App\UI\Backend\AccessControl;
 
 use Drago\Permission\Provider;
 use Drago\Permission\Role;

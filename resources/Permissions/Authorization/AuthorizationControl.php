@@ -39,34 +39,31 @@ class AuthorizationControl extends BaseControl
 	 */
 	public function render(): void
 	{
-		$template = $this->createRender();
+		$template = $this->template;
 		$template->setFile(__DIR__ . '/Authorization.latte');
 		$template->setTranslator($this->translator);
+		$template->roles = $this->rolesRepository->getAllRoles();
+		$template->roleId = $this->roleId;
 
-		if ($template instanceof AuthorizationTemplate) {
-			$template->roles = $this->rolesRepository->getAllRoles();
-			$template->roleId = $this->roleId;
+		if ($this->roleId !== null) {
+			$role = $this->rolesRepository->get($this->roleId)->record();
 
-			if ($this->roleId !== null) {
-				$role = $this->rolesRepository->get($this->roleId)->record();
+			$isAdminRole = $role->name === Role::RoleAdmin;
+			$template->roleName = $role->description;
+			$template->isAdminRole = $isAdminRole;
 
-				$isAdminRole = $role->name === Role::RoleAdmin;
-				$template->roleName = $role->description;
-				$template->isAdminRole = $isAdminRole;
+			$rolePermissions = $this->authorizationRepository->getRolePermissions($this->roleId);
+			$template->groupedPermissions = $this->groupPermissionsByResource($rolePermissions);
 
-				$rolePermissions = $this->authorizationRepository->getRolePermissions($this->roleId);
-				$template->groupedPermissions = $this->groupPermissionsByResource($rolePermissions);
-
-				if ($isAdminRole) {
-					$template->allowedCount = count($rolePermissions);
-					$template->deniedCount = 0;
-				} else {
-					$template->allowedCount = count(array_filter(
-						$rolePermissions,
-						static fn(object $item): bool => $item->effective_access === 'allow',
-					));
-					$template->deniedCount = count($rolePermissions) - $template->allowedCount;
-				}
+			if ($isAdminRole) {
+				$template->allowedCount = count($rolePermissions);
+				$template->deniedCount = 0;
+			} else {
+				$template->allowedCount = count(array_filter(
+					$rolePermissions,
+					static fn(object $item): bool => $item->access === 'allow',
+				));
+				$template->deniedCount = count($rolePermissions) - $template->allowedCount;
 			}
 		}
 
