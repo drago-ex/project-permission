@@ -24,7 +24,7 @@
 		"drago-project": {
 			"install": {
 				"copy": {
-					"resources/Permisions": "app/Core/Permission",
+					"resources/Permisions": "app/Core/Permissions",
 					"resources/app/UI/Backend": "app/UI/Backend"
 				}
 			}
