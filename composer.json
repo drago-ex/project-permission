@@ -25,7 +25,8 @@
 			"install": {
 				"copy": {
 					"resources/Permissions": "app/Core/Permissions",
-					"resources/app/UI/Backend": "app/UI/Backend"
+					"resources/app/UI/Backend": "app/UI/Backend",
+					"resources/assets": "assets"
 				}
 			}
 		}
