@@ -27,7 +27,16 @@ System roles such as `admin`, `user` and `guest` are handled as protected base r
 composer require drago-ex/project-permission
 ```
 
-After installation, run the package migrations and load the provided service configuration.
+After installation, run the package migrations, load the provided service configuration, register the Naja extension from `assets/permission-toggle.js` and include styles from `assets/permission-togle.scss`.
+
+Example:
+
+```js
+import naja from 'naja';
+import PermissionToggle from 'drago-ex/project-permission/assets/permission-toggle';
+
+naja.registerExtension(new PermissionToggle());
+```
 
 ## Database
 
