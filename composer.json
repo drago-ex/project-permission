@@ -15,7 +15,7 @@
 		"drago-ex/application": "^1.0",
 		"drago-ex/form": "^1.0",
 		"drago-ex/permission": "^1.0",
-		"drago-ex/translator": "^1.0",
+		"drago-ex/translator": "^2.0",
 		"drago-ex/datagrid": "@dev",
 		"drago-ex/project-user": "^1.0",
 		"drago-ex/project-front": "^1.0"
