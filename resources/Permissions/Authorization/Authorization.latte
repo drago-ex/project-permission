@@ -25,7 +25,7 @@
 
 				<select name="authorization-roleId" id="role-switch" class="form-select form-select-sm" onchange="this.form.submit()">
 					{foreach $roles as $id => $name}
-						<option n:attr="value: $id, selected: $id === $roleId">
+						<option value="{$id}" n:attr="selected: $id === $roleId">
 							{$name}
 						</option>
 					{/foreach}
@@ -69,64 +69,55 @@
 					<div class="px-4 py-2 bg-light rounded">
 						<div class="fw-semibold text-dark">{$resource}</div>
 						<div class="small text-body-secondary">
-							{count($items)} {_'permissions'}
+							{$items|length} {_'permissions'}
 						</div>
 					</div>
 
-					{* permission items *}
+					{* permission items grouped by component prefix *}
+					{var $byComponent = []}
+					{foreach $items as $item}
+						{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
+						{var $prefix = explode('-', $item->privilege, 2)[0]}
+						{do $byComponent[$prefix][] = $item}
+					{/foreach}
+
 					<div class="list-group list-group-flush">
-						{foreach $items as $item}
-							{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
-							{do $inputId = "permission-{$roleId}-{$item->id}"}
-							{do $isAllowed = $isAdminRole || $item->access === 'allow'}
+						{foreach $byComponent as $group}
+							{foreach $group as $item}
+								{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
+								{var $inputId = "permission-{$roleId}-{$item->id}"}
+								{var $isAllowed = $isAdminRole || $item->access === 'allow'}
 
-							<div class="list-group-item px-3 py-3">
-								<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+								<div n:class="'list-group-item', 'px-3', $iterator->isLast() ? 'pt-1 pb-3' : 'pt-2 pb-0 border-bottom-0'">
+									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
 
-									{* privilege info *}
-									<div class="min-w-0">
-										<div class="d-flex flex-wrap align-items-center gap-2">
-											<span class="badge rounded-pill small text-bg-light border border-secondary-subtle text-secondary px-3 py-1">
-												{$item->privilege}
-											</span>
-											<div class="small fw-semibold text-dark">
-												{$item->description ?? 'No description'}
+										{* privilege info *}
+										<div class="min-w-0">
+											<div class="d-flex align-items-center gap-2 small">
+												<span class="fw-semibold text-dark">{$item->description}</span>
+												<span class="text-body-tertiary ms-1">{$item->privilege}</span>
 											</div>
 										</div>
-									</div>
 
-									{* permission toggle *}
-									<div class="d-flex align-items-center gap-2 flex-shrink-0">
-										<input
+										{* permission toggle *}
+										<div class="d-flex align-items-center gap-2 flex-shrink-0">
+											<input
 												type="checkbox"
 												id="{$inputId}"
 												data-naja-history="off"
 												autocomplete="off"
 												data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
-												n:attr="
-													class: [
-														'btn-check',
-														'js-permission-toggle' => !$isAdminRole,
-													],
-													checked: $isAllowed,
-													disabled: $isAdminRole,
-												">
+												n:class="'btn-check', !$isAdminRole ? 'js-permission-toggle'"
+												n:attr="checked: $isAllowed, disabled: $isAdminRole">
 
-										<label for="{$inputId}" n:attr="class: [
-											'btn',
-											'btn-sm',
-											'px-3',
-											'fw-semibold',
-											'rounded-pill',
-											'btn-success' => $isAllowed,
-											'btn-danger' => !$isAllowed,
-										]">
-											{$isAllowed ? 'Allowed' : 'Denied'}
-										</label>
+											<label for="{$inputId}" n:class="'btn', 'btn-sm', 'px-3', 'fw-semibold', 'rounded-pill', $isAllowed ? 'btn-success' : 'btn-danger'">
+												{if $isAllowed}{_'Allowed'}{else}{_'Denied'}{/if}
+											</label>
+										</div>
+
 									</div>
-
 								</div>
-							</div>
+							{/foreach}
 						{/foreach}
 					</div>
 

@@ -43,6 +43,7 @@ class AccessControlPresenter extends BasePresenter
 	{
 		$control = $this->rolesControl;
 		$control->translator = $this->getTranslator();
+		$control->permissionsDestination = 'permissions';
 		return $control;
 	}
 

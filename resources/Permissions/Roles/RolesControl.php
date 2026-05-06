@@ -13,13 +13,16 @@ use Drago\Attr\AttributeDetectionException;
 use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Drago\Form\Autocomplete;
+use Drago\Permission\Role;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
-use Nette\Utils\Strings;
 
 
 class RolesControl extends BaseControl
 {
+	public string $permissionsDestination = 'permissions';
+
+
 	public function __construct(
 		public Factory $factory,
 		private readonly RolesRepository $rolesRepository,
@@ -39,6 +42,7 @@ class RolesControl extends BaseControl
 			->setPrimaryKey('id');
 
 		$grid->addColumnText('description', 'Role description');
+		$grid->addColumnText('name', 'System name');
 
 		$grid->addAction(
 			label: 'Edit',
@@ -77,6 +81,12 @@ class RolesControl extends BaseControl
 	protected function createComponentRoles(): Form
 	{
 		$form = $this->factory->create();
+		$form->addTextInput(RolesValues::Name, 'Role name')
+			->setPlaceholder('e.g. member, editor')
+			->setRequired('Please enter role name.')
+			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9-]+')
+			->setAutocomplete(Autocomplete::Off);
+
 		$form->addTextInput(RolesValues::Description, 'Description role')
 			->setPlaceholder('Description role')
 			->setRequired('Please enter description role.')
@@ -95,7 +105,14 @@ class RolesControl extends BaseControl
 	private function success(Form $form, RolesValues $values): void
 	{
 		try {
-			$values->name = Strings::webalize($values->description);
+			// preserve original name for system roles
+			if ($values->id > 0) {
+				$original = $this->rolesRepository->get($values->id)->record();
+				if ($original !== null && $this->isSystemRole($original->name)) {
+					$values->name = $original->name;
+				}
+			}
+
 			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
 
 			$this->rolesRepository->save($values);
@@ -121,7 +138,7 @@ class RolesControl extends BaseControl
 
 	public function handlePermissions(int $id): void
 	{
-		$this->getPresenter()->redirect('permissions', [
+		$this->getPresenter()->redirect($this->permissionsDestination, [
 			'authorization-roleId' => $id,
 		]);
 	}
@@ -140,6 +157,11 @@ class RolesControl extends BaseControl
 		$factory = $this->getComponent('roles');
 		if ($factory instanceof Form) {
 			$factory->setDefaults($items);
+
+			if ($this->isSystemRole($items->name)) {
+				$this->getFormComponent($factory, RolesValues::Name)
+					->setHtmlAttribute('readonly');
+			}
 		}
 
 		$this->getFormComponent($factory, 'send')
@@ -167,7 +189,18 @@ class RolesControl extends BaseControl
 	 */
 	protected function getItemRepository(int $id): string|null
 	{
-		return $this->rolesRepository->get($id)
-			->record()?->description;
+		$role = $this->rolesRepository->get($id)->record();
+
+		if ($role !== null && $this->isSystemRole($role->name)) {
+			$this->error('System role cannot be deleted.', 403);
+		}
+
+		return $role?->description;
+	}
+
+
+	private function isSystemRole(string $name): bool
+	{
+		return in_array($name, [Role::RoleAdmin, Role::RoleUser, Role::RoleGuest], true);
 	}
 }
