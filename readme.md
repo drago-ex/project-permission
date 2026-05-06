@@ -6,7 +6,6 @@ Component for ACL and permission management in a Drago / Nette project.
 [![PHP version](https://badge.fury.io/ph/drago-ex%2Fproject-permission.svg)](https://badge.fury.io/ph/drago-ex/project-permission)
 
 ## Requirements
-## Requirements
 - PHP >= 8.3
 - Nette Framework
 - Composer
