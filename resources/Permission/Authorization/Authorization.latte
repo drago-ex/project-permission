@@ -1,4 +1,4 @@
-{templateType App\Core\Permissions\Authorization\AuthorizationTemplate}
+{templateType App\Core\Permission\Authorization\AuthorizationTemplate}
 {varType array $groupedPermissions}
 {varType bool $isAdminRole}
 
@@ -60,7 +60,7 @@
 	<div class="card-body">
 		<div class="d-flex flex-column gap-3">
 			{foreach $groupedPermissions as $resource => $items}
-				{varType App\Core\Permissions\Authorization\ResourcesEntity[] $items}
+				{varType App\Core\Permission\Authorization\ResourcesEntity[] $items}
 
 				{* resource group *}
 				<div class="bg-white overflow-hidden">
@@ -76,7 +76,7 @@
 					{* permission items grouped by component prefix *}
 					{var $byComponent = []}
 					{foreach $items as $item}
-						{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
+						{varType App\Core\Permission\Authorization\ResourcesEntity $item}
 						{var $prefix = explode('-', $item->privilege, 2)[0]}
 						{do $byComponent[$prefix][] = $item}
 					{/foreach}
@@ -84,7 +84,7 @@
 					<div class="list-group list-group-flush">
 						{foreach $byComponent as $group}
 							{foreach $group as $item}
-								{varType App\Core\Permissions\Authorization\ResourcesEntity $item}
+								{varType App\Core\Permission\Authorization\ResourcesEntity $item}
 								{var $inputId = "permission-{$roleId}-{$item->id}"}
 								{var $isAllowed = $isAdminRole || $item->access === 'allow'}
 
