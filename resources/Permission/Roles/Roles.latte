@@ -1,6 +1,6 @@
 {templateType App\Core\Permission\BaseTemplate}
 {embed '../../Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
-    {block title}{_'Offcanvas'}{/block}
+    {block title}{_'Manage Role'}{/block}
     {block body}
         {snippet offcanvas}
             {embed '../../Widget/@form.latte', class: 'ajax', name: 'roles', najaHistory: 'off'}
