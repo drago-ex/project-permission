@@ -1,7 +1,7 @@
 {templateType App\Core\Permission\BaseTemplate}
 {default string $deleteTitle}
 {embed '../../Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
-    {block title}{_'Offcanvas'}{/block}
+    {block title}{_'Manage User Roles'}{/block}
     {block body}
         {snippet offcanvas}
             {embed '../../Widget/@form.latte', class: 'ajax', name: 'users', najaHistory: 'off'}
