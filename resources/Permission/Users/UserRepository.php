@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Users;
+namespace App\Core\Permission\Users;
 
 use Dibi\Connection;
 use Drago\Attr\AttributeDetectionException;

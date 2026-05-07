@@ -1,6 +1,6 @@
 services:
 	permissionFactory:
-		class: App\Core\Permissions\PermissionFactory
+		class: App\Core\Permission\PermissionFactory
 		arguments:
 			initializers: tagged(PermisionTag)
 

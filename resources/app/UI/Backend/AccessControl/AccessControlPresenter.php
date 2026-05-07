@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\UI\Backend\AccessControl;
 
-use App\Core\Permissions\Authorization\AuthorizationControl;
-use App\Core\Permissions\Roles\RolesControl;
-use App\Core\Permissions\Users\UsersControl;
+use App\Core\Permission\Authorization\AuthorizationControl;
+use App\Core\Permission\Roles\RolesControl;
+use App\Core\Permission\Users\UsersControl;
 use App\UI\BasePresenter;
 use Exception;
 use Throwable;

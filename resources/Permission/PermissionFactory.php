@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions;
+namespace App\Core\Permission;
 
-use App\Core\Permissions\Authorization\AuthorizationEntity;
-use App\Core\Permissions\Authorization\ResourcesEntity;
-use App\Core\Permissions\Roles\RolesEntity;
+use App\Core\Permission\Authorization\AuthorizationEntity;
+use App\Core\Permission\Authorization\ResourcesEntity;
+use App\Core\Permission\Roles\RolesEntity;
 use Dibi\Connection;
 use Dibi\DriverException;
 use Drago\Permission\Provider;

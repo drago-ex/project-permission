@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Authorization;
+namespace App\Core\Permission\Authorization;
 
 use Dibi\Connection;
 use Dibi\Exception;

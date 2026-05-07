@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Users;
+namespace App\Core\Permission\Users;
 
-use App\Core\Permissions\Roles\RolesEntity;
+use App\Core\Permission\Roles\RolesEntity;
 use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;

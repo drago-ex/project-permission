@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Roles;
+namespace App\Core\Permission\Roles;
 
-use App\Core\Permissions\BaseControl;
-use App\Core\Permissions\Factory;
+use App\Core\Permission\BaseControl;
+use App\Core\Permission\Factory;
 use Dibi\Exception;
 use Dibi\Result;
 use Drago\Application\UI\Alert;

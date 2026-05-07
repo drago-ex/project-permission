@@ -24,7 +24,7 @@
 		"drago-project": {
 			"install": {
 				"copy": {
-					"resources/Permissions": "app/Core/Permissions",
+					"resources/Permission": "app/Core/Permission",
 					"resources/app/UI/Backend": "app/UI/Backend",
 					"resources/assets": "assets/naja"
 				}
@@ -35,7 +35,7 @@
 		"phpstan/phpstan-nette": "^1.2.9"
 	},
 	"scripts": {
-		"phpstan": "phpstan analyse --level 5 --configuration phpstan.neon resources/Permissions",
+		"phpstan": "phpstan analyse --level 5 --configuration phpstan.neon resources/Permission",
 		"post-install-cmd": [
 			"php dev-copy.php"
 		],

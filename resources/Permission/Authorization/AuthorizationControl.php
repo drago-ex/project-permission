@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Permissions\Authorization;
+namespace App\Core\Permission\Authorization;
 
-use App\Core\Permissions\BaseControl;
-use App\Core\Permissions\Factory;
-use App\Core\Permissions\Roles\RolesRepository;
+use App\Core\Permission\BaseControl;
+use App\Core\Permission\Factory;
+use App\Core\Permission\Roles\RolesRepository;
 use Dibi\Exception;
 use Dibi\Result;
 use Drago\Attr\AttributeDetectionException;
