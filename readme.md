@@ -60,25 +60,16 @@ Seed migrations also add default roles and AccessControl permissions for the bac
 
 ## Integration with project-auth
 
-In [`UserAuthenticator`](https://github.com/drago-ex/project-auth/blob/main/resources/app/UI/Backend/Sign/User/UserAuthenticator.php)
-add a `getRolesByUser()` method (or SQL query) that fetches the user's roles, then pass them into `SimpleIdentity` in both `authenticate()` and `wakeupIdentity()`:
+In [`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/UI/Backend/Sign/User/UserRepository.php)
+fill in the body of the prepared `getRolesByUser()` method:
 
 ```php
-/**
- * Finds the roles of a user.
- */
 public function getRolesByUser(int $userId): array
 {
-    return $this->userRepository->getConnection()
+    return $this->getConnection()
         ->select('r.*')->from(RolesEntity::Table)->as('r')
         ->innerJoin(UsersRolesEntity::Table)->as('ur')->on('ur.role_id = r.id')
         ->where('ur.%n = ?', UsersRolesEntity::ColumnUserId, $userId)
         ->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnName);
 }
-```
-
-```php
-// in authenticate() and wakeupIdentity()
-$roles = $this->getRolesByUser($user->id);
-return new SimpleIdentity(id: $user->id, roles: $roles, data: $user);
 ```
