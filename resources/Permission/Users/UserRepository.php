@@ -10,14 +10,14 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/** @extends Database<UsersEntity> */
+/** @use Database<UsersEntity> */
 #[Table(UsersEntity::Table, UsersEntity::PrimaryKey, class: UsersEntity::class)]
 class UserRepository
 {
 	use Database;
 
 	public function __construct(
-		private readonly Connection $connection,
+		protected readonly Connection $connection,
 	) {
 	}
 

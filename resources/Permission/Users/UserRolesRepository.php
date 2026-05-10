@@ -13,14 +13,14 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/** @extends Database<UsersRolesEntity> */
+/** @use Database<UsersRolesEntity> */
 #[Table(UsersRolesEntity::Table, UsersRolesEntity::ColumnUserId, class: UsersRolesEntity::class)]
 class UserRolesRepository
 {
 	use Database;
 
 	public function __construct(
-		private readonly Connection $connection,
+		protected readonly Connection $connection,
 	) {
 	}
 

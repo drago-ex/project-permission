@@ -73,7 +73,9 @@ class RolesControl extends BaseControl
 	{
 		$template = $this->createRender();
 		$template->setFile(__DIR__ . '/Roles.latte');
-		$template->setTranslator($this->translator);
+		if (method_exists($template, 'setTranslator')) {
+			$template->setTranslator($this->translator);
+		}
 		$template->render();
 	}
 

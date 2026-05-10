@@ -11,14 +11,14 @@ use Drago\Database\Database;
 use Drago\Database\ExtraFluent;
 
 
-/** @extends Database<RolesEntity> */
+/** @use Database<RolesEntity> */
 #[Table(RolesEntity::Table, RolesEntity::PrimaryKey, class: RolesEntity::class)]
 class RolesRepository
 {
 	use Database;
 
 	public function __construct(
-		private readonly Connection $connection,
+		protected readonly Connection $connection,
 	) {
 	}
 

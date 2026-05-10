@@ -12,14 +12,14 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/** @extends Database<AuthorizationEntity> */
+/** @use Database<AuthorizationEntity> */
 #[Table(AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, class: AuthorizationEntity::class)]
 class AuthorizationRepository
 {
 	use Database;
 
 	public function __construct(
-		private readonly Connection $connection,
+		protected readonly Connection $connection,
 	) {
 	}
 
