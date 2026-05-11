@@ -28,6 +28,9 @@
 					"resources/app/UI/Backend": "app/UI/Backend",
 					"resources/assets": "assets/naja"
 				}
+			},
+			"commands": {
+				"db:migrate-permission": "php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations"
 			}
 		}
 	},
