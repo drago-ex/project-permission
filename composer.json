@@ -22,6 +22,7 @@
 	},
 	"extra": {
 		"drago-project": {
+			"priority": 20,
 			"install": {
 				"copy": {
 					"resources/Permission": "app/Core/Permission",
