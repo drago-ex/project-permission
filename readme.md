@@ -56,6 +56,9 @@ The package works with these tables:
 - `resources`
 - `authorization`
 
+**Important Note on Migrations:**
+The migrations in this package depend on the `users` table. If you are not using the automated `package-setup` tool, ensure that you run the migrations from **`drago-ex/project-auth`** first to create the necessary foreign key targets.
+
 Seed migrations also add default roles and AccessControl permissions for the backend module.
 
 ## Integration with project-auth
