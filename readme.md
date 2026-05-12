@@ -27,6 +27,7 @@ Example:
 ```js
 import naja from 'naja';
 import PermissionToggle from 'drago-ex/project-permission/assets/permission-toggle';
+import 'drago-ex/project-permission/assets/permission-toggle.scss';
 
 naja.registerExtension(new PermissionToggle());
 ```
