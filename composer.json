@@ -5,10 +5,9 @@
 	"license": ["MIT"],
 	"require": {
 		"php": ">=8.3 <9",
-		"nette/robot-loader": "^4.1",
+		"nette/di": "^3.1",
 		"nette/security": "^3.1",
 		"nette/application": "^3.1",
-		"nette/di": "^3.1",
 		"drago-ex/component": "^1.0",
 		"drago-ex/database": "^2.0",
 		"drago-ex/utils": "^1.0",
@@ -16,9 +15,8 @@
 		"drago-ex/form": "^1.0",
 		"drago-ex/permission": "^1.0",
 		"drago-ex/translator": "^2.0",
-		"drago-ex/datagrid": "@dev",
-		"drago-ex/project-user": "^1.0",
-		"drago-ex/project-front": "^1.0"
+		"drago-ex/project-front": "^1.0",
+		"drago-ex/datagrid": "@dev"
 	},
 	"extra": {
 		"drago-project": {
