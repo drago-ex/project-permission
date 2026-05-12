@@ -74,7 +74,7 @@ public function getRolesByUser(int $userId): array
 }
 ```
 
-# Database migration
+## Database migration
 - https://github.com/drago-ex/migration
 ```bash
 php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations
