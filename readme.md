@@ -65,13 +65,16 @@ fill in the body of the prepared `getRolesByUser()` method:
 
 ```php
 public function getRolesByUser(int $userId): array
-{
-    return $this->getConnection()
-        ->select('r.*')->from(RolesEntity::Table)->as('r')
-        ->innerJoin(UsersRolesEntity::Table)->as('ur')->on('ur.role_id = r.id')
-        ->where('ur.%n = ?', UsersRolesEntity::ColumnUserId, $userId)
-        ->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnName);
-}
+	{
+		$roles = $this->getConnection()
+			->select('r.*')->from(RolesEntity::Table)->as('r')
+			->innerJoin(UsersRolesEntity::Table)->as('ur')->on('ur.role_id = r.id')
+			->where('ur.%n = ?', UsersRolesEntity::ColumnUserId, $userId)
+			->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnName);
+
+
+		return $roles ?: [\Drago\Permission\Role::RoleUser];
+	}
 ```
 
 ## Database migration
