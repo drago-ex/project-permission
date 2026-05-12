@@ -61,7 +61,7 @@ Seed migrations also add default roles and AccessControl permissions for the bac
 
 ## Integration with project-auth
 
-In [`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/UI/Backend/Sign/User/UserRepository.php)
+In [`UserRepository`]([https://github.com/drago-ex/project-auth/blob/main/resources/app/UI/Backend/Sign/User/UserRepository.php](https://github.com/drago-ex/project-auth/blob/main/resources/app/UI/Backend/Sign/User/UserRepository.php#L58))
 fill in the body of the prepared `getRolesByUser()` method:
 
 ```php
