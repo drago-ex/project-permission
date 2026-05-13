@@ -32,13 +32,10 @@
     {/block}
 {/embed}
 
-<div class="d-inline-flex align-items-center gap-2">
-    <a href="{link openOffcanvas!}"
-       class="ajax btn btn-xs btn-primary"
-       data-naja-history="off">
-        <span>&plus;</span>
-    </a>
+{embed ../@datagrid.heading.latte}
+    {block title}
+        Roles
+    {/block}
+{/embed}
 
-    <span class="fw-semibold">Roles</span>
-</div>
 {control dataGrid}
