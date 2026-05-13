@@ -38,6 +38,7 @@ class RolesControl extends BaseControl
 	protected function createComponentDataGrid(): DataGrid
 	{
 		$grid = new DataGrid;
+		$grid->setTranslator($this->translator);
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
