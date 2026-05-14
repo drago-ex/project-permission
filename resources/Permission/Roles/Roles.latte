@@ -32,7 +32,7 @@
     {/block}
 {/embed}
 
-{embed ../@datagrid.heading.latte}
+{embed ../@datagrid.heading.latte, access: $user->isAllowed('Backend:AccessControl', 'roles-write')}
     {block title}
         {_'Roles data'}
     {/block}
