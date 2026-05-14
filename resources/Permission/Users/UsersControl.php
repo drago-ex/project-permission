@@ -44,19 +44,24 @@ class UsersControl extends BaseControl
 		$grid->addColumnText('username', 'User');
 		$grid->addColumnText('roles', 'Roles');
 
-		$grid->addAction(
-			label: 'Edit',
-			signal: 'edit!',
-			class: 'ajax btn btn-xs btn btn-primary',
-			callback: fn(int $id) => $this->handleEdit($id),
-		);
+		$user = $this->getPresenter()
+			->getUser();
 
-		$grid->addAction(
-			label: 'Delete',
-			signal: 'delete!',
-			class: 'ajax btn btn-xs btn-danger',
-			callback: fn(int $id) => $this->handleDelete($id),
-		);
+		if ($user->isAllowed('Backend:AccessControl', 'users-write')) {
+			$grid->addAction(
+				label: 'Edit',
+				signal: 'edit!',
+				class: 'ajax btn btn-xs btn btn-primary',
+				callback: fn(int $id) => $this->handleEdit($id),
+			);
+
+			$grid->addAction(
+				label: 'Delete',
+				signal: 'delete!',
+				class: 'ajax btn btn-xs btn-danger',
+				callback: fn(int $id) => $this->handleDelete($id),
+			);
+		}
 
 		return $grid;
 	}
