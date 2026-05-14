@@ -46,7 +46,7 @@
     {/block}
 {/embed}
 
-{embed ../@datagrid.heading.latte}
+{embed ../@datagrid.heading.latte, access: $user->isAllowed('Backend:AccessControl', 'users-write')}
     {block title}
        {_'Users data'}
     {/block}
