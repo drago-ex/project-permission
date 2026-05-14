@@ -45,26 +45,31 @@ class RolesControl extends BaseControl
 		$grid->addColumnText('description', 'Role description');
 		$grid->addColumnText('name', 'System name');
 
-		$grid->addAction(
-			label: 'Edit',
-			signal: 'edit!',
-			class: 'ajax btn btn-xs btn btn-primary',
-			callback: fn(int $id) => $this->handleEdit($id),
-		);
+		$user = $this->getPresenter()
+			->getUser();
 
-		$grid->addAction(
-			label: 'Delete',
-			signal: 'delete!',
-			class: 'ajax btn btn-xs btn-danger',
-			callback: fn(int $id) => $this->handleDelete($id),
-		);
+		if ($user->isAllowed('Backend:AccessControl', 'roles-write')) {
+			$grid->addAction(
+				label: 'Edit',
+				signal: 'edit!',
+				class: 'ajax btn btn-xs btn btn-primary',
+				callback: fn(int $id) => $this->handleEdit($id),
+			);
 
-		$grid->addAction(
-			label: 'Permissions',
-			signal: 'permissions!',
-			class: 'btn btn-xs btn-secondary',
-			callback: fn(int $id) => $this->handlePermissions($id),
-		);
+			$grid->addAction(
+				label: 'Delete',
+				signal: 'delete!',
+				class: 'ajax btn btn-xs btn-danger',
+				callback: fn(int $id) => $this->handleDelete($id),
+			);
+
+			$grid->addAction(
+				label: 'Permissions',
+				signal: 'permissions!',
+				class: 'btn btn-xs btn-secondary',
+				callback: fn(int $id) => $this->handlePermissions($id),
+			);
+		}
 
 		return $grid;
 	}
