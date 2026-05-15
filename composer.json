@@ -25,7 +25,7 @@
 				"copy": {
 					"resources/Permission": "app/Core/Permission",
 					"resources/app/UI/Backend": "app/UI/Backend",
-					"resources/assets": "assets/naja"
+					"resources/assets/naja": "assets/naja"
 				}
 			},
 			"commands": {
