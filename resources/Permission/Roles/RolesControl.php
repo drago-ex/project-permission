@@ -52,7 +52,7 @@ class RolesControl extends BaseControl
 			$grid->addAction(
 				label: 'Edit',
 				signal: 'edit!',
-				class: 'ajax btn btn-xs btn btn-primary',
+				class: 'ajax btn btn-xs btn-primary',
 				callback: fn(int $id) => $this->handleEdit($id),
 			);
 
