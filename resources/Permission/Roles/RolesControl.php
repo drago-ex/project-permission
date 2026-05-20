@@ -163,13 +163,11 @@ class RolesControl extends BaseControl
 		$items ?: $this->error();
 
 		$factory = $this->getComponent('roles');
-		if ($factory instanceof Form) {
-			$factory->setDefaults($items);
+		$factory->setDefaults($items);
 
-			if ($this->isSystemRole($items->name)) {
-				$this->getFormComponent($factory, RolesValues::Name)
-					->setHtmlAttribute('readonly');
-			}
+		if ($this->isSystemRole($items->name)) {
+			$this->getFormComponent($factory, RolesValues::Name)
+				->setHtmlAttribute('readonly');
 		}
 
 		$this->getFormComponent($factory, 'send')

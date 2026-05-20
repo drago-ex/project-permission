@@ -153,12 +153,10 @@ class UsersControl extends BaseControl
 		$rolesIdList = array_column($items, $roleId, $roleId);
 
 		$factory = $this->getComponent('users');
-		if ($factory instanceof Form) {
-			$factory->setDefaults([
-				UsersValues::UserId => $items[0]->user_id,
-				UsersValues::RoleId => $rolesIdList,
-			]);
-		}
+		$factory->setDefaults([
+			UsersValues::UserId => $items[0]->user_id,
+			UsersValues::RoleId => $rolesIdList,
+		]);
 
 		$this->getFormComponent($factory, 'send')
 			->setCaption('Edit roles');

@@ -34,11 +34,11 @@
 		}
 	},
 	"require-dev": {
-		"phpstan/phpstan-nette": "^1.2.9",
+		"phpstan/phpstan-nette": "^2",
 		"drago-ex/project-installer": "@dev"
 	},
 	"scripts": {
-		"phpstan": "phpstan analyse --level 5 --configuration phpstan.neon resources/Permission",
+		"phpstan": "phpstan analyse",
 		"post-install-cmd": [
 			"drago-install --dev",
 			"drago-clean"
