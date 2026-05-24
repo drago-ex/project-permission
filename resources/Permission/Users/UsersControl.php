@@ -153,11 +153,11 @@ class UsersControl extends BaseControl
 			UsersValues::RoleId => $rolesIdList,
 		]);
 
-		$this->getFormComponent($factory, 'send')
-			->setCaption('Edit roles');
+		$sendControl = $this->getFormComponent($factory, 'send');
+		$sendControl?->setCaption('Edit roles');
 
-		$this->getFormComponent($factory, UsersValues::UserId)
-			->setHtmlAttribute('data-locked');
+		$userIdControl = $this->getFormComponent($factory, UsersValues::UserId);
+		$userIdControl?->setHtmlAttribute('data-locked');
 
 		$this->redrawOffCanvas();
 	}

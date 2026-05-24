@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Core\Permission\Authorization;
 
 use App\Core\Permission\BaseTemplate;
+use Dibi\Row;
 
 
 class AuthorizationTemplate extends BaseTemplate
 {
-	/** @var array<string, ResourcesEntity[]> */
+	/** @var array<string, Row[]> */
 	public array $groupedPermissions = [];
 
 	/** @var array<int, string> */

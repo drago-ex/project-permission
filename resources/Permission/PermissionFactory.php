@@ -11,7 +11,6 @@ use Dibi\Connection;
 use Dibi\DriverException;
 use Drago\Permission\Provider;
 use Drago\Permission\Role;
-use LogicException;
 use Nette\Security\Authorizator;
 use Nette\Security\Permission;
 
@@ -22,15 +21,11 @@ class PermissionFactory
 	private iterable $initializers;
 
 
+	/** @param iterable<Provider> $initializers */
 	public function __construct(
 		private readonly Connection $connection,
 		iterable $initializers = [],
 	) {
-		foreach ($initializers as $initializer) {
-			if (!$initializer instanceof Provider) {
-				throw new LogicException(sprintf('%s must implement Provider', $initializer::class));
-			}
-		}
 		$this->initializers = $initializers;
 	}
 
@@ -81,9 +76,13 @@ class PermissionFactory
 				->fetchAll();
 
 			foreach ($permissions as $row) {
-				$privilege = $row->privilege === 'all' ? Authorizator::All : $row->privilege;
+				$privilege = $row->privilege === 'all'
+					? Authorizator::All
+					: $row->privilege;
+
 				$acl->allow($row->role, $row->resource, $privilege);
 			}
+
 		} catch (DriverException) {
 			// Not implemented.
 		}

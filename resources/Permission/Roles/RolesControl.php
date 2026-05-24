@@ -156,18 +156,20 @@ class RolesControl extends BaseControl
 	public function handleEdit(int $id): void
 	{
 		$items = $this->rolesRepository->get($id)->record();
-		$items ?: $this->error();
-
-		$factory = $this->getComponent('roles');
-		$factory->setDefaults($items);
-
-		if ($this->isSystemRole($items->name)) {
-			$this->getFormComponent($factory, RolesValues::Name)
-				->setHtmlAttribute('readonly');
+		if ($items === null) {
+			$this->error();
 		}
 
-		$this->getFormComponent($factory, 'send')
-			->setCaption('Edit roles');
+		$factory = $this->getComponent('roles');
+		$factory->setDefaults((array) $items);
+
+		if ($this->isSystemRole($items->name)) {
+			$nameControl = $this->getFormComponent($factory, RolesValues::Name);
+			$nameControl?->setHtmlAttribute('readonly');
+		}
+
+		$sendControl = $this->getFormComponent($factory, 'send');
+		$sendControl?->setCaption('Edit roles');
 
 		$this->redrawOffCanvas();
 	}

@@ -42,12 +42,16 @@ class AuthorizationControl extends BaseControl
 	{
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/Authorization.latte');
-		$template->setTranslator($this->translator);
 		$template->roles = $this->rolesRepository->getAllRoles();
-		$template->roleId = $this->roleId;
+		$template->roleId = $this->roleId ?? 0;
 
 		if ($this->roleId !== null) {
 			$role = $this->rolesRepository->get($this->roleId)->record();
+
+			if ($role === null) {
+				$template->render();
+				return;
+			}
 
 			$isAdminRole = $role->name === Role::RoleAdmin;
 			$template->roleName = $role->description;
@@ -73,14 +77,15 @@ class AuthorizationControl extends BaseControl
 
 
 	/**
-	 * @param array<int, object> $permissions
-	 * @return array<string, array<int, object>>
+	 * @param Row[] $permissions
+	 * @return array<string, Row[]>
 	 */
 	private function groupPermissionsByResource(array $permissions): array
 	{
 		$groupedPermissions = [];
 		foreach ($permissions as $permission) {
-			$groupedPermissions[$permission->resource][] = $permission;
+			$resource = (string) $permission['resource'];
+			$groupedPermissions[$resource][] = $permission;
 		}
 
 		return $groupedPermissions;

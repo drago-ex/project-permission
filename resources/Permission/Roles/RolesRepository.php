@@ -34,7 +34,10 @@ class RolesRepository
 	}
 
 
-	/** @throws AttributeDetectionException */
+	/**
+	 * @return ExtraFluent<RolesEntity>
+	 * @throws AttributeDetectionException
+	 */
 	public function getRolesFluent(): ExtraFluent
 	{
 		return $this->read('*');
