@@ -19,7 +19,7 @@ class RolesEntity extends Drago\Database\Entity
 	 * Primary key
 	 * Column size 10
 	 */
-	public int $id;
+	public ?int $id = null;
 
 	/** Column size 40 */
 	public string $name;
