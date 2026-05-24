@@ -15,6 +15,7 @@ use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Template;
+use Nette\Forms\Controls\SubmitButton;
 
 
 /**
@@ -118,8 +119,10 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	/**
 	 * Delete record from modal dialog.
 	 */
-	private function delete(Form $form): void
+	private function delete(SubmitButton $button): void
 	{
+		$form = $button->getForm();
+
 		try {
 			$id = $form->getValues()['id'];
 			$this->getResultRepository($id);
@@ -131,6 +134,7 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 			$this->redrawControl();
 
 			$dataGrid = $this->getComponent('dataGrid');
+
 			if ($dataGrid instanceof DataGrid) {
 				$dataGrid->redrawDataGrid();
 			}
