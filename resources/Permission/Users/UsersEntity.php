@@ -18,7 +18,7 @@ class UsersEntity extends Drago\Database\Entity
 	 * Primary key
 	 * Column size 10
 	 */
-	public int $id;
+	public ?int $id = null;
 
 	/** Column size 50 */
 	public string $username;
