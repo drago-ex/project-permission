@@ -13,10 +13,10 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/** @use Database<UsersRolesEntity> */
 #[Table(UsersRolesEntity::Table, UsersRolesEntity::ColumnUserId, class: UsersRolesEntity::class)]
 class UserRolesRepository
 {
+	/** @use Database<UsersRolesEntity> */
 	use Database;
 
 	public function __construct(

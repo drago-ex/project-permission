@@ -9,8 +9,12 @@ use App\Core\Permission\BaseTemplate;
 
 class AuthorizationTemplate extends BaseTemplate
 {
+	/** @var array<string, ResourcesEntity[]> */
 	public array $groupedPermissions = [];
+
+	/** @var array<int, string> */
 	public array $roles = [];
+
 	public string $roleName = '';
 	public int $roleId = 0;
 	public int $allowedCount = 0;

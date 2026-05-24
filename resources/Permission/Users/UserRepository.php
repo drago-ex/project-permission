@@ -10,10 +10,10 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/** @use Database<UsersEntity> */
 #[Table(UsersEntity::Table, UsersEntity::PrimaryKey, class: UsersEntity::class)]
 class UserRepository
 {
+	/** @use Database<UsersEntity> */
 	use Database;
 
 	public function __construct(
@@ -23,6 +23,7 @@ class UserRepository
 
 
 	/**
+	 * @return array<int, string>
 	 * @throws AttributeDetectionException
 	 */
 	public function getAllUsers(): array

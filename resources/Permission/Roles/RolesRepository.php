@@ -11,10 +11,10 @@ use Drago\Database\Database;
 use Drago\Database\ExtraFluent;
 
 
-/** @use Database<RolesEntity> */
 #[Table(RolesEntity::Table, RolesEntity::PrimaryKey, class: RolesEntity::class)]
 class RolesRepository
 {
+	/** @use Database<RolesEntity> */
 	use Database;
 
 	public function __construct(
@@ -24,6 +24,7 @@ class RolesRepository
 
 
 	/**
+	 * @return array<int, string>
 	 * @throws AttributeDetectionException
 	 */
 	public function getAllRoles(): array
@@ -33,9 +34,7 @@ class RolesRepository
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws AttributeDetectionException */
 	public function getRolesFluent(): ExtraFluent
 	{
 		return $this->read('*');

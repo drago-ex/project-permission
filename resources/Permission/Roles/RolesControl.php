@@ -16,6 +16,7 @@ use Drago\Form\Autocomplete;
 use Drago\Permission\Role;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
 
 
 class RolesControl extends BaseControl
@@ -45,8 +46,7 @@ class RolesControl extends BaseControl
 		$grid->addColumnText('description', 'Role description');
 		$grid->addColumnText('name', 'System name');
 
-		$user = $this->getPresenter()
-			->getUser();
+		$user = $this->getPresenter()->getUser();
 
 		if ($user->isAllowed('Backend:AccessControl', 'roles-write')) {
 			$grid->addAction(
@@ -79,9 +79,6 @@ class RolesControl extends BaseControl
 	{
 		$template = $this->createRender();
 		$template->setFile(__DIR__ . '/Roles.latte');
-		if (method_exists($template, 'setTranslator')) {
-			$template->setTranslator($this->translator);
-		}
 		$template->render();
 	}
 
@@ -110,18 +107,17 @@ class RolesControl extends BaseControl
 	}
 
 
-	private function success(Form $form, RolesValues $values): void
+	private function success(Form $form, ArrayHash $values): void
 	{
 		try {
-			// preserve original name for system roles
-			if ($values->id > 0) {
-				$original = $this->rolesRepository->get($values->id)->record();
+			if ((int) $values->id > 0) {
+				$original = $this->rolesRepository->get((int) $values->id)->record();
 				if ($original !== null && $this->isSystemRole($original->name)) {
 					$values->name = $original->name;
 				}
 			}
 
-			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
+			$message = (int) $values->id > 0 ? 'Update successful.' : 'Insert successful.';
 
 			$this->rolesRepository->save($values);
 			$this->redrawFlashMessage($message, Alert::Success);

@@ -9,6 +9,7 @@ use App\Core\Permission\Factory;
 use App\Core\Permission\Roles\RolesRepository;
 use Dibi\Exception;
 use Dibi\Result;
+use Dibi\Row;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Permission\Role;
 use Nette\Application\Attributes\Parameter;
@@ -61,7 +62,7 @@ class AuthorizationControl extends BaseControl
 			} else {
 				$template->allowedCount = count(array_filter(
 					$rolePermissions,
-					static fn(object $item): bool => $item->access === 'allow',
+					static fn(Row $item): bool => $item['access'] === 'allow',
 				));
 				$template->deniedCount = count($rolePermissions) - $template->allowedCount;
 			}
@@ -71,6 +72,10 @@ class AuthorizationControl extends BaseControl
 	}
 
 
+	/**
+	 * @param array<int, object> $permissions
+	 * @return array<string, array<int, object>>
+	 */
 	private function groupPermissionsByResource(array $permissions): array
 	{
 		$groupedPermissions = [];
@@ -94,12 +99,9 @@ class AuthorizationControl extends BaseControl
 			->getPost('allowed');
 
 		if ($allowed === 1) {
-			$this->authorizationRepository
-				->allow($roleId, $resourceId);
-
+			$this->authorizationRepository->allow($roleId, $resourceId);
 		} else {
-			$this->authorizationRepository
-				->deny($roleId, $resourceId);
+			$this->authorizationRepository->deny($roleId, $resourceId);
 		}
 
 		$this->roleId = $roleId;
@@ -109,14 +111,12 @@ class AuthorizationControl extends BaseControl
 
 	protected function getResultRepository(int $id): Result|int|null
 	{
-		// TODO: Implement getResultRepository() method.
 		return null;
 	}
 
 
 	protected function getItemRepository(int $id): string|null
 	{
-		// TODO: Implement getItemRepository() method.
 		return null;
 	}
 }

@@ -16,6 +16,7 @@ use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
 
 
 class UsersControl extends BaseControl
@@ -44,8 +45,7 @@ class UsersControl extends BaseControl
 		$grid->addColumnText('username', 'User');
 		$grid->addColumnText('roles', 'Roles');
 
-		$user = $this->getPresenter()
-			->getUser();
+		$user = $this->getPresenter()->getUser();
 
 		if ($user->isAllowed('Backend:AccessControl', 'users-write')) {
 			$grid->addAction(
@@ -71,16 +71,11 @@ class UsersControl extends BaseControl
 	{
 		$template = $this->createRender();
 		$template->setFile(__DIR__ . '/Users.latte');
-		if (method_exists($template, 'setTranslator')) {
-			$template->setTranslator($this->translator);
-		}
 		$template->render();
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws AttributeDetectionException */
 	protected function createComponentUsers(): Form
 	{
 		$form = $this->factory->create();
@@ -106,8 +101,9 @@ class UsersControl extends BaseControl
 
 	/**
 	 * @throws DriverException
+	 * @throws Exception
 	 */
-	private function success(Form $form, UsersValues $values): void
+	private function success(Form $form, ArrayHash $values): void
 	{
 		$repository = $this->userRolesRepository;
 
@@ -118,14 +114,13 @@ class UsersControl extends BaseControl
 
 			$entity = new UsersRolesEntity;
 			foreach ($values->role_id as $role) {
-				$entity->user_id = $values->user_id;
-				$entity->role_id = $role;
-				$repository->insert($entity)
-					->execute();
+				$entity->user_id = (int) $values->user_id;
+				$entity->role_id = (int) $role;
+				$repository->insert($entity)->execute();
 			}
 
 			$repository->commit();
-			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
+			$message = (int) $values->id > 0 ? 'Update successful.' : 'Insert successful.';
 			$this->redrawFlashMessage($message, Alert::Success);
 
 			$form->reset();
@@ -133,7 +128,7 @@ class UsersControl extends BaseControl
 			$this->redrawControl();
 			$this['dataGrid']->redrawDataGrid();
 
-		} catch (\Throwable $e) {
+		} catch (\Throwable) {
 			$repository->rollBack();
 		}
 	}
@@ -186,17 +181,12 @@ class UsersControl extends BaseControl
 	 */
 	protected function getItemRepository(int $id): string|null
 	{
-		$userId = $this->userRolesRepository->get($id)
-			->record()->user_id;
-
-		$user = null;
-		if ($userId !== null) {
-			$user = $this->userRepository
-				->get($userId)
-				->record()
-				->username;
+		$userRole = $this->userRolesRepository->get($id)->record();
+		if ($userRole === null) {
+			return null;
 		}
 
-		return $user;
+		$user = $this->userRepository->get($userRole->user_id)->record();
+		return $user?->username;
 	}
 }

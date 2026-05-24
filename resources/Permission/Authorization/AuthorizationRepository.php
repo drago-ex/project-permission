@@ -7,15 +7,16 @@ namespace App\Core\Permission\Authorization;
 use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;
+use Dibi\Row;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/** @use Database<AuthorizationEntity> */
 #[Table(AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, class: AuthorizationEntity::class)]
 class AuthorizationRepository
 {
+	/** @use Database<AuthorizationEntity> */
 	use Database;
 
 	public function __construct(
@@ -24,15 +25,14 @@ class AuthorizationRepository
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws AttributeDetectionException */
 	public function getAll(): Fluent
 	{
 		return $this->read('*');
 	}
 
 
+	/** @return Row[] */
 	public function getRolePermissions(int $roleId): array
 	{
 		return $this->connection->select("
@@ -53,9 +53,7 @@ class AuthorizationRepository
 	}
 
 
-	/**
-	 * @throws Exception
-	 */
+	/** @throws Exception */
 	public function allow(int $roleId, int $resourceId): void
 	{
 		$this->connection->insert(AuthorizationEntity::Table, [
@@ -66,9 +64,7 @@ class AuthorizationRepository
 	}
 
 
-	/**
-	 * @throws Exception
-	 */
+	/** @throws Exception */
 	public function deny(int $roleId, int $resourceId): void
 	{
 		$this->connection->delete(AuthorizationEntity::Table)

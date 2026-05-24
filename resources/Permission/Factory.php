@@ -22,22 +22,16 @@ readonly class Factory
 	public function create(): Forms
 	{
 		$form = new Forms;
-
-		// Add form protection if the user is logged in
 		if ($this->user->isLoggedIn()) {
 			$form->addProtection();
 		}
 
-		// Set the translator for form
 		$form->setTranslator($this->translator);
-
 		return $form;
 	}
 
 
-	/**
-	 * Creates a delete form with a hidden ID field.
-	 */
+	/** Creates a delete form with a hidden ID field. */
 	public function createDelete(?int $id = null): Form
 	{
 		$form = $this->create();
