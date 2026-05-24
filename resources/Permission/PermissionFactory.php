@@ -82,7 +82,6 @@ class PermissionFactory
 
 				$acl->allow($row->role, $row->resource, $privilege);
 			}
-
 		} catch (DriverException) {
 			// Not implemented.
 		}
