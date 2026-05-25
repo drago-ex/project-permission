@@ -42,6 +42,7 @@ class AuthorizationControl extends BaseControl
 	{
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/Authorization.latte');
+		$template->setTranslator($this->translator);
 		$template->roles = $this->rolesRepository->getAllRoles();
 		$template->roleId = $this->roleId ?? 0;
 
