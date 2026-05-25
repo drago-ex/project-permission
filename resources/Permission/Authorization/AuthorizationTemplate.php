@@ -8,6 +8,7 @@ use App\Core\Permission\BaseTemplate;
 use Dibi\Row;
 
 
+/** Authorization template. */
 class AuthorizationTemplate extends BaseTemplate
 {
 	/** @var array<string, Row[]> */
@@ -15,7 +16,6 @@ class AuthorizationTemplate extends BaseTemplate
 
 	/** @var array<int, string> */
 	public array $roles = [];
-
 	public string $roleName = '';
 	public int $roleId = 0;
 	public int $allowedCount = 0;

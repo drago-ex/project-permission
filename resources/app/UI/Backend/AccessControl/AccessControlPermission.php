@@ -9,16 +9,16 @@ use Drago\Permission\Role;
 use Nette\Security\Permission;
 
 
+/** Access control permission provider. */
 class AccessControlPermission implements Provider
 {
 	private const string Resource = 'Backend:AccessControl';
 
 
+	/** Registers permissions. */
 	public function register(Permission $acl): void
 	{
 		$acl->addResource(self::Resource);
-
-		// admin has full access
 		$acl->allow(Role::RoleAdmin);
 	}
 }

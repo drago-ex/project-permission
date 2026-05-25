@@ -12,6 +12,7 @@ use Exception;
 use Throwable;
 
 
+/** Access control presenter. */
 class AccessControlPresenter extends BasePresenter
 {
 	public function __construct(
@@ -23,10 +24,7 @@ class AccessControlPresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @throws Throwable
-	 * @throws Exception
-	 */
+	/** @throws Throwable|Exception */
 	public function createComponentUsers(): UsersControl
 	{
 		$control = $this->usersControl;
@@ -35,10 +33,7 @@ class AccessControlPresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @throws Throwable
-	 * @throws Exception
-	 */
+	/** @throws Throwable|Exception */
 	public function createComponentRoles(): RolesControl
 	{
 		$control = $this->rolesControl;
@@ -48,10 +43,7 @@ class AccessControlPresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @throws Exception
-	 * @throws Throwable
-	 */
+	/** @throws Throwable|Exception */
 	public function createComponentAuthorization(): AuthorizationControl
 	{
 		$control = $this->authorizationControl;

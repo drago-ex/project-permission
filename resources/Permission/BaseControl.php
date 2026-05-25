@@ -19,6 +19,7 @@ use Nette\Forms\Controls\SubmitButton;
 
 
 /**
+ * Base control.
  * @property-read BaseTemplate $template
  */
 abstract class BaseControl extends ExtraControl implements OffcanvasHandle, ModalHandle
@@ -27,7 +28,6 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 
 	#[Parameter]
 	public ?int $id = null;
-
 	public ?string $deleteTitle = null;
 	protected string $snippetMessage = 'message';
 
@@ -103,9 +103,7 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	}
 
 
-	/**
-	 * Factory delete item.
-	 */
+	/** Factory for delete item form. */
 	protected function createComponentDelete(): Form
 	{
 		$form = $this->factory->createDelete($this->id);
@@ -116,9 +114,6 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	}
 
 
-	/**
-	 * Delete record from modal dialog.
-	 */
 	private function delete(SubmitButton $button): void
 	{
 		$form = $button->getForm();

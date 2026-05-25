@@ -13,6 +13,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/** Repository for managing user roles data. */
 #[Table(UsersRolesEntity::Table, UsersRolesEntity::ColumnUserId, class: UsersRolesEntity::class)]
 class UserRolesRepository
 {
@@ -37,10 +38,7 @@ class UserRolesRepository
 	}
 
 
-	/**
-	 * @return Fluent
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws AttributeDetectionException */
 	public function getAllUserRoles(): Fluent
 	{
 		return $this->read('ur.user_id id, u.username, GROUP_CONCAT(r.description SEPARATOR ", ") AS roles')->as('ur')

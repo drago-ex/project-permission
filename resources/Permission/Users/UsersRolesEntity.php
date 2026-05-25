@@ -7,6 +7,7 @@ namespace App\Core\Permission\Users;
 use Drago\Database\Entity;
 
 
+/** Users roles entity. */
 class UsersRolesEntity extends Entity
 {
 	public const string

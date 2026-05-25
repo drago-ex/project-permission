@@ -13,6 +13,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/** Repository for managing authorization data. */
 #[Table(AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, class: AuthorizationEntity::class)]
 class AuthorizationRepository
 {

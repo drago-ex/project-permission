@@ -19,6 +19,7 @@ use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
 
+/** Users control. */
 class UsersControl extends BaseControl
 {
 	public function __construct(
@@ -31,10 +32,7 @@ class UsersControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws InvalidColumnException
-	 */
+	/** @throws AttributeDetectionException|InvalidColumnException */
 	protected function createComponentDataGrid(): DataGrid
 	{
 		$grid = new DataGrid;
@@ -67,6 +65,7 @@ class UsersControl extends BaseControl
 	}
 
 
+	/** Renders the control. */
 	public function render(): void
 	{
 		$template = $this->createRender();
@@ -135,6 +134,7 @@ class UsersControl extends BaseControl
 
 
 	/**
+	 * Handles users edit.
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */

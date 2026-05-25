@@ -7,6 +7,7 @@ namespace App\Core\Permission\Users;
 use Drago\Utils\ExtraArrayHash;
 
 
+/** Users values. */
 class UsersValues extends ExtraArrayHash
 {
 	public const string

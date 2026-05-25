@@ -7,6 +7,7 @@ namespace App\Core\Permission\Roles;
 use Drago\Utils\ExtraArrayHash;
 
 
+/** Roles values. */
 class RolesValues extends ExtraArrayHash
 {
 	public const string

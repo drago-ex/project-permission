@@ -11,6 +11,7 @@ use Drago\Database\Database;
 use Drago\Database\ExtraFluent;
 
 
+/** Repository for managing roles data. */
 #[Table(RolesEntity::Table, RolesEntity::PrimaryKey, class: RolesEntity::class)]
 class RolesRepository
 {

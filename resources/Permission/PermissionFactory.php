@@ -15,6 +15,7 @@ use Nette\Security\Authorizator;
 use Nette\Security\Permission;
 
 
+/** Permission factory. */
 class PermissionFactory
 {
 	/** @var iterable<Provider> */
@@ -30,6 +31,7 @@ class PermissionFactory
 	}
 
 
+	/** Creates permission object. */
 	public function create(): Permission
 	{
 		$acl = new Permission;
@@ -42,7 +44,6 @@ class PermissionFactory
 		}
 
 		try {
-
 			/** @var RolesEntity[] $roles */
 			$roles = $this->connection
 				->select('*')
@@ -83,7 +84,6 @@ class PermissionFactory
 				$acl->allow($row->role, $row->resource, $privilege);
 			}
 		} catch (DriverException) {
-			// Not implemented.
 		}
 
 		return $acl;

@@ -10,6 +10,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/** Repository for managing users data. */
 #[Table(UsersEntity::Table, UsersEntity::PrimaryKey, class: UsersEntity::class)]
 class UserRepository
 {

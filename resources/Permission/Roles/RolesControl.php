@@ -19,6 +19,7 @@ use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
 
+/** Roles control. */
 class RolesControl extends BaseControl
 {
 	public string $permissionsDestination = 'permissions';
@@ -32,10 +33,7 @@ class RolesControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws InvalidColumnException
-	 */
+	/** @throws AttributeDetectionException|InvalidColumnException */
 	protected function createComponentDataGrid(): DataGrid
 	{
 		$grid = new DataGrid;
@@ -75,6 +73,7 @@ class RolesControl extends BaseControl
 	}
 
 
+	/** Renders the control. */
 	public function render(): void
 	{
 		$template = $this->createRender();
@@ -83,6 +82,7 @@ class RolesControl extends BaseControl
 	}
 
 
+	/** Creates roles form. */
 	protected function createComponentRoles(): Form
 	{
 		$form = $this->factory->create();
@@ -140,6 +140,7 @@ class RolesControl extends BaseControl
 	}
 
 
+	/** Redirects to permissions. */
 	public function handlePermissions(int $id): void
 	{
 		$this->getPresenter()->redirect($this->permissionsDestination, [
@@ -149,6 +150,7 @@ class RolesControl extends BaseControl
 
 
 	/**
+	 * Handles roles edit.
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */

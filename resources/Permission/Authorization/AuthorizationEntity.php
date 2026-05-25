@@ -7,6 +7,7 @@ namespace App\Core\Permission\Authorization;
 use Drago\Database\Entity;
 
 
+/** Authorization entity. */
 class AuthorizationEntity extends Entity
 {
 	public const string

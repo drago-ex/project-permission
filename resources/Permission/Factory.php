@@ -10,6 +10,7 @@ use Nette\Application\UI\Form;
 use Nette\Security\User;
 
 
+/** Factory for creating forms. */
 readonly class Factory
 {
 	public function __construct(
@@ -19,6 +20,7 @@ readonly class Factory
 	}
 
 
+	/** Creates a new form. */
 	public function create(): Forms
 	{
 		$form = new Forms;

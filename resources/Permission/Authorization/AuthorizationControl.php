@@ -17,6 +17,7 @@ use Nette\Application\Attributes\Requires;
 
 
 /**
+ * Authorization control.
  * @property-read AuthorizationTemplate $template
  */
 class AuthorizationControl extends BaseControl

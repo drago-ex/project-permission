@@ -7,6 +7,7 @@ namespace App\Core\Permission\Roles;
 use Drago\Database\Entity;
 
 
+/** Roles entity. */
 class RolesEntity extends Entity
 {
 	public const string
