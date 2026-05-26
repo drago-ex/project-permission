@@ -71,8 +71,9 @@ public function getRolesByUser(int $userId): array
 		->select('r.*')->from(RolesEntity::Table)->as('r')
 		->innerJoin(UsersRolesEntity::Table)->as('ur')->on('ur.role_id = r.id')
 		->where('ur.%n = ?', UsersRolesEntity::ColumnUserId, $userId)
-		->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnName);
+		->fetchPairs(value: RolesEntity::ColumnName);
 
+	$roles = array_values($roles);
 	return $roles ?: [\Drago\Permission\Role::RoleUser];
 }
 ```
