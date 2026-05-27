@@ -107,7 +107,7 @@ class RolesControl extends BaseControl
 	}
 
 
-	private function success(Form $form, ArrayHash $values): void
+	private function success(Form $form, RolesValues $values): void
 	{
 		try {
 			if ((int) $values->id > 0) {
