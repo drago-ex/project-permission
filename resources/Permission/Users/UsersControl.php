@@ -19,7 +19,6 @@ use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
 
-/** Users control. */
 class UsersControl extends BaseControl
 {
 	public function __construct(
@@ -32,7 +31,10 @@ class UsersControl extends BaseControl
 	}
 
 
-	/** @throws AttributeDetectionException|InvalidColumnException */
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws InvalidColumnException
+	 */
 	protected function createComponentDataGrid(): DataGrid
 	{
 		$grid = new DataGrid;
@@ -65,7 +67,6 @@ class UsersControl extends BaseControl
 	}
 
 
-	/** Renders the control. */
 	public function render(): void
 	{
 		$template = $this->createRender();
@@ -102,7 +103,7 @@ class UsersControl extends BaseControl
 	 * @throws DriverException
 	 * @throws Exception
 	 */
-	private function success(Form $form, ArrayHash $values): void
+	private function success(Form $form, UsersValues $values): void
 	{
 		$repository = $this->userRolesRepository;
 
@@ -113,9 +114,9 @@ class UsersControl extends BaseControl
 
 			$entity = new UsersRolesEntity;
 			foreach ($values->role_id as $role) {
-				$entity->user_id = (int) $values->user_id;
-				$entity->role_id = (int) $role;
-				$repository->insert($entity)->execute();
+				$entity->user_id = $values->user_id;
+				$entity->role_id = $role;
+				$repository->insert($entity->toArray())->execute();
 			}
 
 			$repository->commit();
@@ -134,7 +135,6 @@ class UsersControl extends BaseControl
 
 
 	/**
-	 * Handles users edit.
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
