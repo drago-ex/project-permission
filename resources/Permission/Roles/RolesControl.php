@@ -16,7 +16,6 @@ use Drago\Form\Autocomplete;
 use Drago\Permission\Role;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
-use Nette\Utils\ArrayHash;
 
 
 /** Roles control. */
