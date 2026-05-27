@@ -16,7 +16,6 @@ use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
-use Nette\Utils\ArrayHash;
 
 
 class UsersControl extends BaseControl
