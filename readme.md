@@ -20,6 +20,10 @@ Component for ACL and permission management in a Drago / Nette project.
 composer require drago-ex/project-permission
 ```
 
+## Project files
+The package has `extra.drago-project.skip` set to `false`, so `drago-install` copies the configured files automatically.
+If `skip` is set to `true`, copy those files manually according to the `copy` section in `composer.json`.
+
 After installation, run the package migrations, load the provided service configuration, register the Naja extension from `assets/permission-toggle.js` and include styles from `assets/permission-togle.scss`.
 
 Example:
