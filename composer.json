@@ -20,7 +20,6 @@
 	},
 	"extra": {
 		"drago-project": {
-			"skip": false,
 			"priority": 20,
 			"install": {
 				"copy": {
