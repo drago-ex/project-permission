@@ -27,7 +27,7 @@
 					"resources/assets/naja": "assets/naja"
 				}
 			},
-			"priority": 20,
+			"commands-priority": 20,
 			"commands": {
 				"db:migrate-permission": "php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations"
 			}

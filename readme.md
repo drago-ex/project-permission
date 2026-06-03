@@ -90,5 +90,14 @@ public function getRolesByUser(int $userId): array
 php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations
 ```
 
+## Automated setup
+
+This package exposes setup commands in `composer.json` under `extra.drago-project.commands`.
+If [drago-ex/project-tools](https://github.com/drago-ex/project-tools) is installed, you can run them from the project root:
+
+```bash
+php vendor/bin/drago-setup
+```
+
 **Important Note on Migrations:**
-The migrations in this package depend on the `users` table. If you are not using the automated `package-setup` tool, ensure that you run the migrations from **`drago-ex/project-auth`** first to create the necessary foreign key targets.
+The migrations in this package depend on the `users` table. If you are not using the automated `drago-setup` tool, ensure that you run the migrations from **`drago-ex/project-auth`** first to create the necessary foreign key targets.
