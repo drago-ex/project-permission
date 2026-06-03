@@ -20,7 +20,6 @@
 	},
 	"extra": {
 		"drago-project": {
-			"priority": 20,
 			"install": {
 				"copy": {
 					"resources/Permission": "app/Core/Permission",
@@ -28,6 +27,7 @@
 					"resources/assets/naja": "assets/naja"
 				}
 			},
+			"priority": 20,
 			"commands": {
 				"db:migrate-permission": "php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations"
 			}
@@ -35,7 +35,7 @@
 	},
 	"require-dev": {
 		"phpstan/phpstan-nette": "^2",
-		"drago-ex/project-installer": "@dev"
+		"drago-ex/project-tools": "@dev"
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse",
