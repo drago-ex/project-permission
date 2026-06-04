@@ -1,6 +1,6 @@
 {
 	"name": "drago-ex/project-permission",
-	"type": "drago-project-resource",
+	"type": "drago-tools-resource",
 	"description": "Component for managing user permissions in a Drago project.",
 	"license": ["MIT"],
 	"require": {
@@ -19,7 +19,7 @@
 		"drago-ex/datagrid": "@dev"
 	},
 	"extra": {
-		"drago-project": {
+		"drago-tools": {
 			"install": {
 				"copy": {
 					"resources/Permission": "app/Core/Permission",
