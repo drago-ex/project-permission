@@ -63,11 +63,11 @@
 				{varType App\Core\Permission\Authorization\ResourcesEntity[] $items}
 
 				{* resource group *}
-				<div class="bg-white overflow-hidden">
+				<div class="overflow-hidden">
 
 					{* resource header *}
-					<div class="px-4 py-2 bg-light rounded">
-						<div class="fw-semibold text-dark">{$resource}</div>
+					<div class="px-4 py-2 bg-body-tertiary rounded">
+						<div class="fw-semibold text-body-emphasis">{$resource}</div>
 						<div class="small text-body-secondary">
 							{$items|length} {_'permissions'}
 						</div>
@@ -94,7 +94,7 @@
 										{* privilege info *}
 										<div class="min-w-0">
 											<div class="d-flex align-items-center gap-2 small">
-												<span class="fw-semibold text-dark">{_$item->description}</span>
+												<span class="fw-semibold text-body-emphasis">{_$item->description}</span>
 												<span class="text-body-tertiary ms-1">{_$item->privilege}</span>
 											</div>
 										</div>
@@ -126,7 +126,7 @@
 			{else}
 
 				{* empty state *}
-				<div class="px-4 py-5 text-center text-body-secondary bg-white border rounded-3">
+				<div class="px-4 py-5 text-center text-body-secondary bg-body-tertiary border rounded-3">
 					{_'No permissions found'}
 				</div>
 

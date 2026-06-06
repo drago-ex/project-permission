@@ -1,6 +1,8 @@
 {block title}{_'Roles data'}{/block}
 {block content}
-    <div class="py-3 px-4 rounded mb-3 bg-white shadow-sm">
-        {control roles}
-    </div>
+    {embed ../../../Core/Widget/@content.latte}
+        {block content}
+            {control roles}
+        {/block}
+    {/embed}
 {/block}
