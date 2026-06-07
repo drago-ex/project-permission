@@ -7,7 +7,6 @@ namespace App\Core\Permission;
 use Drago\Form\Forms;
 use Drago\Localization\Translator;
 use Nette\Application\UI\Form;
-use Nette\Security\User;
 
 
 /** Factory for creating forms. */
@@ -15,7 +14,6 @@ readonly class Factory
 {
 	public function __construct(
 		private Translator $translator,
-		private User $user,
 	) {
 	}
 
@@ -24,10 +22,7 @@ readonly class Factory
 	public function create(): Forms
 	{
 		$form = new Forms;
-		if ($this->user->isLoggedIn()) {
-			$form->addProtection();
-		}
-
+		$form->addProtection();
 		$form->setTranslator($this->translator);
 		return $form;
 	}
