@@ -16,7 +16,7 @@
 		"drago-ex/permission": "^2.0",
 		"drago-ex/translator": "^3.0",
 		"drago-ex/project-front": "^2.0",
-		"drago-ex/datagrid": "@dev"
+		"drago-ex/datagrid": "^1.0"
 	},
 	"extra": {
 		"drago-tools": {
@@ -35,7 +35,7 @@
 	},
 	"require-dev": {
 		"phpstan/phpstan-nette": "^2",
-		"drago-ex/project-tools": "@dev"
+		"drago-ex/project-tools": "^1.0"
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse",
