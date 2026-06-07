@@ -26,14 +26,14 @@ which must be installed in your project. Without it, copy the files manually acc
 in this package's `composer.json`. To skip this package, set `"skip": true` under
 `extra.drago-tools.packages.<package-name>` in your root `composer.json`.
 
-After installation, run the package migrations, load the provided service configuration, register the Naja extension from `assets/permission-toggle.js` and include styles from `assets/permission-togle.scss`.
+After installation, run the package migrations, load the provided service configuration, register the Naja extension from `assets/naja/permission-toggle.js` and include styles from `assets/naja/permission-togle.scss`.
 
 Example:
 
 ```js
 import naja from 'naja';
-import PermissionToggle from 'drago-ex/project-permission/assets/permission-toggle';
-import 'drago-ex/project-permission/assets/permission-toggle.scss';
+import PermissionToggle from './naja/permission-toggle.js';
+import './naja/permission-togle.scss';
 
 naja.registerExtension(new PermissionToggle());
 ```
