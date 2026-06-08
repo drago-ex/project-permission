@@ -18,7 +18,7 @@
     {/block}
 {/embed}
 
-{embed ../../Widget/@modal.latte, modalId: $modalId, options: [header: 'danger']}
+{embed '../../Widget/@modal.latte', modalId: $modalId, options: [header: 'danger']}
     {block title}{_'Confirm delete'}{/block}
     {block body}
         {snippet content}
@@ -32,7 +32,7 @@
     {/block}
 {/embed}
 
-{embed ../@datagrid.heading.latte, access: $user->isAllowed('Backend:AccessControl', 'roles-write')}
+{embed '../@datagrid.heading.latte', access: $user->isAllowed('Backend:AccessControl', 'roles-write')}
     {block title}
         {_'Roles data'}
     {/block}
