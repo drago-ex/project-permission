@@ -21,7 +21,7 @@
     {/block}
 {/embed}
 
-{embed ../../Widget/@modal.latte, modalId: $modalId, options: [header: 'danger']}
+{embed '../../Widget/@modal.latte', modalId: $modalId, options: [header: 'danger']}
     {block title}{_'Confirm delete'}{/block}
     {block body}
         {snippet title}
@@ -35,7 +35,7 @@
     {/block}
     {block footer}
         {snippet modal}
-            {embed ../../Widget/@form.latte, name: 'delete', class: 'ajax', defaultClass: false}
+            {embed '../../Widget/@form.latte', name: 'delete', class: 'ajax', defaultClass: false}
                 {import '../../Widget/@dismiss.button.latte'}
                 {block form}
                     {include submit, name: 'confirm', class: 'btn btn-danger'}
@@ -46,7 +46,7 @@
     {/block}
 {/embed}
 
-{embed ../@datagrid.heading.latte, access: $user->isAllowed('Backend:AccessControl', 'users-write')}
+{embed '../@datagrid.heading.latte', access: $user->isAllowed('Backend:AccessControl', 'users-write')}
     {block title}
        {_'Users data'}
     {/block}
