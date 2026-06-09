@@ -1,0 +1,14 @@
+services:
+	permissionFactory:
+		class: App\UI\Backend\Permission\Component\PermissionFactory
+		arguments:
+			initializers: tagged(PermisionTag)
+
+	- @permissionFactory::create
+
+
+search:
+	permissions:
+		in: %appDir%/UI
+		classes: [*Provider]
+		tags: [PermisionTag]

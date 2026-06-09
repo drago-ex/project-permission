@@ -22,7 +22,6 @@
 		"drago-tools": {
 			"install": {
 				"copy": {
-					"resources/Permission": "app/Core/Permission",
 					"resources/app/UI/Backend": "app/UI/Backend",
 					"resources/assets/naja": "assets/naja"
 				}
