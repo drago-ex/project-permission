@@ -1,5 +1,4 @@
 {templateType App\UI\Backend\Permission\Component\BaseTemplate}
-{default string $deleteTitle}
 {embed '../../../../../Core/Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
     {block title}{_'Manage User Roles'}{/block}
     {block body}
@@ -22,31 +21,19 @@
 {/embed}
 
 {embed '../../../../../Core/Widget/@modal.latte', modalId: $modalId, options: [header: 'danger']}
-    {block title}{_'Confirm delete'}{/block}
     {block body}
-        {snippet title}
-            <p n:if="$deleteTitle" class="fw-semibold text-center">
-                <em>
-                    {_'Are you sure you want to delete the item?'}
-                    <span class="d-block text-danger">{$deleteTitle}</span>
-                </em>
-            </p>
+        {snippet content}
+            {include '../@modal-body.latte'}
         {/snippet}
     {/block}
     {block footer}
         {snippet modal}
-            {embed '../../../../../Core/Widget/@form.latte', name: 'delete', class: 'ajax', defaultClass: false}
-                {import '../../../../../Core/Widget/@dismiss.button.latte'}
-                {block form}
-                    {include submit, name: 'confirm', class: 'btn btn-danger'}
-                    {include buttonDismiss, type: 'modal', class: 'btn btn-secondary'}
-                {/block}
-            {/embed}
+            {include '../@modal-footer.latte'}
         {/snippet}
     {/block}
 {/embed}
 
-{embed '../@datagrid.heading.latte', access: $user->isAllowed('Backend:Permission', 'users-write')}
+{embed '../@datagrid-heading.latte', access: $user->isAllowed('Backend:Permission', 'users-write')}
     {block title}
        {_'Users data'}
     {/block}

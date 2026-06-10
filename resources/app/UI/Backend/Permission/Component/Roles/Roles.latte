@@ -22,17 +22,17 @@
     {block title}{_'Confirm delete'}{/block}
     {block body}
         {snippet content}
-            {include '../@modal.body.latte'}
+            {include '../@modal-body.latte'}
         {/snippet}
     {/block}
     {block footer}
         {snippet modal}
-            {include '../@modal.footer.latte'}
+            {include '../@modal-footer.latte'}
         {/snippet}
     {/block}
 {/embed}
 
-{embed '../@datagrid.heading.latte', access: $user->isAllowed('Backend:Permission', 'roles-write')}
+{embed '../@datagrid-heading.latte', access: $user->isAllowed('Backend:Permission', 'roles-write')}
     {block title}
         {_'Roles data'}
     {/block}
