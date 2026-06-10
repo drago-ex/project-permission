@@ -21,6 +21,7 @@
 {/embed}
 
 {embed '../../../../../Core/Widget/@modal.latte', modalId: $modalId, options: [header: 'danger']}
+    {block title}{_'Confirm delete'}{/block}
     {block body}
         {snippet content}
             {include '../@modal-body.latte'}
