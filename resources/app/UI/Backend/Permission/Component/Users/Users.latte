@@ -5,7 +5,7 @@
         {snippet offcanvas}
             {embed '../../../../../Core/Widget/@form.latte', class: 'ajax', name: 'users', najaHistory: 'off'}
                 {import '../../../../../Core/Widget/@form-tom-select.latte'}
-                {import '../../../../../Core/Widget/@dismiss.button.latte'}
+                {import '../../../../../Core/Widget/@dismiss-button.latte'}
                 {block form}
                     {var string $selectTom = 'select-tom'}
                     {include selectTom, name: 'user_id', columns: 12, class: $selectTom}

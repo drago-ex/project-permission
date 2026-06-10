@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\UI\Backend\Permission;
+namespace app\UI\Backend\Permission;
 
 use App\UI\Backend\BackendPresenter;
 use App\UI\Backend\Permission\Component\Authorization\AuthorizationControl;
