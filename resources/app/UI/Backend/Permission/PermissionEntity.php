@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace app\UI\Backend\Permission;
+namespace App\UI\Backend\Permission;
 
 use Drago\Database\Entity;
 

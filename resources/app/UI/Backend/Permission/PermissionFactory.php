@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace app\UI\Backend\Permission;
+namespace App\UI\Backend\Permission;
 
 use App\UI\Backend\Permission\Component\Authorization\AuthorizationEntity;
 use App\UI\Backend\Permission\Component\Authorization\ResourcesEntity;
