@@ -103,7 +103,6 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	}
 
 
-	/** Factory for delete item form. */
 	protected function createComponentDelete(): Form
 	{
 		$form = $this->factory->createDelete($this->id);

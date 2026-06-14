@@ -20,7 +20,6 @@ readonly class Factory extends \Drago\Application\UI\Factory
 	}
 
 
-	/** Creates a delete form with a hidden ID field. */
 	public function createDelete(?int $id = null): Form
 	{
 		$form = $this->create();

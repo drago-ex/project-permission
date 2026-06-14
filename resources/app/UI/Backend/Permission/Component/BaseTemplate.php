@@ -7,7 +7,6 @@ namespace App\UI\Backend\Permission\Component;
 use Drago\Application\UI\ExtraTemplate;
 
 
-/** Base template. */
 class BaseTemplate extends ExtraTemplate
 {
 	public string $offcanvasId;

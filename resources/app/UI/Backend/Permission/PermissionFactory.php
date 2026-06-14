@@ -15,7 +15,6 @@ use Nette\Security\Authorizator;
 use Nette\Security\Permission;
 
 
-/** Component factory. */
 class PermissionFactory
 {
 	/** @var iterable<Provider> */
@@ -31,7 +30,6 @@ class PermissionFactory
 	}
 
 
-	/** Creates permission object. */
 	public function create(): Permission
 	{
 		$acl = new Permission;
