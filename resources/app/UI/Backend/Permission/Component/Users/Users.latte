@@ -8,11 +8,11 @@
 				{import '../../../../../Core/Widget/@dismiss-button.latte'}
 				{block form}
 					{var string $selectTom = 'select-tom'}
-					{include selectTom, name: 'user_id', columns: 12, class: $selectTom}
-					{include selectTom, name: 'role_id', columns: 12, class: $selectTom}
-					<div class="d-block">
-						{include submit, name: 'send'}
+					{include selectTom, name: 'user_id', class: $selectTom}
+					{include selectTom, name: 'role_id', class: $selectTom}
+					<div class="col-12">
 						{include buttonDismiss, type: 'offcanvas'}
+						{include submit, name: 'send'}
 					</div>
 				{/block}
 			{/embed}

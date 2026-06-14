@@ -6,11 +6,11 @@
 			{embed '../../../../../Core/Widget/@form.latte', class: 'ajax', name: 'roles', najaHistory: 'off'}
 				{import '../../../../../Core/Widget/@dismiss-button.latte'}
 				{block form}
-					{include input, name: 'name', columns: 12}
-					{include input, name: 'description', columns: 12}
-					<div class="d-block">
-						{include submit, name: 'send'}
+					{include input, name: 'name'}
+					{include input, name: 'description'}
+					<div class="col-12">
 						{include buttonDismiss, type: 'offcanvas'}
+						{include submit, name: 'send'}
 					</div>
 				{/block}
 			{/embed}
