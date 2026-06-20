@@ -27,15 +27,15 @@ in this package's `composer.json`. To skip this package, set `"skip": true` unde
 `extra.drago-tools.packages.<package-name>` in your root `composer.json`.
 
 After installation, run the package migrations, load the provided service configuration from
-`app/UI/Backend/Permission/conf.neon`, register the Naja extension from `assets/naja/permission-toggle.js`
-and include styles from `assets/naja/permission-togle.scss`.
+`app/Presentation/Backend/Permission/conf.neon`, register the Naja extension from `assets/naja/permission-toggle.js`
+and include styles from `assets/naja/permission-toggle.scss`.
 
 Example:
 
 ```js
 import naja from 'naja';
 import PermissionToggle from './naja/permission-toggle.js';
-import './naja/permission-togle.scss';
+import './naja/permission-toggle.scss';
 
 naja.registerExtension(new PermissionToggle());
 ```
@@ -54,8 +54,8 @@ The package ships with an admin section for:
 - **Roles** - create, edit and delete custom roles
 - **Permissions** - allow or deny access for a selected role
 
-The backend module is installed under `App\UI\Backend\Permission` and uses the `Backend:Permission`
-ACL resource. Module permissions are registered by `PermissionProvider` classes found in the application UI.
+The backend module is installed under `App\Presentation\Backend\Permission` and uses the `Backend:Permission`
+ACL resource. Module permissions are registered by `PermissionProvider` classes found in the presentation layer.
 
 System roles such as `admin`, `user` and `guest` are handled as protected base roles.
 
@@ -72,8 +72,8 @@ Seed migrations also add default roles and backend permission resources.
 
 ## Integration with project-auth
 
-[`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/UI/Sign/User/UserRepository.php#L58)
-fill in the body of the prepared `getRolesByUser()` method:
+To load roles from this package, implement the prepared `getRolesByUser()` method in
+[`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/Presentation/Sign/User/UserRepository.php):
 
 ```php
 public function getRolesByUser(int $userId): array
@@ -90,7 +90,6 @@ public function getRolesByUser(int $userId): array
 ```
 
 ## Database migration
-- https://github.com/drago-ex/migration
 ```bash
 php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations
 ```
@@ -104,5 +103,5 @@ If [drago-ex/project-tools](https://github.com/drago-ex/project-tools) is instal
 php vendor/bin/drago-setup
 ```
 
-**Important Note on Migrations:**
-The migrations in this package depend on the `users` table. If you are not using the automated `drago-setup` tool, ensure that you run the migrations from **`drago-ex/project-auth`** first to create the necessary foreign key targets.
+The migrations depend on the `users` table. Without `drago-setup`, run the
+`drago-ex/project-auth` migrations first.

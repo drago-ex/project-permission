@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Presentation\Backend\Permission\Component\Users;
+
+use Drago\Database\Entity;
+
+
+class UsersEntity extends Entity
+{
+	public const string
+		Table = 'users',
+		PrimaryKey = 'id',
+		ColumnUsername = 'username';
+
+	public int $id;
+	public string $username;
+}
