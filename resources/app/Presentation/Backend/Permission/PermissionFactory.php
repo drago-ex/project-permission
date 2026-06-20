@@ -42,7 +42,7 @@ class PermissionFactory
 		}
 
 		try {
-			/** @temp RolesEntity[] $roles */
+			/** @var RolesEntity[] $roles */
 			$roles = $this->connection
 				->select('*')
 				->from(RolesEntity::Table)
@@ -54,7 +54,7 @@ class PermissionFactory
 				}
 			}
 
-			/** @temp ResourcesEntity[] $resources */
+			/** @var ResourcesEntity[] $resources */
 			$resources = $this->connection
 				->select('*')
 				->from(ResourcesEntity::Table)
@@ -66,7 +66,7 @@ class PermissionFactory
 				}
 			}
 
-			/** @temp PermissionEntity[] $permissions */
+			/** @var PermissionEntity[] $permissions */
 			$permissions = $this->connection
 				->select('r.name AS role, res.resource, res.privilege')
 				->from(AuthorizationEntity::Table)->as('a')
