@@ -40,6 +40,7 @@ class RolesRepository
 	 */
 	public function getRolesFluent(): ExtraFluent
 	{
-		return $this->read('*');
+		return $this->read('*')
+			->orderBy(RolesEntity::PrimaryKey, 'DESC');
 	}
 }
