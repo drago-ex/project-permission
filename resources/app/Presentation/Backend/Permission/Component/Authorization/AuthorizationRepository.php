@@ -13,7 +13,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-#[Table(AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, class: AuthorizationEntity::class)]
+#[Table(AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, entity: AuthorizationEntity::class)]
 class AuthorizationRepository
 {
 	/** @phpstan-use Database<AuthorizationEntity> */

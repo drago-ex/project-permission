@@ -10,7 +10,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-#[Table(UsersEntity::Table, UsersEntity::PrimaryKey, class: UsersEntity::class)]
+#[Table(UsersEntity::Table, UsersEntity::PrimaryKey, entity: UsersEntity::class)]
 class UserRepository
 {
 	/** @phpstan-use Database<UsersEntity> */
