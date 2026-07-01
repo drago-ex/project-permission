@@ -119,7 +119,7 @@ class UsersControl extends BaseControl
 			}
 
 			$repository->commit();
-			$message = (int) $values->id > 0 ? 'Update successful.' : 'Insert successful.';
+			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
 			$this->redrawFlashMessage($message, Alert::Success);
 
 			$form->reset();
