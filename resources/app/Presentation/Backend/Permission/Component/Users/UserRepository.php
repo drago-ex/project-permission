@@ -13,7 +13,7 @@ use Drago\Database\Database;
 #[Table(UsersEntity::Table, UsersEntity::PrimaryKey, entity: UsersEntity::class)]
 class UserRepository
 {
-	/** @phpstan-use Database<UsersEntity> */
+	/** @use Database<UsersEntity> */
 	use Database;
 
 	public function __construct(

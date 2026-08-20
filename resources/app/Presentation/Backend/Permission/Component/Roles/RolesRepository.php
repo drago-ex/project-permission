@@ -14,7 +14,7 @@ use Drago\Database\ExtraFluent;
 #[Table(RolesEntity::Table, RolesEntity::PrimaryKey, entity: RolesEntity::class)]
 class RolesRepository
 {
-	/** @phpstan-use Database<RolesEntity> */
+	/** @use Database<RolesEntity> */
 	use Database;
 
 	public function __construct(
