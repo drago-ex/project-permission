@@ -93,13 +93,6 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	}
 
 
-	public function redrawFlashMessage(string $message, string $type = 'info'): void
-	{
-		$this->getPresenter()->flashMessage($message, $type);
-		$this->getPresenter()->redrawControl($this->snippetMessage);
-	}
-
-
 	protected function createComponentDelete(): Form
 	{
 		$form = $this->factory->createDelete($this->id);
@@ -119,7 +112,8 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 			$this->getResultRepository($id);
 
 			$message = 'Delete successful.';
-			$this->redrawFlashMessage($message, Alert::Success);
+			$this->addFlashMessage($message, Alert::Success);
+			$this->addRedraw($this->snippetMessage);
 
 			$this->closeComponent();
 			$this->redrawControl();
@@ -132,7 +126,8 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 
 		} catch (\Throwable $e) {
 			$message = 'Unknown status code.';
-			$this->redrawFlashMessage($message, Alert::Warning);
+			$this->addFlashMessage($message, Alert::Warning);
+			$this->addRedraw($this->snippetMessage);
 		}
 	}
 }
