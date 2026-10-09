@@ -6,6 +6,7 @@ Component for ACL and permission management in a Drago / Nette project.
 [![PHP version](https://badge.fury.io/ph/drago-ex%2Fproject-permission.svg)](https://badge.fury.io/ph/drago-ex/project-permission)
 
 ## Requirements
+
 - PHP >= 8.3
 - Nette Framework
 - Composer
@@ -21,6 +22,7 @@ composer require drago-ex/project-permission
 ```
 
 ## Project files
+
 File copying is handled automatically by [drago-ex/project-tools](https://github.com/drago-ex/project-tools),
 which must be installed in your project. Without it, copy the files manually according to the `copy` section
 in this package's `composer.json`. To skip this package, set `"skip": true` under
@@ -90,6 +92,7 @@ public function getRolesByUser(int $userId): array
 ```
 
 ## Database migration
+
 ```bash
 php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations
 ```
