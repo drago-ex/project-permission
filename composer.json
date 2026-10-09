@@ -1,7 +1,7 @@
 {
 	"name": "drago-ex/project-permission",
-	"type": "drago-tools-resource",
 	"description": "Component for managing user permissions in a Drago project.",
+	"type": "drago-tools-resource",
 	"license": ["MIT"],
 	"require": {
 		"php": ">=8.3 <9",
@@ -20,6 +20,21 @@
 		"drago-ex/project-backend": "^2.0",
 		"drago-ex/datagrid": "^1.0"
 	},
+	"require-dev": {
+		"phpstan/phpstan-nette": "^2",
+		"drago-ex/project-tools": "^1.0"
+	},
+	"scripts": {
+		"phpstan": "phpstan analyse",
+		"post-install-cmd": [
+			"drago-install --dev",
+			"drago-clean"
+		],
+		"post-update-cmd": [
+			"drago-install --dev",
+			"drago-clean"
+		]
+	},
 	"extra": {
 		"drago-tools": {
 			"install": {
@@ -36,20 +51,5 @@
 		"drago-translator": {
 			"translation": "app/Presentation/Backend/Permission/Translate"
 		}
-	},
-	"require-dev": {
-		"phpstan/phpstan-nette": "^2",
-		"drago-ex/project-tools": "^1.0"
-	},
-	"scripts": {
-		"phpstan": "phpstan analyse",
-		"post-install-cmd": [
-			"drago-install --dev",
-			"drago-clean"
-		],
-		"post-update-cmd": [
-			"drago-install --dev",
-			"drago-clean"
-		]
 	}
 }
