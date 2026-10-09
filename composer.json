@@ -32,6 +32,9 @@
 			"commands": {
 				"db:migrate-permission": "php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations"
 			}
+		},
+		"drago-translator": {
+			"translation": "app/Presentation/Backend/Permission/Translate"
 		}
 	},
 	"require-dev": {
