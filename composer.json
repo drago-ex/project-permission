@@ -49,7 +49,7 @@
 			}
 		},
 		"drago-translator": {
-			"translation": "resources/app/Presentation/Backend/Permission/Translate"
+			"translation": "app/Presentation/Backend/Permission/Translate"
 		}
 	}
 }
