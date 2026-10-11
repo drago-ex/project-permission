@@ -84,18 +84,18 @@ class RolesControl extends BaseControl
 		$form = $this->factory->create();
 		$form->addTextInput(RolesValues::Name, 'Role name')
 			->setPlaceholder('e.g. member, editor')
+			->setAutocomplete(Autocomplete::Off)
 			->setRequired('Please enter role name.')
-			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9-]+')
-			->setAutocomplete(Autocomplete::Off);
+			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9-]+');
 
 		$form->addTextInput(RolesValues::Description, 'Description role')
 			->setPlaceholder('Description role')
-			->setRequired('Please enter description role.')
-			->setAutocomplete(Autocomplete::Off);
+			->setAutocomplete(Autocomplete::Off)
+			->setRequired('Please enter description role.');
 
 		$form->addHidden('id', $this->id)
-			->addRule($form::Integer)
-			->setNullable();
+			->setNullable()
+			->addRule($form::Integer);
 
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->success(...);

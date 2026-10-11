@@ -86,13 +86,13 @@ class UsersControl extends BaseControl
 
 		$form->addSelect(UsersValues::UserId, 'Name', $users)
 			->setTranslator(null)
-			->setRequired('Please select a user.')
-			->setPrompt($this->translate('Select user'));
+			->setPrompt($this->translate('Select user'))
+			->setRequired('Please select a user.');
 
 		$roles = $this->rolesRepository->getAllRoles();
 		$form->addMultiSelect(UsersValues::RoleId, 'Role', $roles)
-			->setRequired('Please select a role.')
-			->setHtmlAttribute('placeholder', $this->translate('Select role'));
+			->setHtmlAttribute('placeholder', $this->translate('Select role'))
+			->setRequired('Please select a role.');
 
 		$form->addHidden('id', $this->id)
 			->addRule($form::Integer);
