@@ -38,11 +38,15 @@ class UsersControl extends BaseControl
 	{
 		$grid = new DataGrid;
 		$grid->setTranslator($this->translator);
+		$grid->setRowClickAction('edit!');
 		$grid->setDataSource($this->userRolesRepository->getAllUserRoles())
 			->setPrimaryKey('id');
 
-		$grid->addColumnText('username', 'User');
-		$grid->addColumnText('roles', 'Roles');
+		$grid->addColumnText('username', 'User')
+			->setFilterText();
+
+		$grid->addColumnText('roles', 'Roles')
+			->setFilterText();
 
 		$user = $this->getPresenter()->getUser();
 
@@ -81,13 +85,14 @@ class UsersControl extends BaseControl
 		$users = $this->userRepository->getAllUsers();
 
 		$form->addSelect(UsersValues::UserId, 'Name', $users)
+			->setTranslator(null)
 			->setRequired('Please select a user.')
-			->setPrompt('Select user');
+			->setPrompt($this->translate('Select user'));
 
 		$roles = $this->rolesRepository->getAllRoles();
 		$form->addMultiSelect(UsersValues::RoleId, 'Role', $roles)
 			->setRequired('Please select a role.')
-			->setHtmlAttribute('placeholder', $form->getTranslator()?->translate('Select role') ?? 'Select role');
+			->setHtmlAttribute('placeholder', $this->translate('Select role'));
 
 		$form->addHidden('id', $this->id)
 			->addRule($form::Integer);
