@@ -53,6 +53,7 @@ class UsersControl extends BaseControl
 
 		$factory = $this->getComponent('users');
 		$factory->setDefaults([
+			UsersValues::Id => $id,
 			UsersValues::UserId => $items[0]->user_id,
 			UsersValues::RoleId => $rolesIdList,
 		]);
@@ -123,7 +124,8 @@ class UsersControl extends BaseControl
 			->setHtmlAttribute('placeholder', $this->translate('Select role'))
 			->setRequired('Please select a role.');
 
-		$form->addHidden('id', $this->id)
+		$form->addHidden('id')
+			->setNullable()
 			->addRule($form::Integer);
 
 		$form->addSubmit('send', 'Send');

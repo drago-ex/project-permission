@@ -61,7 +61,7 @@ class RolesControl extends BaseControl
 		}
 
 		$factory = $this->getComponent('roles');
-		$factory->setDefaults((array) $items);
+		$factory->setDefaults($items);
 
 		if ($this->isSystemRole($items->name)) {
 			$nameControl = $this->getFormComponent($factory, RolesValues::Name);
@@ -80,6 +80,7 @@ class RolesControl extends BaseControl
 	{
 		$grid = new DataGrid;
 		$grid->setTranslator($this->translator);
+		$grid->setRowClickAction('edit!');
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
@@ -170,14 +171,14 @@ class RolesControl extends BaseControl
 	private function success(Form $form, RolesValues $values): void
 	{
 		try {
-			if ((int) $values->id > 0) {
-				$original = $this->rolesRepository->get((int) $values->id)->record();
+			if ($values->id > 0) {
+				$original = $this->rolesRepository->get($values->id)->record();
 				if ($original !== null && $this->isSystemRole($original->name)) {
 					$values->name = $original->name;
 				}
 			}
 
-			$message = (int) $values->id > 0 ? 'Update successful.' : 'Insert successful.';
+			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
 
 			$this->rolesRepository->save($values);
 			$this->addFlashMessage($message, Alert::Success);

@@ -11,7 +11,8 @@ class UsersValues extends ExtraArrayHash
 {
 	public const string
 		UserId = 'user_id',
-		RoleId = 'role_id';
+		RoleId = 'role_id',
+		Id = 'id';
 
 	public int $id = 0;
 	public int $user_id;
