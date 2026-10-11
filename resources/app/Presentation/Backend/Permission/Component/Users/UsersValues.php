@@ -14,7 +14,7 @@ class UsersValues extends ExtraArrayHash
 		RoleId = 'role_id',
 		Id = 'id';
 
-	public int $id = 0;
+	public ?int $id = null;
 	public int $user_id;
 
 	/** @var array<int, int> */
