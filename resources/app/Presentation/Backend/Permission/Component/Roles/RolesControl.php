@@ -138,7 +138,7 @@ class RolesControl extends BaseControl
 			->addRule($form::Integer);
 
 		$form->addSubmit('send', 'Send');
-		$form->onSuccess[] = $this->success(...);
+		$form->onSuccess[] = $this->processRoleForm(...);
 		return $form;
 	}
 
@@ -171,7 +171,7 @@ class RolesControl extends BaseControl
 	}
 
 
-	private function success(Form $form, RolesValues $values): void
+	private function processRoleForm(Form $form, RolesValues $values): void
 	{
 		try {
 			if ($values->id > 0) {

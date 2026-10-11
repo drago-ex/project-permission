@@ -129,7 +129,7 @@ class UsersControl extends BaseControl
 			->addRule($form::Integer);
 
 		$form->addSubmit('send', 'Send');
-		$form->onSuccess[] = $this->success(...);
+		$form->onSuccess[] = $this->processUserRolesForm(...);
 		return $form;
 	}
 
@@ -166,7 +166,7 @@ class UsersControl extends BaseControl
 	 * @throws DriverException
 	 * @throws Exception
 	 */
-	private function success(Form $form, UsersValues $values): void
+	private function processUserRolesForm(Form $form, UsersValues $values): void
 	{
 		$repository = $this->userRolesRepository;
 
