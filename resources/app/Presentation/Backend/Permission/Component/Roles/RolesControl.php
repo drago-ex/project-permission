@@ -84,8 +84,11 @@ class RolesControl extends BaseControl
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
-		$grid->addColumnText('description', 'Role description');
-		$grid->addColumnText('name', 'System name');
+		$grid->addColumnText('description', 'Role description')
+			->setFilterText();
+
+		$grid->addColumnText('name', 'System name')
+			->setFilterText();
 
 		$user = $this->getPresenter()->getUser();
 
