@@ -31,6 +31,50 @@ class RolesControl extends BaseControl
 	}
 
 
+	public function render(): void
+	{
+		$template = $this->createRender();
+		$template->setFile(__DIR__ . '/Roles.latte');
+		$template->render();
+	}
+
+
+	public function handlePermissions(int $id): void
+	{
+		$this->addRedirect($this->permissionsDestination, [
+			'authorization-roleId' => $id,
+		]);
+	}
+
+
+	/**
+	 * Handles roles edit.
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	#[Requires(ajax: true)]
+	public function handleEdit(int $id): void
+	{
+		$items = $this->rolesRepository->get($id)->record();
+		if ($items === null) {
+			$this->error();
+		}
+
+		$factory = $this->getComponent('roles');
+		$factory->setDefaults((array) $items);
+
+		if ($this->isSystemRole($items->name)) {
+			$nameControl = $this->getFormComponent($factory, RolesValues::Name);
+			$nameControl?->setHtmlAttribute('readonly');
+		}
+
+		$sendControl = $this->getFormComponent($factory, 'send');
+		$sendControl?->setCaption('Edit roles');
+
+		$this->redrawOffCanvas();
+	}
+
+
 	/** @throws AttributeDetectionException|InvalidColumnException */
 	protected function createComponentDataGrid(): DataGrid
 	{
@@ -71,14 +115,6 @@ class RolesControl extends BaseControl
 	}
 
 
-	public function render(): void
-	{
-		$template = $this->createRender();
-		$template->setFile(__DIR__ . '/Roles.latte');
-		$template->render();
-	}
-
-
 	protected function createComponentRoles(): Form
 	{
 		$form = $this->factory->create();
@@ -100,6 +136,34 @@ class RolesControl extends BaseControl
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->success(...);
 		return $form;
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	protected function getResultRepository(int $id): Result|int|null
+	{
+		return $this->rolesRepository
+			->delete(RolesEntity::PrimaryKey, $id)
+			->execute();
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	protected function getItemRepository(int $id): string|null
+	{
+		$role = $this->rolesRepository->get($id)->record();
+
+		if ($role !== null && $this->isSystemRole($role->name)) {
+			$this->error('System role cannot be deleted.', 403);
+		}
+
+		return $role?->description;
 	}
 
 
@@ -134,70 +198,6 @@ class RolesControl extends BaseControl
 			$form->addError($message);
 			$this->redrawOffCanvas();
 		}
-	}
-
-
-	public function handlePermissions(int $id): void
-	{
-		$this->addRedirect($this->permissionsDestination, [
-			'authorization-roleId' => $id,
-		]);
-	}
-
-
-	/**
-	 * Handles roles edit.
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
-	#[Requires(ajax: true)]
-	public function handleEdit(int $id): void
-	{
-		$items = $this->rolesRepository->get($id)->record();
-		if ($items === null) {
-			$this->error();
-		}
-
-		$factory = $this->getComponent('roles');
-		$factory->setDefaults((array) $items);
-
-		if ($this->isSystemRole($items->name)) {
-			$nameControl = $this->getFormComponent($factory, RolesValues::Name);
-			$nameControl?->setHtmlAttribute('readonly');
-		}
-
-		$sendControl = $this->getFormComponent($factory, 'send');
-		$sendControl?->setCaption('Edit roles');
-
-		$this->redrawOffCanvas();
-	}
-
-
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
-	protected function getResultRepository(int $id): Result|int|null
-	{
-		return $this->rolesRepository
-			->delete(RolesEntity::PrimaryKey, $id)
-			->execute();
-	}
-
-
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
-	protected function getItemRepository(int $id): string|null
-	{
-		$role = $this->rolesRepository->get($id)->record();
-
-		if ($role !== null && $this->isSystemRole($role->name)) {
-			$this->error('System role cannot be deleted.', 403);
-		}
-
-		return $role?->description;
 	}
 
 

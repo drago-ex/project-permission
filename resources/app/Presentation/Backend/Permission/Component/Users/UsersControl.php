@@ -30,6 +30,43 @@ class UsersControl extends BaseControl
 	}
 
 
+	public function render(): void
+	{
+		$template = $this->createRender();
+		$template->setFile(__DIR__ . '/Users.latte');
+		$template->render();
+	}
+
+
+	/**
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	#[Requires(ajax: true)]
+	public function handleEdit(int $id): void
+	{
+		$items = $this->userRolesRepository->getUserRoles($id);
+		$items ?: $this->error();
+
+		$roleId = UsersValues::RoleId;
+		$rolesIdList = array_column($items, $roleId, $roleId);
+
+		$factory = $this->getComponent('users');
+		$factory->setDefaults([
+			UsersValues::UserId => $items[0]->user_id,
+			UsersValues::RoleId => $rolesIdList,
+		]);
+
+		$sendControl = $this->getFormComponent($factory, 'send');
+		$sendControl?->setCaption('Edit roles');
+
+		$userIdControl = $this->getFormComponent($factory, UsersValues::UserId);
+		$userIdControl?->setHtmlAttribute('data-locked');
+
+		$this->redrawOffCanvas();
+	}
+
+
 	/**
 	 * @throws AttributeDetectionException
 	 * @throws InvalidColumnException
@@ -70,14 +107,6 @@ class UsersControl extends BaseControl
 	}
 
 
-	public function render(): void
-	{
-		$template = $this->createRender();
-		$template->setFile(__DIR__ . '/Users.latte');
-		$template->render();
-	}
-
-
 	/** @throws AttributeDetectionException */
 	protected function createComponentUsers(): Form
 	{
@@ -100,6 +129,34 @@ class UsersControl extends BaseControl
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->success(...);
 		return $form;
+	}
+
+
+	/**
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	protected function getResultRepository(int $id): Result|int|null
+	{
+		return $this->userRolesRepository
+			->delete(UsersRolesEntity::ColumnUserId, $id)
+			->execute();
+	}
+
+
+	/**
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	protected function getItemRepository(int $id): string|null
+	{
+		$userRole = $this->userRolesRepository->get($id)->record();
+		if ($userRole === null) {
+			return null;
+		}
+
+		$user = $this->userRepository->get($userRole->user_id)->record();
+		return $user?->username;
 	}
 
 
@@ -136,62 +193,5 @@ class UsersControl extends BaseControl
 		} catch (\Throwable) {
 			$repository->rollBack();
 		}
-	}
-
-
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
-	#[Requires(ajax: true)]
-	public function handleEdit(int $id): void
-	{
-		$items = $this->userRolesRepository->getUserRoles($id);
-		$items ?: $this->error();
-
-		$roleId = UsersValues::RoleId;
-		$rolesIdList = array_column($items, $roleId, $roleId);
-
-		$factory = $this->getComponent('users');
-		$factory->setDefaults([
-			UsersValues::UserId => $items[0]->user_id,
-			UsersValues::RoleId => $rolesIdList,
-		]);
-
-		$sendControl = $this->getFormComponent($factory, 'send');
-		$sendControl?->setCaption('Edit roles');
-
-		$userIdControl = $this->getFormComponent($factory, UsersValues::UserId);
-		$userIdControl?->setHtmlAttribute('data-locked');
-
-		$this->redrawOffCanvas();
-	}
-
-
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
-	protected function getResultRepository(int $id): Result|int|null
-	{
-		return $this->userRolesRepository
-			->delete(UsersRolesEntity::ColumnUserId, $id)
-			->execute();
-	}
-
-
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
-	protected function getItemRepository(int $id): string|null
-	{
-		$userRole = $this->userRolesRepository->get($id)->record();
-		if ($userRole === null) {
-			return null;
-		}
-
-		$user = $this->userRepository->get($userRole->user_id)->record();
-		return $user?->username;
 	}
 }

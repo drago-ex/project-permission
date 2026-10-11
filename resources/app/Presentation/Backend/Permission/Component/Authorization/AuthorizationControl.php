@@ -76,22 +76,6 @@ class AuthorizationControl extends BaseControl
 
 
 	/**
-	 * @param Row[] $permissions
-	 * @return array<string, Row[]>
-	 */
-	private function groupPermissionsByResource(array $permissions): array
-	{
-		$groupedPermissions = [];
-		foreach ($permissions as $permission) {
-			$resource = (string) $permission['resource'];
-			$groupedPermissions[$resource][] = $permission;
-		}
-
-		return $groupedPermissions;
-	}
-
-
-	/**
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
@@ -122,5 +106,21 @@ class AuthorizationControl extends BaseControl
 	protected function getItemRepository(int $id): string|null
 	{
 		return null;
+	}
+
+
+	/**
+	 * @param Row[] $permissions
+	 * @return array<string, Row[]>
+	 */
+	private function groupPermissionsByResource(array $permissions): array
+	{
+		$groupedPermissions = [];
+		foreach ($permissions as $permission) {
+			$resource = (string) $permission['resource'];
+			$groupedPermissions[$resource][] = $permission;
+		}
+
+		return $groupedPermissions;
 	}
 }
