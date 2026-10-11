@@ -24,17 +24,6 @@
 		"phpstan/phpstan-nette": "^2",
 		"drago-ex/project-tools": "^1.0"
 	},
-	"scripts": {
-		"phpstan": "phpstan analyse",
-		"post-install-cmd": [
-			"drago-install --dev",
-			"drago-clean"
-		],
-		"post-update-cmd": [
-			"drago-install --dev",
-			"drago-clean"
-		]
-	},
 	"extra": {
 		"drago-tools": {
 			"install": {
@@ -51,5 +40,16 @@
 		"drago-translator": {
 			"translation": "app/Presentation/Backend/Permission/Translate"
 		}
+	},
+	"scripts": {
+		"phpstan": "phpstan analyse",
+		"post-install-cmd": [
+			"drago-install --dev",
+			"drago-clean"
+		],
+		"post-update-cmd": [
+			"drago-install --dev",
+			"drago-clean"
+		]
 	}
 }
