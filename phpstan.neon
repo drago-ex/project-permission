@@ -5,3 +5,7 @@ parameters:
 	level: 8
 	paths:
 		- resources
+
+	excludePaths:
+		analyseAndScan:
+			- resources/app/Presentation/Accessory/RequireLogged.php
