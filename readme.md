@@ -105,7 +105,7 @@ public function getRolesByUser(int $userId): array
 ## Database migration
 
 The migrations run straight from `vendor/`, together with those of the other packages in one order. This package
-has `commands-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.
+has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.
 
 ```bash
 php vendor/bin/migration db:migrate --packages

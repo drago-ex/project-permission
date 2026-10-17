@@ -33,7 +33,7 @@
 					"resources/assets/naja": "assets/naja"
 				}
 			},
-			"commands-priority": 20
+			"migration-priority": 20
 		},
 		"drago-translator": {
 			"translation": "app/Presentation/Backend/Permission/Translate"
