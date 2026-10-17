@@ -75,7 +75,7 @@ Seed migrations also add default roles and backend permission resources.
 ## Integration with project-auth
 
 To load roles from this package, implement the prepared `getRolesByUser()` method in
-[`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/Presentation/Sign/User/UserRepository.php):
+[`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/Model/User/UserRepository.php):
 
 ```php
 public function getRolesByUser(int $userId): array
