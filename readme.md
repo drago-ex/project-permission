@@ -104,9 +104,17 @@ public function getRolesByUser(int $userId): array
 
 ## Database migration
 
+The migrations are exported into the project's `migrations/` directory and run from there, together with
+those of the other packages in one order (`db-migration-order.json`). This package has `commands-priority` 20,
+so it runs after `drago-ex/project-auth`, whose `users` table it uses.
+
 ```bash
-php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations
+php vendor/bin/sql-export
+php vendor/bin/migration db:migrate migrations
 ```
+
+With [drago-ex/project-tools](https://github.com/drago-ex/project-tools), the `db:migrate` operation of
+`drago-setup` does both.
 
 ## Automated setup
 
@@ -116,6 +124,3 @@ If [drago-ex/project-tools](https://github.com/drago-ex/project-tools) is instal
 ```bash
 php vendor/bin/drago-setup
 ```
-
-The migrations depend on the `users` table. Without `drago-setup`, run the
-`drago-ex/project-auth` migrations first.
