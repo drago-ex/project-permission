@@ -23,7 +23,7 @@
 	"require-dev": {
 		"nette/tester": "^2.5",
 		"phpstan/phpstan-nette": "^2",
-		"drago-ex/project-tools": "^1.0"
+		"drago-ex/project-tools": "^1.1"
 	},
 	"extra": {
 		"drago-tools": {

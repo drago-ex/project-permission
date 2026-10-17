@@ -7,9 +7,12 @@ parameters:
 		- resources
 		- tests
 
+	# resources of the dependencies, installed by drago-install --dev
+	scanDirectories:
+		- .dev-resource
+
 	excludePaths:
 		analyseAndScan:
-			- resources/app/Presentation/Accessory/RequireLogged.php
 			- tests/tmp (?)
 			- tests/*/temp/* (?)
 			- tests/*/*/temp/* (?)
