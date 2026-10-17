@@ -13,6 +13,8 @@ use Drago\Permission\Provider;
 use Drago\Permission\Role;
 use Nette\Security\Authorizator;
 use Nette\Security\Permission;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 
 class PermissionFactory
@@ -81,7 +83,9 @@ class PermissionFactory
 
 				$acl->allow($row->role, $row->resource, $privilege);
 			}
-		} catch (DriverException) {
+		} catch (DriverException $e) {
+			// Without the tables (e.g. before migrations) only the rules from the providers apply.
+			Debugger::log($e, ILogger::WARNING);
 		}
 
 		return $acl;

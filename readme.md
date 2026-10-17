@@ -61,6 +61,17 @@ ACL resource. Module permissions are registered by `PermissionProvider` classes 
 
 System roles such as `admin`, `user` and `guest` are handled as protected base roles.
 
+## Security
+
+- **System roles cannot be renamed or deleted.** The check runs when the delete is confirmed, not only when the
+  dialog opens, because the confirmation form posts the role id.
+- **Signals and forms are checked by the ACL.** Read signals need `{component}-read`, everything else
+  `{component}-write` on `Backend:Permission`; actions in the grids are shown only with the write privilege.
+- **Whoever may assign roles can assign any role**, including `admin`, to anyone, themselves included. Give
+  `users-write` only to administrators.
+- If the permission tables cannot be read (e.g. before the migrations run), only the rules from the
+  `PermissionProvider` classes apply and the error is logged as a warning.
+
 ## Database
 
 The package works with these tables:

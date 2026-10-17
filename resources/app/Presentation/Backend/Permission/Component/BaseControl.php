@@ -16,6 +16,8 @@ use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Template;
 use Nette\Forms\Controls\SubmitButton;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 
 /** @property-read BaseTemplate $template */
@@ -125,7 +127,14 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 			}
 
 		} catch (\Throwable $e) {
-			$message = 'Unknown status code.';
+			// Code 1 marks a message meant for the user; anything else is unexpected and gets logged.
+			if ($e->getCode() === 1) {
+				$message = $e->getMessage();
+			} else {
+				Debugger::log($e, ILogger::EXCEPTION);
+				$message = 'Unknown status code.';
+			}
+
 			$this->addFlashMessage($message, Alert::Warning);
 			$this->addRedraw($this->snippetMessage);
 		}
