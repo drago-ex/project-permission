@@ -21,6 +21,7 @@
 		"drago-ex/datagrid": "^1.0"
 	},
 	"require-dev": {
+		"nette/tester": "^2.5",
 		"phpstan/phpstan-nette": "^2",
 		"drago-ex/project-tools": "^1.0"
 	},
@@ -43,6 +44,7 @@
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse",
+		"tester": "tester tests -s -C",
 		"post-install-cmd": [
 			"drago-install --dev",
 			"drago-clean"

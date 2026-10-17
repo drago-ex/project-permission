@@ -25,12 +25,12 @@ Development dependencies include phpstan/phpstan-nette (^2), drago-ex/project-to
 
 ```bash
 composer phpstan                # phpstan analyse
+composer tester                 # tester tests -s -C
 ```
 
 ## Tests
 
-This repository does not currently define a test script in `composer.json` or contain a `tests/` directory.
-Do not claim behavior is covered by tests unless you find and run a relevant suite. When adding a test suite, follow the package’s existing Nette Tester setup if one is present and add an explicit Composer script.
+Nette Tester tests are in `tests/`; run them with `composer tester`. `tests/bootstrap.php` autoloads `App\` classes from `resources/app`, where `drago-install --dev` also copies the resources of the dependencies (e.g. `drago-ex/project-auth`) after `composer install`.
 
 ## Installation Hooks
 

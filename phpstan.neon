@@ -5,7 +5,11 @@ parameters:
 	level: 8
 	paths:
 		- resources
+		- tests
 
 	excludePaths:
 		analyseAndScan:
 			- resources/app/Presentation/Accessory/RequireLogged.php
+			- tests/tmp (?)
+			- tests/*/temp/* (?)
+			- tests/*/*/temp/* (?)
