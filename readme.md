@@ -63,14 +63,10 @@ System roles such as `admin`, `user` and `guest` are handled as protected base r
 
 ## Security
 
-- **System roles cannot be renamed or deleted.** The check runs when the delete is confirmed, not only when the
-  dialog opens, because the confirmation form posts the role id.
-- **Signals and forms are checked by the ACL.** Read signals need `{component}-read`, everything else
-  `{component}-write` on `Backend:Permission`; actions in the grids are shown only with the write privilege.
-- **Whoever may assign roles can assign any role**, including `admin`, to anyone, themselves included. Give
-  `users-write` only to administrators.
-- If the permission tables cannot be read (e.g. before the migrations run), only the rules from the
-  `PermissionProvider` classes apply and the error is logged as a warning.
+- System roles (`admin`, `user`, `guest`) cannot be renamed or deleted.
+- Signals and forms are checked by the ACL (`{component}-read` / `{component}-write` on `Backend:Permission`).
+- Whoever may assign roles can assign any role, including `admin`; give `users-write` only to administrators.
+- Without the permission tables, only the rules of the `PermissionProvider` classes apply.
 
 ## Database
 
@@ -104,19 +100,8 @@ public function getRolesByUser(int $userId): array
 
 ## Database migration
 
-The migrations run straight from `vendor/`, together with those of the other packages in one order. This package
-has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.
-
 ```bash
 php vendor/bin/migration db:migrate --packages
 ```
 
-The web installer of `drago-ex/project-install` uses the same order.
-
-To run only the migrations of this package:
-
-```bash
-php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations
-```
-
-Both ways can be combined; a migration that already ran is never run again.
+The package has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.

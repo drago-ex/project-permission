@@ -30,7 +30,7 @@ composer tester                 # tester tests -s -C
 
 ## Tests
 
-Nette Tester tests are in `tests/`; run them with `composer tester`. `tests/bootstrap.php` autoloads `App\` classes from `resources/app`, where `drago-install --dev` also copies the resources of the dependencies (e.g. `drago-ex/project-auth`) after `composer install`.
+Nette Tester tests are in `tests/`; run them with `composer tester`. `tests/bootstrap.php` autoloads `App\` classes from `resources/app`, then from `.dev-resource/app`, where `drago-install --dev` copies the resources of the dependencies (e.g. `drago-ex/project-auth`).
 
 ## Installation Hooks
 
