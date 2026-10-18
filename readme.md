@@ -111,8 +111,7 @@ has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `us
 php vendor/bin/migration db:migrate --packages
 ```
 
-With [drago-ex/project-tools](https://github.com/drago-ex/project-tools), the `db:migrate` operation of
-`drago-setup` runs the same command, and the web installer of `drago-ex/project-install` uses the same order.
+The web installer of `drago-ex/project-install` uses the same order.
 
 To run only the migrations of this package:
 
@@ -121,12 +120,3 @@ php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migration
 ```
 
 Both ways can be combined; a migration that already ran is never run again.
-
-## Automated setup
-
-This package exposes setup commands in `composer.json` under `extra.drago-tools.commands`.
-If [drago-ex/project-tools](https://github.com/drago-ex/project-tools) is installed, you can run them from the project root:
-
-```bash
-php vendor/bin/drago-setup
-```
