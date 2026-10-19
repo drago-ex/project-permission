@@ -16,6 +16,7 @@ use Drago\Form\Autocomplete;
 use Drago\Permission\Role;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use RuntimeException;
 
 
 class RolesControl extends BaseControl
@@ -149,6 +150,12 @@ class RolesControl extends BaseControl
 	 */
 	protected function getResultRepository(int $id): Result|int|null
 	{
+		// Checked again here: the delete form posts the id, so the check when opening the dialog is not enough.
+		$role = $this->rolesRepository->get($id)->record();
+		if ($role !== null && $this->isSystemRole($role->name)) {
+			throw new RuntimeException('System role cannot be deleted.', 1);
+		}
+
 		return $this->rolesRepository
 			->delete(RolesEntity::PrimaryKey, $id)
 			->execute();

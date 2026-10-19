@@ -16,6 +16,8 @@ use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 
 class UsersControl extends BaseControl
@@ -152,13 +154,8 @@ class UsersControl extends BaseControl
 	 */
 	protected function getItemRepository(int $id): string|null
 	{
-		$userRole = $this->userRolesRepository->get($id)->record();
-		if ($userRole === null) {
-			return null;
-		}
-
-		$user = $this->userRepository->get($userRole->user_id)->record();
-		return $user?->username;
+		// The grid lists users, so the id is the user id (see getAllUserRoles()).
+		return $this->userRepository->get($id)->record()?->username;
 	}
 
 
@@ -192,8 +189,11 @@ class UsersControl extends BaseControl
 			$this->redrawControl();
 			$this['dataGrid']->redrawDataGrid();
 
-		} catch (\Throwable) {
+		} catch (\Throwable $e) {
 			$repository->rollBack();
+			Debugger::log($e, ILogger::EXCEPTION);
+			$form->addError('Unknown status code.');
+			$this->redrawOffCanvas();
 		}
 	}
 }

@@ -7,7 +7,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - **Type**: drago-tools-resource
 - **Purpose**: Component for managing user permissions in a Drago project.
 - **PHP**: >=8.3 <9
-- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^2.0), drago-ex/database (^3.0), drago-ex/utils (^2.0), drago-ex/application (^3.0), drago-ex/form (^2.0), drago-ex/migration (^2.0), drago-ex/permission (^2.0), drago-ex/translator (^4.0), drago-ex/project-auth (^2.0), drago-ex/project-backend (^2.0), drago-ex/datagrid (^1.0)
+- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^2.0), drago-ex/database (^3.0), drago-ex/utils (^2.0), drago-ex/application (^3.0), drago-ex/form (^2.0), drago-ex/migration (^2.3), drago-ex/permission (^2.0), drago-ex/translator (^4.0), drago-ex/project-auth (^2.0), drago-ex/project-backend (^2.0), drago-ex/datagrid (^1.0)
 - **License**: MIT
 
 ## Repository Layout
@@ -19,18 +19,18 @@ Use this file as package-specific guidance when working in this repository. Keep
 ## Dependencies
 
 Composer constraints describe the package contract. Before changing integration behavior, inspect the source and the actual call sites in this package; do not infer runtime usage solely from dependency declarations.
-Development dependencies include phpstan/phpstan-nette (^2), drago-ex/project-tools (^1.0).
+Development dependencies include phpstan/phpstan-nette (^2), drago-ex/project-tools (^2.0).
 
 ## Essential Commands
 
 ```bash
 composer phpstan                # phpstan analyse
+composer tester                 # tester tests -s -C
 ```
 
 ## Tests
 
-This repository does not currently define a test script in `composer.json` or contain a `tests/` directory.
-Do not claim behavior is covered by tests unless you find and run a relevant suite. When adding a test suite, follow the package’s existing Nette Tester setup if one is present and add an explicit Composer script.
+Nette Tester tests are in `tests/`; run them with `composer tester`. `tests/bootstrap.php` autoloads `App\` classes from `resources/app`, then from `.dev-resource/app`, where `drago-install --dev` copies the resources of the dependencies (e.g. `drago-ex/project-auth`).
 
 ## Installation Hooks
 

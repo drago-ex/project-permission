@@ -58,8 +58,17 @@ The package ships with an admin section for:
 
 The backend module is installed under `App\Presentation\Backend\Permission` and uses the `Backend:Permission`
 ACL resource. Module permissions are registered by `PermissionProvider` classes found in the presentation layer.
+With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui), the item "Permissions" appears
+in the sidebar (`Backend/Permission/3.menu.neon`).
 
 System roles such as `admin`, `user` and `guest` are handled as protected base roles.
+
+## Security
+
+- System roles (`admin`, `user`, `guest`) cannot be renamed or deleted.
+- Signals and forms are checked by the ACL (`{component}-read` / `{component}-write` on `Backend:Permission`).
+- Whoever may assign roles can assign any role, including `admin`; give `users-write` only to administrators.
+- Without the permission tables, only the rules of the `PermissionProvider` classes apply.
 
 ## Database
 
@@ -75,7 +84,7 @@ Seed migrations also add default roles and backend permission resources.
 ## Integration with project-auth
 
 To load roles from this package, implement the prepared `getRolesByUser()` method in
-[`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/Presentation/Sign/User/UserRepository.php):
+[`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/Model/User/UserRepository.php):
 
 ```php
 public function getRolesByUser(int $userId): array
@@ -94,17 +103,7 @@ public function getRolesByUser(int $userId): array
 ## Database migration
 
 ```bash
-php vendor/bin/migration db:migrate vendor/drago-ex/project-permission/migrations
+php vendor/bin/migration db:migrate --packages
 ```
 
-## Automated setup
-
-This package exposes setup commands in `composer.json` under `extra.drago-tools.commands`.
-If [drago-ex/project-tools](https://github.com/drago-ex/project-tools) is installed, you can run them from the project root:
-
-```bash
-php vendor/bin/drago-setup
-```
-
-The migrations depend on the `users` table. Without `drago-setup`, run the
-`drago-ex/project-auth` migrations first.
+The package has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.
