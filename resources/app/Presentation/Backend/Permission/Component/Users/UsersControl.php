@@ -86,9 +86,7 @@ class UsersControl extends BaseControl
 		$grid->addColumnText('roles', 'Roles')
 			->setFilterText();
 
-		$user = $this->getPresenter()->getUser();
-
-		if ($user->isAllowed('Backend:Permission', 'users-write')) {
+		if ($this->isWriteAllowed()) {
 			// A click on the row opens the form, the Edit button is then hidden by the grid.
 			$grid->setRowClickAction('edit');
 			$grid->addActionEdit(fn(int $id) => $this->handleEdit($id));
@@ -175,7 +173,6 @@ class UsersControl extends BaseControl
 
 			$form->reset();
 			$this->closeComponent();
-			$this->redrawControl();
 			$this['dataGrid']->redrawDataGrid();
 
 		} catch (\Throwable $e) {
