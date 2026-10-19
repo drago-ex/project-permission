@@ -9,7 +9,6 @@ use App\Presentation\Backend\Permission\Component\Factory;
 use App\Presentation\Backend\Permission\Component\Roles\RolesRepository;
 use Dibi\DriverException;
 use Dibi\Exception;
-use Dibi\Result;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Datagrid\DataGrid;
@@ -78,7 +77,6 @@ class UsersControl extends BaseControl
 	{
 		$grid = new DataGrid;
 		$grid->setTranslator($this->translator);
-		$grid->setRowClickAction('edit!');
 		$grid->setDataSource($this->userRolesRepository->getAllUserRoles())
 			->setPrimaryKey('id');
 
@@ -91,19 +89,10 @@ class UsersControl extends BaseControl
 		$user = $this->getPresenter()->getUser();
 
 		if ($user->isAllowed('Backend:Permission', 'users-write')) {
-			$grid->addAction(
-				label: 'Edit',
-				signal: 'edit!',
-				class: 'ajax btn btn-xs btn-primary',
-				callback: fn(int $id) => $this->handleEdit($id),
-			);
-
-			$grid->addAction(
-				label: 'Delete',
-				signal: 'delete!',
-				class: 'ajax btn btn-xs btn-danger',
-				callback: fn(int $id) => $this->handleDelete($id),
-			);
+			// A click on the row opens the form, the Edit button is then hidden by the grid.
+			$grid->setRowClickAction('edit');
+			$grid->addActionEdit(fn(int $id) => $this->handleEdit($id));
+			$grid->addActionDelete(fn(int $id) => $this->handleDelete($id));
 		}
 
 		return $grid;
@@ -140,9 +129,9 @@ class UsersControl extends BaseControl
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	protected function getResultRepository(int $id): Result|int|null
+	protected function deleteItem(int $id): void
 	{
-		return $this->userRolesRepository
+		$this->userRolesRepository
 			->delete(UsersRolesEntity::ColumnUserId, $id)
 			->execute();
 	}
@@ -152,7 +141,7 @@ class UsersControl extends BaseControl
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	protected function getItemRepository(int $id): string|null
+	protected function getItemTitle(int $id): ?string
 	{
 		// The grid lists users, so the id is the user id (see getAllUserRoles()).
 		return $this->userRepository->get($id)->record()?->username;

@@ -8,7 +8,6 @@ use App\Presentation\Backend\Permission\Component\BaseControl;
 use App\Presentation\Backend\Permission\Component\Factory;
 use App\Presentation\Backend\Permission\Component\Roles\RolesRepository;
 use Dibi\Exception;
-use Dibi\Result;
 use Dibi\Row;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Permission\Role;
@@ -97,13 +96,12 @@ class AuthorizationControl extends BaseControl
 	}
 
 
-	protected function getResultRepository(int $id): Result|int|null
+	protected function deleteItem(int $id): void
 	{
-		return null;
 	}
 
 
-	protected function getItemRepository(int $id): string|null
+	protected function getItemTitle(int $id): ?string
 	{
 		return null;
 	}

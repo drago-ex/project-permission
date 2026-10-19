@@ -7,7 +7,6 @@ namespace App\Presentation\Backend\Permission\Component\Roles;
 use App\Presentation\Backend\Permission\Component\BaseControl;
 use App\Presentation\Backend\Permission\Component\Factory;
 use Dibi\Exception;
-use Dibi\Result;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Datagrid\DataGrid;
@@ -81,7 +80,6 @@ class RolesControl extends BaseControl
 	{
 		$grid = new DataGrid;
 		$grid->setTranslator($this->translator);
-		$grid->setRowClickAction('edit!');
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
@@ -94,26 +92,16 @@ class RolesControl extends BaseControl
 		$user = $this->getPresenter()->getUser();
 
 		if ($user->isAllowed('Backend:Permission', 'roles-write')) {
+			// A click on the row opens the form, the Edit button is then hidden by the grid.
+			$grid->setRowClickAction('edit');
 			$grid->addAction(
-				label: 'Edit',
-				signal: 'edit!',
-				class: 'ajax btn btn-xs btn-primary',
-				callback: fn(int $id) => $this->handleEdit($id),
-			);
-
-			$grid->addAction(
-				label: 'Delete',
-				signal: 'delete!',
-				class: 'ajax btn btn-xs btn-danger',
-				callback: fn(int $id) => $this->handleDelete($id),
-			);
-
-			$grid->addAction(
+				name: 'permissions',
 				label: 'Permissions',
-				signal: 'permissions!',
-				class: 'btn btn-xs btn-secondary',
 				callback: fn(int $id) => $this->handlePermissions($id),
+				class: 'btn btn-xs btn-secondary',
 			);
+			$grid->addActionEdit(fn(int $id) => $this->handleEdit($id));
+			$grid->addActionDelete(fn(int $id) => $this->handleDelete($id));
 		}
 
 		return $grid;
@@ -134,7 +122,7 @@ class RolesControl extends BaseControl
 			->setAutocomplete(Autocomplete::Off)
 			->setRequired('Please enter description role.');
 
-		$form->addHidden('id', $this->id)
+		$form->addHidden('id')
 			->setNullable()
 			->addRule($form::Integer);
 
@@ -148,7 +136,7 @@ class RolesControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
-	protected function getResultRepository(int $id): Result|int|null
+	protected function deleteItem(int $id): void
 	{
 		// Checked again here: the delete form posts the id, so the check when opening the dialog is not enough.
 		$role = $this->rolesRepository->get($id)->record();
@@ -156,7 +144,7 @@ class RolesControl extends BaseControl
 			throw new RuntimeException('System role cannot be deleted.', 1);
 		}
 
-		return $this->rolesRepository
+		$this->rolesRepository
 			->delete(RolesEntity::PrimaryKey, $id)
 			->execute();
 	}
@@ -166,7 +154,7 @@ class RolesControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
-	protected function getItemRepository(int $id): string|null
+	protected function getItemTitle(int $id): ?string
 	{
 		$role = $this->rolesRepository->get($id)->record();
 

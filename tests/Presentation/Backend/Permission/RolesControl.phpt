@@ -78,11 +78,11 @@ class MemoryRoles extends RolesRepository
 }
 
 
-function deleteRole(MemoryRoles $roles, int $id): mixed
+function deleteRole(MemoryRoles $roles, int $id): void
 {
 	$factory = (new ReflectionClass(Factory::class))->newInstanceWithoutConstructor();
 	$control = new RolesControl($factory, $roles);
-	return Assert::with($control, fn() => $this->getResultRepository($id));
+	Assert::with($control, fn() => $this->deleteItem($id));
 }
 
 
