@@ -26,8 +26,13 @@ test('Without the permission tables only the provider rules apply, and the error
 	$connection = new Connection(['driver' => 'mysqli', 'host' => '127.0.0.1', 'port' => 1, 'lazy' => true]);
 	$acl = (new PermissionFactory($connection, [new PermissionProvider]))->create();
 
-	Assert::true($acl->isAllowed(Role::RoleAdmin, 'Backend:Permission', 'users-write'));
-	Assert::false($acl->isAllowed(Role::RoleUser, 'Backend:Permission', 'users-read'));
-	Assert::false($acl->isAllowed(Role::RoleGuest, 'Backend:Permission', 'users-read'));
-	Assert::true(is_file($logDir . '/warning.log'));
+	try {
+		Assert::true($acl->isAllowed(Role::RoleAdmin, 'Backend:Permission', 'users-write'));
+		Assert::false($acl->isAllowed(Role::RoleUser, 'Backend:Permission', 'users-read'));
+		Assert::false($acl->isAllowed(Role::RoleGuest, 'Backend:Permission', 'users-read'));
+		Assert::true(is_file($logDir . '/warning.log'));
+	} finally {
+		Tester\Helpers::purge($logDir);
+		rmdir($logDir);
+	}
 });
