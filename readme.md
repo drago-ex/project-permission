@@ -81,24 +81,23 @@ The package works with these tables:
 
 Seed migrations also add default roles and backend permission resources.
 
-## Integration with project-auth
+## Roles of users
 
-To load roles from this package, implement the prepared `getRolesByUser()` method in
-[`UserRepository`](https://github.com/drago-ex/project-auth/blob/main/resources/app/Model/User/UserRepository.php):
+The roles assigned here are loaded at sign-in by `getRolesByUser()` of
+[drago-ex/project-auth](https://github.com/drago-ex/project-auth#permissions); its README shows the code.
 
-```php
-public function getRolesByUser(int $userId): array
-{
-	$roles = $this->getConnection()
-		->select('r.*')->from(RolesEntity::Table)->as('r')
-		->innerJoin(UsersRolesEntity::Table)->as('ur')->on('ur.role_id = r.id')
-		->where('ur.%n = ?', UsersRolesEntity::ColumnUserId, $userId)
-		->fetchPairs(value: RolesEntity::ColumnName);
+## Privileges of other packages
 
-	$roles = array_values($roles);
-	return $roles ?: [\Drago\Permission\Role::RoleUser];
-}
+Packages with their own administration (e.g. project-blog, project-static-page) ship their privileges in
+`migrations-permission/`. Import them by hand, so roles can be given them here:
+
+```bash
+php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-permission
 ```
+
+The package installs the trait `app/Presentation/Backend/Accessory/WriteAccess.php`; the administrations of other
+packages use it in place of their own `isWriteAllowed()`, as their READMEs show, so their add, edit and delete
+buttons follow the `{component}-write` privilege.
 
 ## Database migration
 

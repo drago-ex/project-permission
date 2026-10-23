@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission\Component;
 
-use App\Core\Security\CurrentUser;
+use App\Presentation\Backend\Accessory\WriteAccess;
 use Drago\Application\UI\Alert;
 use Drago\Application\UI\ExtraControl;
 use Drago\Component\Component;
@@ -23,6 +23,7 @@ use Tracy\ILogger;
 abstract class BaseControl extends ExtraControl implements OffcanvasHandle, ModalHandle
 {
 	use Component;
+	use WriteAccess;
 
 	public ?string $deleteTitle = null;
 	protected string $snippetMessage = 'message';
@@ -43,22 +44,6 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 		$template->deleteTitle = $this->deleteTitle;
 		$template->writeAllowed = $this->isWriteAllowed();
 		return $template;
-	}
-
-
-	/**
-	 * The privilege the Authorization trait requires for the signals of this control ("{control}-write"),
-	 * so the buttons are shown exactly to those who may use them; without drago-ex/permission everything is allowed.
-	 */
-	public function isWriteAllowed(): bool
-	{
-		$presenter = $this->getPresenter();
-		$user = $presenter->getUser();
-		if (!$user instanceof CurrentUser) {
-			throw new \LogicException('The user service must be App\Core\Security\CurrentUser of drago-ex/project-user.');
-		}
-
-		return $user->isPermitted((string) $presenter->getName(), $this->getName() . '-write');
 	}
 
 

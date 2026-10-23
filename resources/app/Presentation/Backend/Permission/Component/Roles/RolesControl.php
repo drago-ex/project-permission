@@ -89,18 +89,19 @@ class RolesControl extends BaseControl
 		$grid->addColumnText('name', 'System name')
 			->setFilterText();
 
-		if ($this->isWriteAllowed()) {
-			// A click on the row opens the form, the Edit button is then hidden by the grid.
-			$grid->setRowClickAction('edit');
-			$grid->addAction(
-				name: 'permissions',
-				label: 'Permissions',
-				callback: fn(int $id) => $this->handlePermissions($id),
-				class: 'btn btn-xs btn-secondary',
-			);
-			$grid->addActionEdit(fn(int $id) => $this->handleEdit($id));
-			$grid->addActionDelete(fn(int $id) => $this->handleDelete($id));
-		}
+		$writeAllowed = $this->isWriteAllowed();
+		// A click on the row opens the form, the Edit button is then hidden by the grid.
+		$grid->setRowClickAction('edit');
+		$grid->addAction(
+			name: 'permissions',
+			label: 'Permissions',
+			callback: fn(int $id) => $this->handlePermissions($id),
+			class: 'btn btn-xs btn-secondary',
+		)->setVisible($writeAllowed);
+		$grid->addActionEdit(fn(int $id) => $this->handleEdit($id))
+			->setVisible($writeAllowed);
+		$grid->addActionDelete(fn(int $id) => $this->handleDelete($id))
+			->setVisible($writeAllowed);
 
 		return $grid;
 	}
