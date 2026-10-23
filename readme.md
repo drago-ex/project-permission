@@ -1,5 +1,7 @@
 # Drago Project Permission
 
+English | [Čeština](readme.cs.md)
+
 Component for ACL and permission management in a Drago / Nette project.
 
 [![PHP version](https://badge.fury.io/ph/drago-ex%2Fproject-permission.svg)](https://badge.fury.io/ph/drago-ex%2Fproject-permission)
