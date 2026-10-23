@@ -34,6 +34,16 @@ Po instalaci spusťte migrace balíčku, načtěte dodanou konfiguraci služeb z
 `app/Presentation/Backend/Permission/conf.neon`, zaregistrujte rozšíření Naja z `assets/naja/permission-toggle.js`
 a připojte styly z `assets/naja/permission-toggle.scss`.
 
+Konfigurace nahrazuje konfiguraci drago-ex/permission (`src/Permission/conf.neon`): pokud jste ji připojili pro statická
+oprávnění, toto připojení odeberte, jinak se zaregistrují dva autorizátory.
+
+Role se berou z databáze, proto prvnímu administrátorovi přidělte roli `admin` (webový instalátor z
+drago-ex/project-install to udělá za vás):
+
+```sql
+INSERT INTO users_roles (user_id, role_id) SELECT 1, id FROM roles WHERE name = 'admin';
+```
+
 Příklad:
 
 ```js
@@ -64,6 +74,7 @@ S [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui) 
 položka „Oprávnění“ (`Backend/Permission/3.menu.neon`).
 
 Systémové role jako `admin`, `user` a `guest` jsou chráněné základní role.
+Vlastní role dědí z `user`, takže se jejich uživatelé vždy odhlásí a vidí to, co přihlášený uživatel.
 
 ## Bezpečnost
 

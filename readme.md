@@ -34,6 +34,16 @@ After installation, run the package migrations, load the provided service config
 `app/Presentation/Backend/Permission/conf.neon`, register the Naja extension from `assets/naja/permission-toggle.js`
 and include styles from `assets/naja/permission-toggle.scss`.
 
+The configuration replaces the one of drago-ex/permission (`src/Permission/conf.neon`): if you included it for static
+permissions, remove that include, otherwise two authorizators are registered.
+
+Roles come from the database, so give the first administrator the `admin` role (the web installer of
+drago-ex/project-install does it for you):
+
+```sql
+INSERT INTO users_roles (user_id, role_id) SELECT 1, id FROM roles WHERE name = 'admin';
+```
+
 Example:
 
 ```js
@@ -64,6 +74,7 @@ With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-u
 in the sidebar (`Backend/Permission/3.menu.neon`).
 
 System roles such as `admin`, `user` and `guest` are handled as protected base roles.
+Custom roles inherit `user`, so their users can always sign out and see what a signed-in user sees.
 
 ## Security
 

@@ -127,6 +127,8 @@ class RolesControl extends BaseControl
 
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processRoleForm(...);
+		// errors found on the server (e.g. a reserved slug) are shown in the open offcanvas
+		$form->onError[] = fn() => $this->redrawOffCanvas();
 		return $form;
 	}
 

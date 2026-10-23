@@ -61,9 +61,6 @@
 "Delete successful.": "Záznam byl úspěšně smazán."
 "Unknown status code.": "Neznámý stavový kód."
 
-# seeded roles
-"Administrator": "Administrátor"
-
 # seeded permissions
 "View roles": "Zobrazit role"
 "Roles management": "Správa rolí"

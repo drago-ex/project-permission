@@ -15,6 +15,7 @@ use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use Nette\Utils\Html;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -102,15 +103,15 @@ class UsersControl extends BaseControl
 	protected function createComponentUsers(): Form
 	{
 		$form = $this->factory->create();
-		$users = $this->userRepository->getAllUsers();
+		// User names and role descriptions are data, not texts: wrapped in Html they are not translated,
+		// the captions and messages still are.
+		$data = fn(array $items): array => array_map(fn(string $name): Html => Html::el()->setText($name), $items);
 
-		$form->addSelect(UsersValues::UserId, 'Name', $users)
-			->setTranslator(null)
-			->setPrompt($this->translate('Select user'))
+		$form->addSelect(UsersValues::UserId, 'Name', $data($this->userRepository->getAllUsers()))
+			->setPrompt('Select user')
 			->setRequired('Please select a user.');
 
-		$roles = $this->rolesRepository->getAllRoles();
-		$form->addMultiSelect(UsersValues::RoleId, 'Role', $roles)
+		$form->addMultiSelect(UsersValues::RoleId, 'Role', $data($this->rolesRepository->getAllRoles()))
 			->setHtmlAttribute('placeholder', $this->translate('Select role'))
 			->setRequired('Please select a role.');
 
@@ -120,6 +121,8 @@ class UsersControl extends BaseControl
 
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processUserRolesForm(...);
+		// errors found on the server (e.g. a reserved slug) are shown in the open offcanvas
+		$form->onError[] = fn() => $this->redrawOffCanvas();
 		return $form;
 	}
 

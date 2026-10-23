@@ -50,9 +50,10 @@ class PermissionFactory
 				->from(RolesEntity::Table)
 				->fetchAll();
 
+			// Roles added in the administration inherit the signed-in user (sign out, front, account).
 			foreach ($roles as $role) {
 				if (!$acl->hasRole($role->name)) {
-					$acl->addRole($role->name);
+					$acl->addRole($role->name, Role::RoleUser);
 				}
 			}
 
