@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission\Component;
 
-use App\Presentation\Backend\Accessory\WriteAccess;
 use Drago\Application\UI\Alert;
 use Drago\Application\UI\ExtraControl;
 use Drago\Component\Component;
 use Drago\Component\ModalHandle;
 use Drago\Component\OffcanvasHandle;
 use Drago\Datagrid\DataGrid;
+use Drago\Permission\WriteAccess;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Template;

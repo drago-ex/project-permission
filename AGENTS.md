@@ -7,7 +7,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - **Type**: drago-tools-resource
 - **Purpose**: Component for managing user permissions in a Drago project.
 - **PHP**: >=8.3 <9
-- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^2.0), drago-ex/database (^3.0), drago-ex/utils (^2.0), drago-ex/application (^3.0), drago-ex/form (^2.0), drago-ex/migration (^2.3), drago-ex/permission (^2.0), drago-ex/translator (^4.0), drago-ex/project-auth (^2.0), drago-ex/project-backend (^2.0), drago-ex/datagrid (^2.0)
+- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^2.0), drago-ex/database (^3.0), drago-ex/utils (^2.0), drago-ex/application (^3.0), drago-ex/form (^2.0), drago-ex/migration (^2.3), drago-ex/permission (^2.4), drago-ex/translator (^4.0), drago-ex/project-auth (^2.0), drago-ex/project-backend (^2.0), drago-ex/datagrid (^2.0)
 - **License**: MIT
 
 ## Repository Layout
@@ -18,7 +18,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 
 ## Buttons and permissions
 - Roles of users are loaded at sign-in by `getRolesByUser()` of project-auth (code in its README, project-preset overrides it). Privileges of other packages come from their `migrations-permission/`, imported by hand (README "Privileges of other packages"), never automatically.
-- `Accessory/WriteAccess` (copied to `app/Presentation/Backend/Accessory`) is the `"{component}-write"` ACL check of the add/edit/delete buttons (presenter name as resource, unknown resource denied). The package's own `Component\BaseControl` uses it; other packages (project-blog, project-static-page, ...) have no permission code; their README shows how to add this trait, `setVisible()` and `$writeAllowed` by hand, project-preset is meant to ship it pre-done. Grid actions get `->setVisible($writeAllowed)`; templates get `$writeAllowed`.
+- `Component\BaseControl` uses the `WriteAccess` trait of drago-ex/permission (^2.4): `isWriteAllowed()` is the `"{component}-write"` ACL check of the add/edit/delete buttons. Grid actions get `->setVisible($writeAllowed)`; templates get `$writeAllowed`. Other packages (project-blog, project-static-page, ...) have no permission code; their README shows how to add the trait by hand, project-preset is meant to ship it pre-done.
 
 ## Dependencies
 

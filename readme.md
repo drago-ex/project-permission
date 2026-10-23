@@ -95,9 +95,8 @@ Packages with their own administration (e.g. project-blog, project-static-page) 
 php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-permission
 ```
 
-The package installs the trait `app/Presentation/Backend/Accessory/WriteAccess.php`; the administrations of other
-packages use it in place of their own `isWriteAllowed()`, as their READMEs show, so their add, edit and delete
-buttons follow the `{component}-write` privilege.
+The add, edit and delete buttons follow the `{component}-write` privilege by the `WriteAccess` trait of
+[drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
 
 ## Database migration
 
