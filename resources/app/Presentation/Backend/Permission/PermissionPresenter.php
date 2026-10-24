@@ -23,6 +23,20 @@ class PermissionPresenter extends BackendPresenter
 	}
 
 
+	/**
+	 * The module has no page of its own: its address opens the roles. Before parent::startup(), whose ACL check
+	 * knows no "default-read"; the roles page checks the access itself.
+	 */
+	protected function startup(): void
+	{
+		if ($this->getAction() === 'default') {
+			$this->redirect('roles');
+		}
+
+		parent::startup();
+	}
+
+
 	/** @throws Throwable|Exception */
 	public function createComponentUsers(): UsersControl
 	{

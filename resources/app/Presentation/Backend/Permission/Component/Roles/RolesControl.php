@@ -16,6 +16,8 @@ use Drago\Permission\Role;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use RuntimeException;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 
 class RolesControl extends BaseControl
@@ -188,6 +190,12 @@ class RolesControl extends BaseControl
 			$this['dataGrid']->redrawDataGrid();
 
 		} catch (\Throwable $e) {
+			// code 1 is a message for the user, 1062 a duplicate role; anything else is unexpected
+			if (!in_array($e->getCode(), [1, 1062], true)) {
+				// unexpected: the user sees a general message, the log the cause
+				Debugger::log($e, ILogger::EXCEPTION);
+			}
+
 			$message = match ($e->getCode()) {
 				1 => $e->getMessage(),
 				1062 => 'This role already exists.',

@@ -22,6 +22,9 @@ Use this file as package-specific guidance when working in this repository. Keep
 - Role descriptions and user names are data and are never translated (form items wrapped in `Html::el()->setText()`, so the translator does not report them); privilege descriptions of `resources` come from packages and are translated (`cs.neon`).
 - `PermissionFactory` adds the roles of the `roles` table that are not built in with `Role::RoleUser` as parent, so a custom role keeps the signed-in basics (Sign, front, account); without it a role like "moderator" got 403 even on sign-out.
 
+## Key Parts
+- `PermissionPresenter` has no default page: `startup()` redirects `default` to `roles` before `parent::startup()`, because the ACL check of the Authorization trait runs there and there is no `default-read` privilege; the roles page checks the access itself (2026-10-24).
+
 ## Dependencies
 
 Composer constraints describe the package contract. Before changing integration behavior, inspect the source and the actual call sites in this package; do not infer runtime usage solely from dependency declarations.
