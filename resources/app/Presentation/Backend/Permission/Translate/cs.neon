@@ -60,6 +60,7 @@
 "Update successful.": "Záznam byl úspěšně upraven."
 "Delete successful.": "Záznam byl úspěšně smazán."
 "Unknown status code.": "Neznámý stavový kód."
+"The item could not be deleted.": "Záznam se nepodařilo smazat."
 
 # seeded permissions
 "View roles": "Zobrazit role"

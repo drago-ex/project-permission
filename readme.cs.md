@@ -108,6 +108,11 @@ Balíčky s vlastní administrací (např. project-blog, project-static-page) do
 php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-permission
 ```
 
+Stejně dodává project-backend-ui přehled administrace (`Backend:Admin`, `default-read`): přidělte ho roli, která má vstoupit
+do administrace; bez něj se role po přihlášení dostane na úvodní stránku webu.
+
+Webový instalátor z [project-install](https://github.com/drago-ex/project-install) je všechny naimportuje sám.
+
 Tlačítka pro přidání, úpravu a mazání se řídí privilegiem `{component}-write` přes trait `WriteAccess` z
 [drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
 

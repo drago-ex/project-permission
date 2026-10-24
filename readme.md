@@ -108,6 +108,11 @@ Packages with their own administration (e.g. project-blog, project-static-page) 
 php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-permission
 ```
 
+project-backend-ui ships the dashboard (`Backend:Admin`, `default-read`) the same way: give it to a role that should enter
+the administration; without it the role goes to the front page after signing in.
+
+The web installer of [project-install](https://github.com/drago-ex/project-install) imports all of them itself.
+
 The add, edit and delete buttons follow the `{component}-write` privilege by the `WriteAccess` trait of
 [drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
 
