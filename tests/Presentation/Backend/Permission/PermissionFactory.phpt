@@ -20,6 +20,7 @@ test('Without the permission tables only the provider rules apply, and the error
 	$logDir = __DIR__ . '/../../../tmp/log-' . getmypid();
 	@mkdir($logDir, 0o777, true);
 	Tester\Helpers::purge($logDir);
+	$previousLogDirectory = Debugger::$logDirectory;
 	Debugger::$logDirectory = $logDir;
 
 	// Port 1 refuses connections, so loading the database rules fails.
@@ -32,6 +33,8 @@ test('Without the permission tables only the provider rules apply, and the error
 		Assert::false($acl->isAllowed(Role::RoleGuest, 'Backend:Permission', 'users-read'));
 		Assert::true(is_file($logDir . '/warning.log'));
 	} finally {
+		// later logs of this process must not go to the removed directory
+		Debugger::$logDirectory = $previousLogDirectory;
 		Tester\Helpers::purge($logDir);
 		rmdir($logDir);
 	}

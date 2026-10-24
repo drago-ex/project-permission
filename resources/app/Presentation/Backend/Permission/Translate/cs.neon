@@ -69,3 +69,5 @@
 "Assign roles to users": "Přiřazovat role uživatelům"
 "View permissions": "Zobrazit oprávnění"
 "Manage permissions": "Spravovat oprávnění"
+"Allowed (inherited)": "Povoleno (zděděno)"
+"Inherited from a parent role, change it there.": "Zděděno z nadřazené role, změňte ho tam."

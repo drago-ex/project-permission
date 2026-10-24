@@ -9,6 +9,8 @@ use App\Presentation\Backend\Permission\Component\Authorization\AuthorizationCon
 use App\Presentation\Backend\Permission\Component\Roles\RolesControl;
 use App\Presentation\Backend\Permission\Component\Users\UsersControl;
 use Exception;
+use ReflectionClass;
+use ReflectionMethod;
 use Throwable;
 
 
@@ -24,16 +26,19 @@ class PermissionPresenter extends BackendPresenter
 
 
 	/**
-	 * The module has no page of its own: its address opens the roles. Before parent::startup(), whose ACL check
-	 * knows no "default-read"; the roles page checks the access itself.
+	 * The module has no page of its own: its address opens the roles, or the users for a user who may only see those.
+	 * Here, because Nette checks the requirements before the onStartup handlers, where the ACL check (no
+	 * "default-read") runs; the opened page checks the access itself.
 	 */
-	protected function startup(): void
+	public function checkRequirements(ReflectionClass|ReflectionMethod $element): void
 	{
 		if ($this->getAction() === 'default') {
-			$this->redirect('roles');
+			$user = $this->getUser();
+			$this->redirect($user->isAllowed('Backend:Permission', 'users-read')
+				&& !$user->isAllowed('Backend:Permission', 'roles-read') ? 'users' : 'roles');
 		}
 
-		parent::startup();
+		parent::checkRequirements($element);
 	}
 
 

@@ -121,7 +121,7 @@ class UsersControl extends BaseControl
 
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processUserRolesForm(...);
-		// errors found on the server (e.g. a reserved slug) are shown in the open offcanvas
+		// errors found on the server (also those added by processUserRolesForm()) are shown in the open offcanvas
 		$form->onError[] = fn() => $this->redrawOffCanvas();
 		return $form;
 	}
@@ -158,6 +158,11 @@ class UsersControl extends BaseControl
 	{
 		$repository = $this->userRolesRepository;
 
+		// an edit changes the edited user (the select is locked only in the browser), never a user_id of the request
+		if ((int) $values->id > 0) {
+			$values->user_id = (int) $values->id;
+		}
+
 		try {
 			$repository->beginTransaction();
 			$repository->delete(UsersRolesEntity::ColumnUserId, $values->user_id)
@@ -183,7 +188,6 @@ class UsersControl extends BaseControl
 			$repository->rollBack();
 			Debugger::log($e, ILogger::EXCEPTION);
 			$form->addError('Unknown status code.');
-			$this->redrawOffCanvas();
 		}
 	}
 }

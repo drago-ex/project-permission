@@ -85,7 +85,10 @@
 							{foreach $group as $item}
 								{varType App\Presentation\Backend\Permission\Component\Authorization\ResourcesEntity $item}
 								{var $inputId = "permission-{$roleId}-{$item->id}"}
-								{var $isAllowed = $isAdminRole || $item->access === 'allow'}
+								{* a privilege of a parent role (e.g. user) cannot be denied here, it is shown as inherited *}
+								{var $isInherited = !$isAdminRole && $item->access !== 'allow' && isset($inherited[$item->id])}
+								{var $isAllowed = $isAdminRole || $item->access === 'allow' || $isInherited}
+								{var $isLocked = $isAdminRole || $isInherited || !$writeAllowed}
 
 								<div n:class="'list-group-item', 'authorization-permission-item', 'px-3', $iterator->isLast() ? 'pt-1 pb-3' : 'pt-2 pb-0 border-bottom-0'">
 									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
@@ -106,11 +109,12 @@
 												data-naja-history="off"
 												autocomplete="off"
 												data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
-												n:class="'btn-check', !$isAdminRole ? 'js-permission-toggle'"
-												n:attr="checked: $isAllowed, disabled: $isAdminRole">
+												n:class="'btn-check', !$isLocked ? 'js-permission-toggle'"
+												n:attr="checked: $isAllowed, disabled: $isLocked">
 
-											<label for="{$inputId}" n:class="'btn', 'btn-sm', 'px-3', 'fw-semibold', 'rounded-pill', $isAllowed ? 'btn-success' : 'btn-danger'">
-												{if $isAllowed}{_'Allowed'}{else}{_'Denied'}{/if}
+											<label for="{$inputId}" n:class="'btn', 'btn-sm', 'px-3', 'fw-semibold', 'rounded-pill', $isAllowed ? 'btn-success' : 'btn-danger'"
+												n:attr="title: $isInherited ? ('Inherited from a parent role, change it there.'|translate)">
+												{if $isInherited}{_'Allowed (inherited)'}{elseif $isAllowed}{_'Allowed'}{else}{_'Denied'}{/if}
 											</label>
 										</div>
 

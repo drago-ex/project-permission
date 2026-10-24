@@ -7,7 +7,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - **Type**: drago-tools-resource
 - **Purpose**: Component for managing user permissions in a Drago project.
 - **PHP**: >=8.3 <9
-- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^2.0), drago-ex/database (^3.0), drago-ex/utils (^2.0), drago-ex/application (^3.0 || ^4.0), drago-ex/form (^2.0), drago-ex/migration (^2.3), drago-ex/permission (^2.4), drago-ex/translator (^4.0), drago-ex/project-auth (^2.0), drago-ex/project-backend (^2.0), drago-ex/datagrid (^2.0)
+- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^2.0), drago-ex/database (^3.0 || ^4.0), drago-ex/utils (^2.0), drago-ex/application (^3.0 || ^4.0), drago-ex/form (^2.0 || ^3.0), drago-ex/migration (^2.3), drago-ex/permission (^2.4), drago-ex/translator (^4.0), drago-ex/project-auth (^2.0), drago-ex/project-backend (^2.0), drago-ex/datagrid (^2.0)
 - **License**: MIT
 
 ## Repository Layout
@@ -23,7 +23,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - `PermissionFactory` adds the roles of the `roles` table that are not built in with `Role::RoleUser` as parent, so a custom role keeps the signed-in basics (Sign, front, account); without it a role like "moderator" got 403 even on sign-out.
 
 ## Key Parts
-- `PermissionPresenter` has no default page: `startup()` redirects `default` to `roles` before `parent::startup()`, because the ACL check of the Authorization trait runs there and there is no `default-read` privilege; the roles page checks the access itself (2026-10-24).
+- `PermissionPresenter` has no default page: `checkRequirements()` redirects `default` to `roles`. Not in `startup()`: Nette calls the `onStartup` handlers (where the Authorization trait checks the ACL, and there is no `default-read`) before `startup()`, but `checkRequirements()` before them; the roles page checks the access itself (2026-10-24, tested with a roles-read-only role).
 
 ## Dependencies
 

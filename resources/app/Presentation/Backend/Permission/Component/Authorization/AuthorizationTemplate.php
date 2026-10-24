@@ -20,4 +20,7 @@ class AuthorizationTemplate extends BaseTemplate
 	public int $allowedCount = 0;
 	public int $deniedCount = 0;
 	public bool $isAdminRole = false;
+
+	/** @var array<int, true> privileges allowed by a parent role, by resource id */
+	public array $inherited = [];
 }

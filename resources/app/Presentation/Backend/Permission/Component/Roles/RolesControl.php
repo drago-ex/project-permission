@@ -129,7 +129,7 @@ class RolesControl extends BaseControl
 
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processRoleForm(...);
-		// errors found on the server (e.g. a reserved slug) are shown in the open offcanvas
+		// errors found on the server (also those added by processRoleForm()) are shown in the open offcanvas
 		$form->onError[] = fn() => $this->redrawOffCanvas();
 		return $form;
 	}
@@ -190,21 +190,21 @@ class RolesControl extends BaseControl
 			$this['dataGrid']->redrawDataGrid();
 
 		} catch (\Throwable $e) {
-			// code 1 is a message for the user, 1062 a duplicate role; anything else is unexpected
-			if (!in_array($e->getCode(), [1, 1062], true)) {
-				// unexpected: the user sees a general message, the log the cause
-				Debugger::log($e, ILogger::EXCEPTION);
-			}
-
-			$message = match ($e->getCode()) {
+			// code 1 is a message for the user, 1062 a duplicate role; anything else is unexpected and gets logged
+			$form->addError(match ($e->getCode()) {
 				1 => $e->getMessage(),
 				1062 => 'This role already exists.',
-				default => 'Unknown status code.',
-			};
-
-			$form->addError($message);
-			$this->redrawOffCanvas();
+				default => $this->logUnexpected($e),
+			});
 		}
+	}
+
+
+	/** Logs an exception the user cannot fix and returns the general message for the form. */
+	private function logUnexpected(\Throwable $e): string
+	{
+		Debugger::log($e, ILogger::EXCEPTION);
+		return 'Unknown status code.';
 	}
 
 
