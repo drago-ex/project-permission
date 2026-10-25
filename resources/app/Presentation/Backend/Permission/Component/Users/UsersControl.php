@@ -60,13 +60,19 @@ class UsersControl extends BaseControl
 			UsersValues::RoleId => $rolesIdList,
 		]);
 
-		$sendControl = $this->getFormComponent($factory, 'send');
-		$sendControl?->setCaption('Edit roles');
-
-		$userIdControl = $this->getFormComponent($factory, UsersValues::UserId);
-		$userIdControl?->setHtmlAttribute('data-locked');
-
+		$this->setEditMode($factory);
 		$this->redrawOffCanvas();
+	}
+
+
+	/**
+	 * The form edits the roles of one user: the user cannot be changed (the save takes the edited id anyway).
+	 * Also after a server error, when the form is drawn again from the submitted values.
+	 */
+	private function setEditMode(Form $form): void
+	{
+		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
+		$this->getFormComponent($form, UsersValues::UserId)?->setHtmlAttribute('data-locked');
 	}
 
 
@@ -122,7 +128,13 @@ class UsersControl extends BaseControl
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processUserRolesForm(...);
 		// errors found on the server (also those added by processUserRolesForm()) are shown in the open offcanvas
-		$form->onError[] = fn() => $this->redrawOffCanvas();
+		$form->onError[] = function (Form $form): void {
+			if ((int) $form->getComponent(UsersValues::Id)->getValue() > 0) {
+				$this->setEditMode($form);
+			}
+
+			$this->redrawOffCanvas();
+		};
 		return $form;
 	}
 

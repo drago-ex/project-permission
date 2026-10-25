@@ -23,6 +23,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - `PermissionFactory` adds the roles of the `roles` table that are not built in with `Role::RoleUser` as parent, so a custom role keeps the signed-in basics (Sign, front, account); without it a role like "moderator" got 403 even on sign-out.
 
 ## Key Parts
+- The users and roles forms keep their edit mode after a server error (`setEditMode()` from `onError` when the form holds an id: locked user select, readonly name of a system role, caption "Edit roles"); before, the redrawn form looked like a new one while the save still used the edited id (2026-10-25, code review).
 - `PermissionPresenter` has no default page: `checkRequirements()` redirects `default` to `roles`. Not in `startup()`: Nette calls the `onStartup` handlers (where the Authorization trait checks the ACL, and there is no `default-read`) before `startup()`, but `checkRequirements()` before them; the roles page checks the access itself (2026-10-24, tested with a roles-read-only role).
 
 ## Dependencies

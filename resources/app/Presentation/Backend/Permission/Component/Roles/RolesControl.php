@@ -64,16 +64,22 @@ class RolesControl extends BaseControl
 
 		$factory = $this->getComponent('roles');
 		$factory->setDefaults($items);
+		$this->setEditMode($factory, $items->name);
+		$this->redrawOffCanvas();
+	}
 
-		if ($this->isSystemRole($items->name)) {
-			$nameControl = $this->getFormComponent($factory, RolesValues::Name);
-			$nameControl?->setHtmlAttribute('readonly');
+
+	/**
+	 * The form edits a role: the name of a system role cannot be changed. Also after a server error,
+	 * when the form is drawn again from the submitted values.
+	 */
+	private function setEditMode(Form $form, string $name): void
+	{
+		if ($this->isSystemRole($name)) {
+			$this->getFormComponent($form, RolesValues::Name)?->setHtmlAttribute('readonly');
 		}
 
-		$sendControl = $this->getFormComponent($factory, 'send');
-		$sendControl?->setCaption('Edit roles');
-
-		$this->redrawOffCanvas();
+		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
 	}
 
 
@@ -130,7 +136,14 @@ class RolesControl extends BaseControl
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processRoleForm(...);
 		// errors found on the server (also those added by processRoleForm()) are shown in the open offcanvas
-		$form->onError[] = fn() => $this->redrawOffCanvas();
+		$form->onError[] = function (Form $form): void {
+			$role = $this->rolesRepository->get((int) $form->getComponent('id')->getValue())->record();
+			if ($role !== null) {
+				$this->setEditMode($form, $role->name);
+			}
+
+			$this->redrawOffCanvas();
+		};
 		return $form;
 	}
 
