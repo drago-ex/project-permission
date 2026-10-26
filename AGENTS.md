@@ -24,6 +24,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 
 ## Key Parts
 - The users and roles forms keep their edit mode after a server error (`setEditMode()` from `onError` when the form holds an id: locked user select, readonly name of a system role, caption "Edit roles"); before, the redrawn form looked like a new one while the save still used the edited id (2026-10-25, code review).
+- Permissions page: a privilege a parent role allows and the role itself does not is "Allowed (inherited)" and locked; the rule lives only in `AuthorizationControl::getInheritedPrivileges()` (the counters and the template read its result). A resources row with privilege `all` means every privilege of the resource, through `PermissionFactory::privilege()` for both the ACL and the inherited check.
 - `PermissionPresenter` has no default page: `checkRequirements()` redirects `default` to `roles`. Not in `startup()`: Nette calls the `onStartup` handlers (where the Authorization trait checks the ACL, and there is no `default-read`) before `startup()`, but `checkRequirements()` before them; the roles page checks the access itself (2026-10-24, tested with a roles-read-only role).
 
 ## Dependencies

@@ -7,6 +7,7 @@ namespace App\Presentation\Backend\Permission\Component\Authorization;
 use App\Presentation\Backend\Permission\Component\BaseControl;
 use App\Presentation\Backend\Permission\Component\Factory;
 use App\Presentation\Backend\Permission\Component\Roles\RolesRepository;
+use App\Presentation\Backend\Permission\PermissionFactory;
 use Dibi\Exception;
 use Dibi\Row;
 use Drago\Attr\AttributeDetectionException;
@@ -67,9 +68,9 @@ class AuthorizationControl extends BaseControl
 				$template->allowedCount = count($rolePermissions);
 				$template->deniedCount = 0;
 			} else {
-				$template->allowedCount = count(array_filter(
+				$template->allowedCount = count($inherited) + count(array_filter(
 					$rolePermissions,
-					static fn(Row $item): bool => $item['access'] === 'allow' || isset($inherited[(int) $item['id']]),
+					static fn(Row $item): bool => $item['access'] === 'allow',
 				));
 				$template->deniedCount = count($rolePermissions) - $template->allowedCount;
 			}
@@ -113,8 +114,9 @@ class AuthorizationControl extends BaseControl
 
 
 	/**
-	 * Privileges a parent role (e.g. "user", which every custom role inherits) already allows; the role cannot be
-	 * denied them, so they are shown as inherited instead of a toggle. The parents are asked, not the role itself,
+	 * Privileges a parent role (e.g. "user", which every custom role inherits) already allows and the role itself
+	 * does not; the role cannot be denied them, so they are shown as inherited instead of a toggle. The only place
+	 * of this rule (the counters and the template just read the result). The parents are asked, not the role itself,
 	 * so a toggle of the role in this request does not matter.
 	 * @param Row[] $permissions
 	 * @return array<int, true> by resource id
@@ -126,11 +128,17 @@ class AuthorizationControl extends BaseControl
 			return [];
 		}
 
+		$parents = $acl->getRoleParents($roleName);
 		$inherited = [];
 		foreach ($permissions as $permission) {
-			foreach ($acl->getRoleParents($roleName) as $parent) {
+			if ($permission['access'] === 'allow') {
+				continue;
+			}
+
+			$privilege = PermissionFactory::privilege((string) $permission['privilege']);
+			foreach ($parents as $parent) {
 				try {
-					if ($acl->isAllowed($parent, (string) $permission['resource'], (string) $permission['privilege'])) {
+					if ($acl->isAllowed($parent, (string) $permission['resource'], $privilege)) {
 						$inherited[(int) $permission['id']] = true;
 						break;
 					}

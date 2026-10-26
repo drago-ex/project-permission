@@ -86,7 +86,7 @@
 								{varType App\Presentation\Backend\Permission\Component\Authorization\ResourcesEntity $item}
 								{var $inputId = "permission-{$roleId}-{$item->id}"}
 								{* a privilege of a parent role (e.g. user) cannot be denied here, it is shown as inherited *}
-								{var $isInherited = !$isAdminRole && $item->access !== 'allow' && isset($inherited[$item->id])}
+								{var $isInherited = isset($inherited[$item->id])}
 								{var $isAllowed = $isAdminRole || $item->access === 'allow' || $isInherited}
 								{var $isLocked = $isAdminRole || $isInherited || !$writeAllowed}
 

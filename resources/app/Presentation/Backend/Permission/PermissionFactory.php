@@ -78,11 +78,7 @@ class PermissionFactory
 				->fetchAll();
 
 			foreach ($permissions as $row) {
-				$privilege = $row->privilege === 'all'
-					? Authorizator::All
-					: $row->privilege;
-
-				$acl->allow($row->role, $row->resource, $privilege);
+				$acl->allow($row->role, $row->resource, self::privilege($row->privilege));
 			}
 		} catch (DriverException $e) {
 			// Without the tables (e.g. before migrations) only the rules from the providers apply.
@@ -90,5 +86,14 @@ class PermissionFactory
 		}
 
 		return $acl;
+	}
+
+
+	/**
+	 * The privilege of a resources row for the ACL: "all" means every privilege of the resource.
+	 */
+	public static function privilege(string $privilege): ?string
+	{
+		return $privilege === 'all' ? Authorizator::All : $privilege;
 	}
 }
