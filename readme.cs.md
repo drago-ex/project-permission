@@ -76,8 +76,14 @@ Balíček obsahuje sekci administrace pro:
 
 Modul administrace se instaluje do `App\Presentation\Backend\Permission` a používá ACL zdroj
 `Backend:Permission`. Oprávnění modulů registrují třídy `PermissionProvider` nalezené v prezentační vrstvě.
-S [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui) se v postranním menu objeví
-položka „Oprávnění“ (`Backend/Permission/3.menu.neon`).
+Stránky jsou dostupné jako:
+
+```latte
+{link :Backend:Permission:roles}  {* roles and their privileges *}
+{link :Backend:Permission:users}  {* roles of users *}
+```
+
+S [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui) přidejte odkazy do jeho menu (viz jeho README); [drago-ex/project-preset](https://github.com/drago-ex/project-preset) je přidá za vás.
 
 Systémové role jako `admin`, `user` a `guest` jsou chráněné základní role.
 Vlastní role dědí z `user`, takže se jejich uživatelé vždy odhlásí a vidí to, co přihlášený uživatel.

@@ -76,8 +76,14 @@ The package ships with an admin section for:
 
 The backend module is installed under `App\Presentation\Backend\Permission` and uses the `Backend:Permission`
 ACL resource. Module permissions are registered by `PermissionProvider` classes found in the presentation layer.
-With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui), the item "Permissions" appears
-in the sidebar (`Backend/Permission/3.menu.neon`).
+The pages are available as:
+
+```latte
+{link :Backend:Permission:roles}  {* roles and their privileges *}
+{link :Backend:Permission:users}  {* roles of users *}
+```
+
+With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui), add the links to its menu (see its README); [drago-ex/project-preset](https://github.com/drago-ex/project-preset) adds them for you.
 
 System roles such as `admin`, `user` and `guest` are handled as protected base roles.
 Custom roles inherit `user`, so their users can always sign out and see what a signed-in user sees.
