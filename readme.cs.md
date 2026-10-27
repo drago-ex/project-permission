@@ -35,8 +35,8 @@ a připojte styly z `assets/naja/permission-toggle.scss`.
 Konfigurace nahrazuje konfiguraci drago-ex/permission (`src/Permission/conf.neon`): pokud jste ji připojili pro statická
 oprávnění, toto připojení odeberte, jinak se zaregistrují dva autorizátory.
 
-Role se berou z databáze, proto prvnímu administrátorovi přidělte roli `admin` (webový instalátor z
-drago-ex/project-install to udělá za vás):
+Role se berou z databáze, proto prvnímu administrátorovi přidělte roli `admin` (s [drago-ex/project-preset-permission](https://github.com/drago-ex/project-preset-permission)
+to webový instalátor udělá za vás):
 
 ```sql
 INSERT INTO users_roles (user_id, role_id) SELECT 1, id FROM roles WHERE name = 'admin';
@@ -83,7 +83,7 @@ Stránky jsou dostupné jako:
 {link :Backend:Permission:users}  {* roles of users *}
 ```
 
-S [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui) přidejte odkazy do jeho menu (viz jeho README); [drago-ex/project-preset](https://github.com/drago-ex/project-preset) je přidá za vás.
+S [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui) přidejte odkazy do jeho menu (viz jeho README); [drago-ex/project-preset-permission](https://github.com/drago-ex/project-preset-permission) je přidá za vás.
 
 Systémové role jako `admin`, `user` a `guest` jsou chráněné základní role.
 Vlastní role dědí z `user`, takže se jejich uživatelé vždy odhlásí a vidí to, co přihlášený uživatel.
@@ -123,7 +123,7 @@ php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-perm
 Stejně dodává project-backend-ui přehled administrace (`Backend:Admin`, `default-read`): přidělte ho roli, která má vstoupit
 do administrace; bez něj se role po přihlášení dostane na úvodní stránku webu.
 
-Webový instalátor z [project-install](https://github.com/drago-ex/project-install) je všechny naimportuje sám.
+S [drago-ex/project-preset-permission](https://github.com/drago-ex/project-preset-permission) je všechny naimportuje webový instalátor sám.
 
 Tlačítka pro přidání, úpravu a mazání se řídí privilegiem `{component}-write` přes trait `WriteAccess` z
 [drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).

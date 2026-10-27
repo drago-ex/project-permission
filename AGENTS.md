@@ -17,7 +17,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - `composer.json`: package metadata, dependency constraints, autoloading, and available Composer scripts.
 
 ## Buttons and permissions
-- Roles of users are loaded at sign-in by `getRolesByUser()` of project-auth (code in its README, project-preset overrides it). Privileges of other packages come from their `migrations-permission/`, imported by hand (README "Privileges of other packages"), never automatically.
+- Roles of users are loaded at sign-in by `getRolesByUser()` of project-auth (code in its README, project-preset-permission overrides it). Privileges of other packages come from their `migrations-permission/`, imported by hand (README "Privileges of other packages"), never automatically.
 - `Component\BaseControl` uses the `WriteAccess` trait of drago-ex/permission (^1.0): `isWriteAllowed()` is the `"{component}-write"` ACL check of the add/edit/delete buttons. Grid actions get `->setVisible($writeAllowed)`; templates get `$writeAllowed`. Other packages (project-blog, project-static-page, ...) have no permission code; their README shows how to add the trait by hand, project-preset is meant to ship it pre-done.
 - Role descriptions and user names are data and are never translated (form items wrapped in `Html::el()->setText()`, so the translator does not report them); privilege descriptions of `resources` come from packages and are translated (`cs.neon`).
 - `PermissionFactory` adds the roles of the `roles` table that are not built in with `Role::RoleUser` as parent, so a custom role keeps the signed-in basics (Sign, front, account); without it a role like "moderator" got 403 even on sign-out.

@@ -35,8 +35,8 @@ and include styles from `assets/naja/permission-toggle.scss`.
 The configuration replaces the one of drago-ex/permission (`src/Permission/conf.neon`): if you included it for static
 permissions, remove that include, otherwise two authorizators are registered.
 
-Roles come from the database, so give the first administrator the `admin` role (the web installer of
-drago-ex/project-install does it for you):
+Roles come from the database, so give the first administrator the `admin` role (with [drago-ex/project-preset-permission](https://github.com/drago-ex/project-preset-permission),
+the web installer does it for you):
 
 ```sql
 INSERT INTO users_roles (user_id, role_id) SELECT 1, id FROM roles WHERE name = 'admin';
@@ -83,7 +83,7 @@ The pages are available as:
 {link :Backend:Permission:users}  {* roles of users *}
 ```
 
-With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui), add the links to its menu (see its README); [drago-ex/project-preset](https://github.com/drago-ex/project-preset) adds them for you.
+With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui), add the links to its menu (see its README); [drago-ex/project-preset-permission](https://github.com/drago-ex/project-preset-permission) adds them for you.
 
 System roles such as `admin`, `user` and `guest` are handled as protected base roles.
 Custom roles inherit `user`, so their users can always sign out and see what a signed-in user sees.
@@ -123,7 +123,7 @@ php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-perm
 project-backend-ui ships the dashboard (`Backend:Admin`, `default-read`) the same way: give it to a role that should enter
 the administration; without it the role goes to the front page after signing in.
 
-The web installer of [project-install](https://github.com/drago-ex/project-install) imports all of them itself.
+With [drago-ex/project-preset-permission](https://github.com/drago-ex/project-preset-permission), the web installer imports all of them itself.
 
 The add, edit and delete buttons follow the `{component}-write` privilege by the `WriteAccess` trait of
 [drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
