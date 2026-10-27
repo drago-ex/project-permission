@@ -66,17 +66,6 @@ class UsersControl extends BaseControl
 
 
 	/**
-	 * The form edits the roles of one user: the user cannot be changed (the save takes the edited id anyway).
-	 * Also after a server error, when the form is drawn again from the submitted values.
-	 */
-	private function setEditMode(Form $form): void
-	{
-		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
-		$this->getFormComponent($form, UsersValues::UserId)?->setHtmlAttribute('data-locked');
-	}
-
-
-	/**
 	 * @throws AttributeDetectionException
 	 * @throws InvalidColumnException
 	 */
@@ -159,6 +148,17 @@ class UsersControl extends BaseControl
 	{
 		// The grid lists users, so the id is the user id (see getAllUserRoles()).
 		return $this->userRepository->get($id)->record()?->username;
+	}
+
+
+	/**
+	 * The form edits the roles of one user: the user cannot be changed (the save takes the edited id anyway).
+	 * Also after a server error, when the form is drawn again from the submitted values.
+	 */
+	private function setEditMode(Form $form): void
+	{
+		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
+		$this->getFormComponent($form, UsersValues::UserId)?->setHtmlAttribute('data-locked');
 	}
 
 

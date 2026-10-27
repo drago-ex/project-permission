@@ -69,20 +69,6 @@ class RolesControl extends BaseControl
 	}
 
 
-	/**
-	 * The form edits a role: the name of a system role cannot be changed. Also after a server error,
-	 * when the form is drawn again from the submitted values.
-	 */
-	private function setEditMode(Form $form, string $name): void
-	{
-		if ($this->isSystemRole($name)) {
-			$this->getFormComponent($form, RolesValues::Name)?->setHtmlAttribute('readonly');
-		}
-
-		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
-	}
-
-
 	/** @throws AttributeDetectionException|InvalidColumnException */
 	protected function createComponentDataGrid(): DataGrid
 	{
@@ -179,6 +165,20 @@ class RolesControl extends BaseControl
 		}
 
 		return $role?->description;
+	}
+
+
+	/**
+	 * The form edits a role: the name of a system role cannot be changed. Also after a server error,
+	 * when the form is drawn again from the submitted values.
+	 */
+	private function setEditMode(Form $form, string $name): void
+	{
+		if ($this->isSystemRole($name)) {
+			$this->getFormComponent($form, RolesValues::Name)?->setHtmlAttribute('readonly');
+		}
+
+		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
 	}
 
 
