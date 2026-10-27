@@ -7,7 +7,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - **Type**: drago-tools-resource
 - **Purpose**: Component for managing user permissions in a Drago project.
 - **PHP**: >=8.3 <9
-- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^2.0 || ^3.0), drago-ex/database (^3.0 || ^4.0), drago-ex/utils (^2.0), drago-ex/application (^3.0 || ^4.0), drago-ex/form (^2.0 || ^3.0), drago-ex/migration (^2.3), drago-ex/permission (^2.4), drago-ex/translator (^4.0 || ^5.0), drago-ex/project-auth (^2.0), drago-ex/project-backend (^2.0), drago-ex/datagrid (^2.0)
+- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^3.0), drago-ex/database (^4.0), drago-ex/utils (^2.0), drago-ex/application (^4.0), drago-ex/form (^3.0), drago-ex/migration (^1.0), drago-ex/permission (^1.0), drago-ex/translator (^4.0), drago-ex/project-auth (^1.0), drago-ex/project-backend (^1.0), drago-ex/datagrid (^1.0)
 - **License**: MIT
 
 ## Repository Layout
@@ -18,7 +18,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 
 ## Buttons and permissions
 - Roles of users are loaded at sign-in by `getRolesByUser()` of project-auth (code in its README, project-preset overrides it). Privileges of other packages come from their `migrations-permission/`, imported by hand (README "Privileges of other packages"), never automatically.
-- `Component\BaseControl` uses the `WriteAccess` trait of drago-ex/permission (^2.4): `isWriteAllowed()` is the `"{component}-write"` ACL check of the add/edit/delete buttons. Grid actions get `->setVisible($writeAllowed)`; templates get `$writeAllowed`. Other packages (project-blog, project-static-page, ...) have no permission code; their README shows how to add the trait by hand, project-preset is meant to ship it pre-done.
+- `Component\BaseControl` uses the `WriteAccess` trait of drago-ex/permission (^1.0): `isWriteAllowed()` is the `"{component}-write"` ACL check of the add/edit/delete buttons. Grid actions get `->setVisible($writeAllowed)`; templates get `$writeAllowed`. Other packages (project-blog, project-static-page, ...) have no permission code; their README shows how to add the trait by hand, project-preset is meant to ship it pre-done.
 - Role descriptions and user names are data and are never translated (form items wrapped in `Html::el()->setText()`, so the translator does not report them); privilege descriptions of `resources` come from packages and are translated (`cs.neon`).
 - `PermissionFactory` adds the roles of the `roles` table that are not built in with `Role::RoleUser` as parent, so a custom role keeps the signed-in basics (Sign, front, account); without it a role like "moderator" got 403 even on sign-out.
 
@@ -30,7 +30,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 ## Dependencies
 
 Composer constraints describe the package contract. Before changing integration behavior, inspect the source and the actual call sites in this package; do not infer runtime usage solely from dependency declarations.
-Development dependencies include nette/tester (^2.5), phpstan/phpstan-nette (^2), drago-ex/project-tools (^2.0).
+Development dependencies include nette/tester (^2.5), phpstan/phpstan-nette (^2), drago-ex/project-tools (^1.0).
 
 ## Essential Commands
 
