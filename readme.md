@@ -52,6 +52,14 @@ import './naja/permission-toggle.scss';
 naja.registerExtension(new PermissionToggle());
 ```
 
+## Database migration
+
+```bash
+php vendor/bin/migration db:migrate --packages
+```
+
+The package has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.
+
 ## What it does
 
 - manages **roles**
@@ -113,11 +121,3 @@ The web installer of [project-install](https://github.com/drago-ex/project-insta
 
 The add, edit and delete buttons follow the `{component}-write` privilege by the `WriteAccess` trait of
 [drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
-
-## Database migration
-
-```bash
-php vendor/bin/migration db:migrate --packages
-```
-
-The package has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.

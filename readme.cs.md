@@ -52,6 +52,14 @@ import './naja/permission-toggle.scss';
 naja.registerExtension(new PermissionToggle());
 ```
 
+## Migrace databáze
+
+```bash
+php vendor/bin/migration db:migrate --packages
+```
+
+Balíček má `migration-priority` 20, takže běží po `drago-ex/project-auth`, jehož tabulku `users` používá.
+
 ## Co balíček dělá
 
 - spravuje **role**
@@ -113,11 +121,3 @@ Webový instalátor z [project-install](https://github.com/drago-ex/project-inst
 
 Tlačítka pro přidání, úpravu a mazání se řídí privilegiem `{component}-write` přes trait `WriteAccess` z
 [drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
-
-## Migrace databáze
-
-```bash
-php vendor/bin/migration db:migrate --packages
-```
-
-Balíček má `migration-priority` 20, takže běží po `drago-ex/project-auth`, jehož tabulku `users` používá.
