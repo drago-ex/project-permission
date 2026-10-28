@@ -8,12 +8,7 @@ Component for ACL and permission management in a Drago / Nette project.
 ## Requirements
 
 - PHP >= 8.3, < 9
-- Nette Framework
-- Composer
-- Bootstrap
-- Naja
-- Node.js
-- Drago Project core packages
+- [Drago Project](https://github.com/drago-ex/project)
 
 ## Installation
 
