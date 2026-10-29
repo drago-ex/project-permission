@@ -13,6 +13,6 @@ class AuthorizationEntity extends Entity
 		ColumnResourceId = 'resource_id';
 
 	public int $id;
-	public int $role_id;
-	public int $resource_id;
+	public int $roleId;
+	public int $resourceId;
 }

@@ -54,7 +54,7 @@ class UsersControl extends BaseControl
 		$factory = $this->getComponent('users');
 		$factory->setDefaults([
 			UsersValues::Id => $id,
-			UsersValues::UserId => $items[0]->user_id,
+			UsersValues::UserId => $items[0]->userId,
 			UsersValues::RoleId => $rolesIdList,
 		]);
 
@@ -168,21 +168,21 @@ class UsersControl extends BaseControl
 	{
 		$repository = $this->userRolesRepository;
 
-		// an edit changes the edited user (the select is locked only in the browser), never a user_id of the request
+		// an edit changes the edited user (the select is locked only in the browser), never a userId of the request
 		if ((int) $values->id > 0) {
-			$values->user_id = (int) $values->id;
+			$values->userId = (int) $values->id;
 		}
 
 		try {
 			$repository->beginTransaction();
-			$repository->delete(UsersRolesEntity::ColumnUserId, $values->user_id)
+			$repository->delete(UsersRolesEntity::ColumnUserId, $values->userId)
 				->execute();
 
 			$entity = new UsersRolesEntity;
-			foreach ($values->role_id as $role) {
-				$entity->user_id = $values->user_id;
-				$entity->role_id = $role;
-				$repository->insert($entity->toArray())->execute();
+			foreach ($values->roleId as $role) {
+				$entity->userId = $values->userId;
+				$entity->roleId = $role;
+				$repository->insert($entity->toColumns())->execute();
 			}
 
 			$repository->commit();

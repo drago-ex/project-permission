@@ -7,13 +7,13 @@ use Drago\Utils\ExtraArrayHash;
 
 class UsersValues extends ExtraArrayHash
 {
-	public const string UserId = 'user_id',
-		RoleId = 'role_id',
+	public const string UserId = 'userId',
+		RoleId = 'roleId',
 		Id = 'id';
 
 	public ?int $id = null;
-	public int $user_id;
+	public int $userId;
 
 	/** @var array<int, int> */
-	public array $role_id;
+	public array $roleId;
 }

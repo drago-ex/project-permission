@@ -8,8 +8,8 @@
 				{import '../../../../Accessory/Widget/@dismiss-button.latte'}
 				{block form}
 					{var string $selectTom = 'select-tom'}
-					{include selectTom, name: 'user_id', class: $selectTom}
-					{include selectTom, name: 'role_id', class: $selectTom}
+					{include selectTom, name: 'userId', class: $selectTom}
+					{include selectTom, name: 'roleId', class: $selectTom}
 					<div class="col-12">
 						{include buttonDismiss, type: 'offcanvas'}
 						{include submit, name: 'send'}

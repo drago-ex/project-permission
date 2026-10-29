@@ -11,6 +11,6 @@ class UsersRolesEntity extends Entity
 		ColumnUserId = 'user_id',
 		ColumnRoleId = 'role_id';
 
-	public int $user_id;
-	public int $role_id;
+	public int $userId;
+	public int $roleId;
 }
