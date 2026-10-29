@@ -73,6 +73,7 @@ ACL resource. Module permissions are registered by `PermissionProvider` classes 
 The pages are available as:
 
 ```latte
+{link :Backend:Permission:}       {* for the menu: the roles of users, they link to the roles *}
 {link :Backend:Permission:roles}  {* roles and their privileges *}
 {link :Backend:Permission:users}  {* roles of users *}
 ```

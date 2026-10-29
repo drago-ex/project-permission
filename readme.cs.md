@@ -73,6 +73,7 @@ Modul administrace se instaluje do `App\Presentation\Backend\Permission` a použ
 Stránky jsou dostupné jako:
 
 ```latte
+{link :Backend:Permission:}       {* for the menu: the roles of users, they link to the roles *}
 {link :Backend:Permission:roles}  {* roles and their privileges *}
 {link :Backend:Permission:users}  {* roles of users *}
 ```

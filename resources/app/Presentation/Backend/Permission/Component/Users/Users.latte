@@ -36,7 +36,10 @@
 
 {embed '../@datagrid-heading.latte', access: $writeAllowed}
 	{block title}
-	   {_'Users data'}
+		{_'Users data'}
+	{/block}
+	{block buttons}
+		<a n:if="$user->isAllowed('Backend:Permission', 'roles-read')" href="{plink :Backend:Permission:roles}" class="btn btn-secondary btn-xs">{_'Roles'}</a>
 	{/block}
 {/embed}
 

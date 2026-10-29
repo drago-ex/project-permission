@@ -14,9 +14,6 @@
 "Administrator role has full access granted by default. These settings have no effect.":
 	"Role administrátora má ve výchozím nastavení povolený plný přístup. Tato nastavení na ni nemají vliv."
 
-# menu
-"Users roles": "Role uživatelů"
-
 # datagrid actions
 "Add item": "Přidat položku"
 "Edit": "Upravit"
