@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission\Component\Authorization;
 
@@ -16,6 +14,7 @@ use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
 use Nette\InvalidStateException;
 use Nette\Security\Permission;
+use function count;
 
 
 /** @property-read AuthorizationTemplate $template */

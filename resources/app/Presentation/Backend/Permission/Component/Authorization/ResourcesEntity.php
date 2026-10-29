@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission\Component\Authorization;
 
@@ -9,8 +7,7 @@ use Drago\Database\Entity;
 
 class ResourcesEntity extends Entity
 {
-	public const string
-		Table = 'resources',
+	public const string Table = 'resources',
 		PrimaryKey = 'id',
 		ColumnResource = 'resource',
 		ColumnPrivilege = 'privilege',

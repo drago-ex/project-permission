@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: App\Presentation\Backend\Permission\Component\Roles\RolesControl
  */
-
-declare(strict_types=1);
 
 use App\Presentation\Backend\Permission\Component\Factory;
 use App\Presentation\Backend\Permission\Component\Roles\RolesControl;
@@ -48,8 +46,8 @@ class MemoryRoles extends RolesRepository
 	public array $deleted = [];
 
 
-	/** @param array<int, string> $roles id => name */
 	public function __construct(
+		/** @var array<int, string> id => name */
 		private array $roles,
 	) {
 	}

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission\Component\Roles;
 
@@ -9,8 +7,7 @@ use Drago\Utils\ExtraArrayHash;
 
 class RolesValues extends ExtraArrayHash
 {
-	public const string
-		Name = 'name',
+	public const string Name = 'name',
 		Description = 'description';
 
 	public ?int $id = null;

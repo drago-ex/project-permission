@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission;
 
@@ -72,9 +70,14 @@ class PermissionFactory
 			/** @var PermissionEntity[] $permissions */
 			$permissions = $this->connection
 				->select('r.name AS role, res.resource, res.privilege')
-				->from(AuthorizationEntity::Table)->as('a')
-				->innerJoin(RolesEntity::Table)->as('r')->on('a.role_id = r.id')
-				->innerJoin(ResourcesEntity::Table)->as('res')->on('a.resource_id = res.id')
+				->from(AuthorizationEntity::Table)
+				->as('a')
+				->innerJoin(RolesEntity::Table)
+				->as('r')
+				->on('a.role_id = r.id')
+				->innerJoin(ResourcesEntity::Table)
+				->as('res')
+				->on('a.resource_id = res.id')
 				->fetchAll();
 
 			foreach ($permissions as $row) {

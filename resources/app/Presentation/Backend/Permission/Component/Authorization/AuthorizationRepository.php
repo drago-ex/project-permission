@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission\Component\Authorization;
 
@@ -45,8 +43,10 @@ class AuthorizationRepository
 					ELSE 'allow'
 				END AS access
 			")
-			->from(ResourcesEntity::Table)->as('r')
-			->leftJoin(AuthorizationEntity::Table)->as('a')
+			->from(ResourcesEntity::Table)
+			->as('r')
+			->leftJoin(AuthorizationEntity::Table)
+			->as('a')
 			->on('a.resource_id = r.id AND a.role_id = ?', $roleId)
 			->orderBy('r.resource, r.privilege')
 			->fetchAll();

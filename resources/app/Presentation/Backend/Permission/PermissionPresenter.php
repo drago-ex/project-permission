@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Presentation\Backend\Permission;
 
@@ -35,7 +33,9 @@ class PermissionPresenter extends BackendPresenter
 		if ($this->getAction() === 'default') {
 			$user = $this->getUser();
 			$this->redirect($user->isAllowed('Backend:Permission', 'users-read')
-				&& !$user->isAllowed('Backend:Permission', 'roles-read') ? 'users' : 'roles');
+				&& !$user->isAllowed('Backend:Permission', 'roles-read')
+				? 'users'
+				: 'roles');
 		}
 
 		parent::checkRequirements($element);

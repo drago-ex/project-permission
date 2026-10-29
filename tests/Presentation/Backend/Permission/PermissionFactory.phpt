@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: App\Presentation\Backend\Permission\PermissionFactory
  */
-
-declare(strict_types=1);
 
 use App\Presentation\Backend\Permission\PermissionFactory;
 use App\Presentation\Backend\Permission\PermissionProvider;
@@ -18,7 +16,7 @@ require __DIR__ . '/../../../bootstrap.php';
 
 test('Without the permission tables only the provider rules apply, and the error is logged', function () {
 	$logDir = __DIR__ . '/../../../tmp/log-' . getmypid();
-	@mkdir($logDir, 0o777, true);
+	@mkdir($logDir, 0o777, true); // @ directory may already exist
 	Tester\Helpers::purge($logDir);
 	$previousLogDirectory = Debugger::$logDirectory;
 	Debugger::$logDirectory = $logDir;
