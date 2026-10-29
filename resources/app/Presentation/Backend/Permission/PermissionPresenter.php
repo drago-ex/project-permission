@@ -24,18 +24,14 @@ class PermissionPresenter extends BackendPresenter
 
 
 	/**
-	 * The module has no page of its own: its address opens the roles, or the users for a user who may only see those.
-	 * Here, because Nette checks the requirements before the onStartup handlers, where the ACL check (no
-	 * "default-read") runs; the opened page checks the access itself.
+	 * The module has no page of its own: its address (the menu link) opens the roles of users, which link to the roles,
+	 * or the roles for a user who may only see those. Here, because Nette checks the requirements before the onStartup
+	 * handlers, where the ACL check (no "default-read") runs; the opened page checks the access itself.
 	 */
 	public function checkRequirements(ReflectionClass|ReflectionMethod $element): void
 	{
 		if ($this->getAction() === 'default') {
-			$user = $this->getUser();
-			$this->redirect($user->isAllowed('Backend:Permission', 'users-read')
-				&& !$user->isAllowed('Backend:Permission', 'roles-read')
-				? 'users'
-				: 'roles');
+			$this->redirect($this->getUser()->isAllowed('Backend:Permission', 'users-read') ? 'users' : 'roles');
 		}
 
 		parent::checkRequirements($element);
