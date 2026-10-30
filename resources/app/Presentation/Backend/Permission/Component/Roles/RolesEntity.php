@@ -12,6 +12,9 @@ class RolesEntity extends Entity
 		ColumnName = 'name',
 		ColumnDescription = 'description';
 
+	public const int ColumnNameSize = 100,
+		ColumnDescriptionSize = 255;
+
 	public int $id;
 	public string $name;
 	public string $description;

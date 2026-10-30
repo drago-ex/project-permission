@@ -110,12 +110,14 @@ class RolesControl extends BaseControl
 			->setPlaceholder('e.g. member, editor')
 			->setAutocomplete(Autocomplete::Off)
 			->setRequired('Please enter role name.')
-			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9-]+');
+			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9-]+')
+			->addRule($form::MaxLength, 'The role name can have at most %d characters.', RolesEntity::ColumnNameSize);
 
 		$form->addTextInput(RolesValues::Description, 'Description role')
 			->setPlaceholder('Description role')
 			->setAutocomplete(Autocomplete::Off)
-			->setRequired('Please enter description role.');
+			->setRequired('Please enter description role.')
+			->addRule($form::MaxLength, 'The description can have at most %d characters.', RolesEntity::ColumnDescriptionSize);
 
 		$form->addHidden('id')
 			->setNullable()

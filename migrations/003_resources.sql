@@ -5,7 +5,7 @@ CREATE TABLE resources (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     resource VARCHAR(100) NOT NULL,
     privilege VARCHAR(100) NOT NULL,
-    description VARCHAR(255) NULL,
+    description VARCHAR(255) NOT NULL,
     UNIQUE KEY uq_resources (resource, privilege)
 )
     ENGINE = InnoDB
