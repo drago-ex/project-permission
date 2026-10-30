@@ -9,6 +9,7 @@ use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
+use Drago\Datagrid\Exception\InvalidConfigurationException;
 use Drago\Form\Autocomplete;
 use Drago\Permission\Role;
 use Nette\Application\Attributes\Requires;
@@ -67,7 +68,10 @@ class RolesControl extends BaseControl
 	}
 
 
-	/** @throws AttributeDetectionException|InvalidColumnException */
+	/**
+	 * @throws AttributeDetectionException|InvalidColumnException
+	 * @throws InvalidConfigurationException
+	 */
 	protected function createComponentDataGrid(): DataGrid
 	{
 		$grid = new DataGrid;

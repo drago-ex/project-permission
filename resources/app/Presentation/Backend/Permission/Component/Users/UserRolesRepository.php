@@ -18,7 +18,7 @@ class UserRolesRepository
 	use Database;
 
 	public function __construct(
-		protected readonly Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 

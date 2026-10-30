@@ -11,6 +11,7 @@ use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
+use Drago\Datagrid\Exception\InvalidConfigurationException;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Utils\Html;
@@ -66,6 +67,7 @@ class UsersControl extends BaseControl
 	/**
 	 * @throws AttributeDetectionException
 	 * @throws InvalidColumnException
+	 * @throws InvalidConfigurationException
 	 */
 	protected function createComponentDataGrid(): DataGrid
 	{
