@@ -9,7 +9,7 @@
 		"nette/security": "^3.1",
 		"nette/application": "^3.1",
 		"drago-ex/component": "^3.0",
-		"drago-ex/database": "^4.0",
+		"drago-ex/database": "^4.1",
 		"drago-ex/utils": "^2.0",
 		"drago-ex/application": "^4.0",
 		"drago-ex/form": "^3.0",

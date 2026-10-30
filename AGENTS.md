@@ -7,7 +7,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - **Type**: drago-tools-resource
 - **Purpose**: Component for managing user permissions in a Drago project.
 - **PHP**: >=8.3 <9
-- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^3.0), drago-ex/database (^4.0), drago-ex/utils (^2.0), drago-ex/application (^4.0), drago-ex/form (^3.0), drago-ex/migration (^1.0), drago-ex/permission (^1.0), drago-ex/translator (^4.0.1), drago-ex/project-auth (^1.0), drago-ex/project-backend (^1.0), drago-ex/datagrid (^1.0)
+- **Runtime dependencies**: nette/di (^3.1), nette/security (^3.1), nette/application (^3.1), drago-ex/component (^3.0), drago-ex/database (^4.1), drago-ex/utils (^2.0), drago-ex/application (^4.0), drago-ex/form (^3.0), drago-ex/migration (^1.0), drago-ex/permission (^1.0), drago-ex/translator (^4.0.1), drago-ex/project-auth (^1.0), drago-ex/project-backend (^1.0), drago-ex/datagrid (^1.0)
 - **License**: MIT
 
 ## Repository Layout
