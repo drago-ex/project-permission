@@ -92,9 +92,7 @@ class PermissionFactory
 	}
 
 
-	/**
-	 * The privilege of a resources row for the ACL: "all" means every privilege of the resource.
-	 */
+	/** The privilege of a resources row for the ACL: "all" means every privilege of the resource. */
 	public static function privilege(string $privilege): ?string
 	{
 		return $privilege === 'all' ? Authorizator::All : $privilege;
