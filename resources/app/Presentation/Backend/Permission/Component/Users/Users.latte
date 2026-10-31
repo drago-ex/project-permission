@@ -4,12 +4,16 @@
 	{block body}
 		{snippet offcanvas}
 			{embed '../../../../Accessory/Widget/@form.latte', class: 'ajax', name: 'users', najaHistory: 'off'}
-				{import '../../../../Accessory/Widget/@form-tom-select.latte'}
 				{import '../../../../Accessory/Widget/@dismiss-button.latte'}
 				{block form}
-					{var string $selectTom = 'select-tom'}
-					{include selectTom, name: 'userId', class: $selectTom}
-					{include selectTom, name: 'roleId', class: $selectTom}
+					{* an edit changes only the roles: the user is shown readonly, the select is not sent *}
+					{if (int) $form['id']->getValue() > 0}
+						{include input, name: 'userName'}
+					{else}
+						{include input, type: 'select', name: 'userId'}
+					{/if}
+					{* several roles at once: Tom Select of drago-ex/form *}
+					{include input, type: 'select', name: 'roleId', class: 'select-tom'}
 					<div class="col-12">
 						{include buttonDismiss, type: 'offcanvas'}
 						{include submit, name: 'send'}

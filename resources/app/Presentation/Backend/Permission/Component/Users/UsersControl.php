@@ -102,17 +102,24 @@ class UsersControl extends BaseControl
 		// the captions and messages still are.
 		$data = fn(array $items): array => array_map(fn(string $name): Html => Html::el()->setText($name), $items);
 
+		$id = $form->addHidden('id')
+			->setNullable()
+			->addRule($form::Integer);
+
+		// an edit saves the roles of the edited id and shows the user readonly instead of the select, which is not sent then
 		$form->addSelect(UsersValues::UserId, 'Name', $data($this->userRepository->getAllUsers()))
 			->setPrompt('Select user')
-			->setRequired('Please select a user.');
+			->addConditionOn($id, $form::Blank)
+				->setRequired('Please select a user.');
+
+		// the user of an edit, only shown: omitted from the values, so a changed value is never used
+		$form->addTextInput(UsersValues::UserName, 'Name')
+			->setReadOnly()
+			->setOmitted();
 
 		$form->addMultiSelect(UsersValues::RoleId, 'Role', $data($this->rolesRepository->getAllRoles()))
 			->setHtmlAttribute('placeholder', $this->translate('Select role'))
 			->setRequired('Please select a role.');
-
-		$form->addHidden('id')
-			->setNullable()
-			->addRule($form::Integer);
 
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processUserRolesForm(...);
@@ -152,13 +159,16 @@ class UsersControl extends BaseControl
 
 
 	/**
-	 * The form edits the roles of one user: the user cannot be changed (the save takes the edited id anyway).
-	 * Also after a server error, when the form is drawn again from the submitted values.
+	 * The form edits the roles of one user: the template shows the user readonly (the save takes the edited id
+	 * anyway). Also after a server error, when the form is drawn again from the submitted values.
+	 * @throws AttributeDetectionException
+	 * @throws Exception
 	 */
 	private function setEditMode(Form $form): void
 	{
 		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
-		$this->getFormComponent($form, UsersValues::UserId)?->setHtmlAttribute('data-locked');
+		$id = (int) $form->getComponent(UsersValues::Id)->getValue();
+		$this->getFormComponent($form, UsersValues::UserName)?->setValue($this->getItemTitle($id));
 	}
 
 
@@ -170,19 +180,18 @@ class UsersControl extends BaseControl
 	{
 		$repository = $this->userRolesRepository;
 
-		// an edit changes the edited user (the select is locked only in the browser), never a userId of the request
-		if ((int) $values->id > 0) {
-			$values->userId = (int) $values->id;
-		}
+		// an edit changes the edited user (shown readonly, the select is not sent), never a userId of the request;
+		// a new one has the user required by the form
+		$userId = (int) $values->id > 0 ? (int) $values->id : (int) $values->userId;
 
 		try {
-			$repository->transaction(function () use ($repository, $values): void {
-				$repository->delete(UsersRolesEntity::ColumnUserId, $values->userId)
+			$repository->transaction(function () use ($repository, $values, $userId): void {
+				$repository->delete(UsersRolesEntity::ColumnUserId, $userId)
 					->execute();
 
 				$entity = new UsersRolesEntity;
 				foreach ($values->roleId as $role) {
-					$entity->userId = $values->userId;
+					$entity->userId = $userId;
 					$entity->roleId = $role;
 					$repository->insert($entity)->execute();
 				}
