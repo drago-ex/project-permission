@@ -176,30 +176,30 @@ class UsersControl extends BaseControl
 		}
 
 		try {
-			$repository->beginTransaction();
-			$repository->delete(UsersRolesEntity::ColumnUserId, $values->userId)
-				->execute();
+			$repository->transaction(function () use ($repository, $values): void {
+				$repository->delete(UsersRolesEntity::ColumnUserId, $values->userId)
+					->execute();
 
-			$entity = new UsersRolesEntity;
-			foreach ($values->roleId as $role) {
-				$entity->userId = $values->userId;
-				$entity->roleId = $role;
-				$repository->insert($entity->toColumns())->execute();
-			}
-
-			$repository->commit();
-			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
-			$this->addFlashMessage($message, Alert::Success);
-			$this->addRedraw($this->snippetMessage);
-
-			$form->reset();
-			$this->closeComponent();
-			$this['dataGrid']->redrawDataGrid();
+				$entity = new UsersRolesEntity;
+				foreach ($values->roleId as $role) {
+					$entity->userId = $values->userId;
+					$entity->roleId = $role;
+					$repository->insert($entity)->execute();
+				}
+			});
 
 		} catch (\Throwable $e) {
-			$repository->rollBack();
 			Debugger::log($e, ILogger::EXCEPTION);
 			$form->addError('Unknown status code.');
+			return;
 		}
+
+		$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
+		$this->addFlashMessage($message, Alert::Success);
+		$this->addRedraw($this->snippetMessage);
+
+		$form->reset();
+		$this->closeComponent();
+		$this['dataGrid']->redrawDataGrid();
 	}
 }
