@@ -67,7 +67,7 @@ class MemoryRoles extends RolesRepository
 	}
 
 
-	public function delete(string $column, mixed $args): ExtraFluent
+	public function delete(string|array $column, mixed $args = null): ExtraFluent
 	{
 		return new FixedFluent(onExecute: function () use ($args): void {
 			$this->deleted[] = $args;
