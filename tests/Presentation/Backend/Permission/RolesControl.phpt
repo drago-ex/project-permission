@@ -10,23 +10,27 @@ use App\Presentation\Backend\Permission\Component\Roles\RolesEntity;
 use App\Presentation\Backend\Permission\Component\Roles\RolesRepository;
 use Dibi\Connection;
 use Drago\Database\ExtraFluent;
+use Drago\Database\Table;
 use Tester\Assert;
 
 require __DIR__ . '/../../../bootstrap.php';
 
 
-/** A query that returns a fixed record or result instead of running against a database. */
+/**
+ * A query that returns a fixed record or result instead of running against a database.
+ * @extends ExtraFluent<RolesEntity>
+ */
 class FixedFluent extends ExtraFluent
 {
 	public function __construct(
-		private ?RolesEntity $record = null,
-		private ?Closure $onExecute = null,
+		private readonly ?RolesEntity $record = null,
+		private readonly ?Closure $onExecute = null,
 	) {
 		parent::__construct(new Connection(['driver' => 'mysqli', 'lazy' => true]));
 	}
 
 
-	public function record(): ?Dibi\Row
+	public function record(): ?RolesEntity
 	{
 		return $this->record;
 	}
@@ -40,19 +44,28 @@ class FixedFluent extends ExtraFluent
 }
 
 
-class MemoryRoles extends RolesRepository
+/**
+ * The roles table in memory: get() returns the role of the id, delete() keeps the deleted id.
+ * @extends Table<RolesEntity>
+ */
+readonly class MemoryRolesTable extends Table
 {
-	/** @var list<int> */
-	public array $deleted = [];
-
-
 	public function __construct(
 		/** @var array<int, string> id => name */
 		private array $roles,
+		/** @var ArrayObject<int, mixed> */
+		public ArrayObject $deleted = new ArrayObject,
 	) {
+		parent::__construct(
+			new Connection(['driver' => 'mysqli', 'lazy' => true]),
+			RolesEntity::Table,
+			RolesEntity::PrimaryKey,
+			RolesEntity::class,
+		);
 	}
 
 
+	/** @return ExtraFluent<RolesEntity> */
 	public function get(int $id): ExtraFluent
 	{
 		$role = null;
@@ -67,11 +80,25 @@ class MemoryRoles extends RolesRepository
 	}
 
 
+	/** @return ExtraFluent<RolesEntity> */
 	public function delete(string|array $column, mixed $args = null): ExtraFluent
 	{
 		return new FixedFluent(onExecute: function () use ($args): void {
 			$this->deleted[] = $args;
 		});
+	}
+}
+
+
+class MemoryRoles extends RolesRepository
+{
+	public MemoryRolesTable $memory;
+
+
+	/** @param array<int, string> $roles id => name */
+	public function __construct(array $roles)
+	{
+		$this->table = $this->memory = new MemoryRolesTable($roles);
 	}
 }
 
@@ -96,7 +123,7 @@ test('System roles cannot be deleted, even when the delete form is posted direct
 		);
 	}
 
-	Assert::same([], $roles->deleted);
+	Assert::same([], $roles->memory->deleted->getArrayCopy());
 });
 
 
@@ -104,5 +131,5 @@ test('A custom role is deleted', function () {
 	$roles = new MemoryRoles([4 => 'editor']);
 
 	deleteRole($roles, 4);
-	Assert::same([4], $roles->deleted);
+	Assert::same([4], $roles->memory->deleted->getArrayCopy());
 });

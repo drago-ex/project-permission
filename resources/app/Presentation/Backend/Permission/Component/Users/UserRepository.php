@@ -3,30 +3,25 @@
 namespace App\Presentation\Backend\Permission\Component\Users;
 
 use Dibi\Connection;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
-#[Table(UsersEntity::Table, UsersEntity::PrimaryKey, entity: UsersEntity::class)]
-class UserRepository
+readonly class UserRepository
 {
-	/** @use Database<UsersEntity> */
-	use Database;
+	/** @var Table<UsersEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, UsersEntity::Table, UsersEntity::PrimaryKey, UsersEntity::class);
 	}
 
 
-	/**
-	 * @return array<int, string>
-	 * @throws AttributeDetectionException
-	 */
+	/** @return array<int, string> */
 	public function getAllUsers(): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->fetchPairs(UsersEntity::PrimaryKey, UsersEntity::ColumnUsername);
 	}
 }

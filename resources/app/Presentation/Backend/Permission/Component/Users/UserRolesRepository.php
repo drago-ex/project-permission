@@ -6,39 +6,35 @@ use App\Presentation\Backend\Permission\Component\Roles\RolesEntity;
 use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
-#[Table(UsersRolesEntity::Table, UsersRolesEntity::ColumnUserId, entity: UsersRolesEntity::class)]
-class UserRolesRepository
+readonly class UserRolesRepository
 {
-	/** @use Database<UsersRolesEntity> */
-	use Database;
+	/** @var Table<UsersRolesEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, UsersRolesEntity::Table, UsersRolesEntity::ColumnUserId, UsersRolesEntity::class);
 	}
 
 
 	/**
 	 * @return list<UsersRolesEntity>
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getUserRoles(int $userId): array
 	{
-		return $this->find(UsersRolesEntity::ColumnUserId, $userId)
+		return $this->table->find(UsersRolesEntity::ColumnUserId, $userId)
 			->recordAll();
 	}
 
 
-	/** @throws AttributeDetectionException */
 	public function getAllUserRoles(): Fluent
 	{
-		return $this->read('ur.user_id id, u.username, GROUP_CONCAT(r.description SEPARATOR ", ") AS roles')->as('ur')
+		return $this->table->read('ur.user_id id, u.username, GROUP_CONCAT(r.description SEPARATOR ", ") AS roles')->as('ur')
 			->innerJoin(UsersEntity::Table)
 			->as('u')
 			->on('ur.user_id = u.id')

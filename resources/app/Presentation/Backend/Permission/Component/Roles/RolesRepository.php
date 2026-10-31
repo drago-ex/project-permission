@@ -3,42 +3,34 @@
 namespace App\Presentation\Backend\Permission\Component\Roles;
 
 use Dibi\Connection;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
 use Drago\Database\ExtraFluent;
+use Drago\Database\Table;
 
 
-#[Table(RolesEntity::Table, RolesEntity::PrimaryKey, entity: RolesEntity::class)]
 class RolesRepository
 {
-	/** @use Database<RolesEntity> */
-	use Database;
+	/** @var Table<RolesEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, RolesEntity::Table, RolesEntity::PrimaryKey, RolesEntity::class);
 	}
 
 
-	/**
-	 * @return array<int, string>
-	 * @throws AttributeDetectionException
-	 */
+	/** @return array<int, string> */
 	public function getAllRoles(): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->fetchPairs(RolesEntity::PrimaryKey, RolesEntity::ColumnDescription);
 	}
 
 
-	/**
-	 * @return ExtraFluent<RolesEntity>
-	 * @throws AttributeDetectionException
-	 */
+	/** @return ExtraFluent<RolesEntity> */
 	public function getRolesFluent(): ExtraFluent
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->orderBy(RolesEntity::PrimaryKey, 'DESC');
 	}
 }

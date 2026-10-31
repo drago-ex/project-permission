@@ -8,7 +8,6 @@ use App\Presentation\Backend\Permission\Component\Roles\RolesRepository;
 use Dibi\DriverException;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Drago\Datagrid\Exception\InvalidConfigurationException;
@@ -39,10 +38,7 @@ class UsersControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws Exception */
 	#[Requires(ajax: true)]
 	public function handleEdit(int $id): void
 	{
@@ -65,7 +61,6 @@ class UsersControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
 	 * @throws InvalidColumnException
 	 * @throws InvalidConfigurationException
 	 */
@@ -94,7 +89,6 @@ class UsersControl extends BaseControl
 	}
 
 
-	/** @throws AttributeDetectionException */
 	protected function createComponentUsers(): Form
 	{
 		$form = $this->factory->create();
@@ -135,33 +129,26 @@ class UsersControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws Exception */
 	protected function deleteItem(int $id): void
 	{
-		$this->userRolesRepository
+		$this->userRolesRepository->table
 			->delete(UsersRolesEntity::ColumnUserId, $id)
 			->execute();
 	}
 
 
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws Exception */
 	protected function getItemTitle(int $id): ?string
 	{
 		// The grid lists users, so the id is the user id (see getAllUserRoles()).
-		return $this->userRepository->get($id)->record()?->username;
+		return $this->userRepository->table->get($id)->record()?->username;
 	}
 
 
 	/**
 	 * The form edits the roles of one user: the template shows the user readonly (the save takes the edited id
 	 * anyway). Also after a server error, when the form is drawn again from the submitted values.
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	private function setEditMode(Form $form): void
@@ -185,15 +172,15 @@ class UsersControl extends BaseControl
 		$userId = (int) $values->id > 0 ? (int) $values->id : (int) $values->userId;
 
 		try {
-			$repository->transaction(function () use ($repository, $values, $userId): void {
-				$repository->delete(UsersRolesEntity::ColumnUserId, $userId)
+			$repository->table->transaction(function () use ($repository, $values, $userId): void {
+				$repository->table->delete(UsersRolesEntity::ColumnUserId, $userId)
 					->execute();
 
 				$entity = new UsersRolesEntity;
 				foreach ($values->roleId as $role) {
 					$entity->userId = $userId;
 					$entity->roleId = $role;
-					$repository->insert($entity)->execute();
+					$repository->table->insert($entity)->execute();
 				}
 			});
 

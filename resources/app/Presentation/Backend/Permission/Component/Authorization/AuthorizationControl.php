@@ -8,7 +8,6 @@ use App\Presentation\Backend\Permission\Component\Roles\RolesRepository;
 use App\Presentation\Backend\Permission\PermissionFactory;
 use Dibi\Exception;
 use Dibi\Row;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Permission\Role;
 use Nette\Application\Attributes\Parameter;
 use Nette\Application\Attributes\Requires;
@@ -33,10 +32,7 @@ class AuthorizationControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
+	/** @throws Exception */
 	public function render(): void
 	{
 		$template = $this->template;
@@ -48,7 +44,7 @@ class AuthorizationControl extends BaseControl
 		$template->writeAllowed = $this->isWriteAllowed();
 
 		if ($this->roleId !== null) {
-			$role = $this->rolesRepository->get($this->roleId)->record();
+			$role = $this->rolesRepository->table->get($this->roleId)->record();
 
 			if ($role === null) {
 				$template->render();
@@ -79,10 +75,7 @@ class AuthorizationControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws Exception */
 	#[Requires(ajax: true)]
 	public function handleTogglePermission(int $roleId, int $resourceId): void
 	{

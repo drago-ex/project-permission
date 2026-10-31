@@ -6,34 +6,31 @@ use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;
 use Dibi\Row;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
-#[Table(AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, entity: AuthorizationEntity::class)]
-class AuthorizationRepository
+readonly class AuthorizationRepository
 {
-	/** @use Database<AuthorizationEntity> */
-	use Database;
+	/** @var Table<AuthorizationEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, AuthorizationEntity::class);
 	}
 
 
-	/** @throws AttributeDetectionException */
 	public function getAll(): Fluent
 	{
-		return $this->read('*');
+		return $this->table->read('*');
 	}
 
 
 	/** @return list<Row> */
 	public function getRolePermissions(int $roleId): array
 	{
-		return $this->connection->select("
+		return $this->table->getConnection()->select("
 				r.id,
 				r.resource,
 				r.privilege,
@@ -56,7 +53,7 @@ class AuthorizationRepository
 	/** @throws Exception */
 	public function allow(int $roleId, int $resourceId): void
 	{
-		$this->connection->insert(AuthorizationEntity::Table, [
+		$this->table->getConnection()->insert(AuthorizationEntity::Table, [
 			AuthorizationEntity::ColumnRoleId => $roleId,
 			AuthorizationEntity::ColumnResourceId => $resourceId,
 		])
@@ -67,7 +64,7 @@ class AuthorizationRepository
 	/** @throws Exception */
 	public function deny(int $roleId, int $resourceId): void
 	{
-		$this->connection->delete(AuthorizationEntity::Table)
+		$this->table->getConnection()->delete(AuthorizationEntity::Table)
 			->where('%n = ?', AuthorizationEntity::ColumnRoleId, $roleId)
 			->where('%n = ?', AuthorizationEntity::ColumnResourceId, $resourceId)
 			->execute();

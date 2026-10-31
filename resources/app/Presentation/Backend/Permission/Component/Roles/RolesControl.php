@@ -6,7 +6,6 @@ use App\Presentation\Backend\Permission\Component\BaseControl;
 use App\Presentation\Backend\Permission\Component\Factory;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Drago\Datagrid\Exception\InvalidConfigurationException;
@@ -50,13 +49,12 @@ class RolesControl extends BaseControl
 
 	/**
 	 * Handles roles edit.
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	#[Requires(ajax: true)]
 	public function handleEdit(int $id): void
 	{
-		$items = $this->rolesRepository->get($id)->record();
+		$items = $this->rolesRepository->table->get($id)->record();
 		if ($items === null) {
 			$this->error();
 		}
@@ -69,7 +67,7 @@ class RolesControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException|InvalidColumnException
+	 * @throws InvalidColumnException
 	 * @throws InvalidConfigurationException
 	 */
 	protected function createComponentDataGrid(): DataGrid
@@ -127,7 +125,7 @@ class RolesControl extends BaseControl
 		$form->onSuccess[] = $this->processRoleForm(...);
 		// errors found on the server (also those added by processRoleForm()) are shown in the open offcanvas
 		$form->onError[] = function (Form $form): void {
-			$role = $this->rolesRepository->get((int) $form->getComponent('id')->getValue())->record();
+			$role = $this->rolesRepository->table->get((int) $form->getComponent('id')->getValue())->record();
 			if ($role !== null) {
 				$this->setEditMode($form, $role->name);
 			}
@@ -138,31 +136,25 @@ class RolesControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
+	/** @throws Exception */
 	protected function deleteItem(int $id): void
 	{
 		// Checked again here: the delete form posts the id, so the check when opening the dialog is not enough.
-		$role = $this->rolesRepository->get($id)->record();
+		$role = $this->rolesRepository->table->get($id)->record();
 		if ($role !== null && $this->isSystemRole($role->name)) {
 			throw new RuntimeException('System role cannot be deleted.', 1);
 		}
 
-		$this->rolesRepository
+		$this->rolesRepository->table
 			->delete(RolesEntity::PrimaryKey, $id)
 			->execute();
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
+	/** @throws Exception */
 	protected function getItemTitle(int $id): ?string
 	{
-		$role = $this->rolesRepository->get($id)->record();
+		$role = $this->rolesRepository->table->get($id)->record();
 
 		if ($role !== null && $this->isSystemRole($role->name)) {
 			$this->error('System role cannot be deleted.', 403);
@@ -190,7 +182,7 @@ class RolesControl extends BaseControl
 	{
 		try {
 			if ($values->id > 0) {
-				$original = $this->rolesRepository->get($values->id)->record();
+				$original = $this->rolesRepository->table->get($values->id)->record();
 				if ($original !== null && $this->isSystemRole($original->name)) {
 					$values->name = $original->name;
 				}
@@ -198,7 +190,7 @@ class RolesControl extends BaseControl
 
 			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
 
-			$this->rolesRepository->save($values);
+			$this->rolesRepository->table->save($values);
 			$this->addFlashMessage($message, Alert::Success);
 			$this->addRedraw($this->snippetMessage);
 
