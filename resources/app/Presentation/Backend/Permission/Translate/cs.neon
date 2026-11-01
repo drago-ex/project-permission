@@ -16,6 +16,8 @@
 
 # datagrid actions
 "Add item": "Přidat položku"
+"Manage the users and their roles.": "Spravujte uživatele a jejich role."
+"Manage the roles that are assigned to the users.": "Spravujte role, které se přidělují uživatelům."
 "Edit": "Upravit"
 "Delete": "Smazat"
 "Permissions": "Oprávnění"

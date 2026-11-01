@@ -5,12 +5,12 @@
 {snippet permissions}
 
 	{* header *}
-	<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-bottom pb-2 mb-3">
+	<header class="mb-4 pb-2 border-bottom d-flex flex-wrap justify-content-between align-items-end gap-3">
 
 		{* title *}
 		<div>
-			<h5>{_'Role permissions'}</h5>
-			<p class="text-body-secondary small m-0">
+			<h1 class="h5 mb-1">{_'Role permissions'}</h1>
+			<p class="small text-body-secondary mb-0">
 				{_'Setting access for the selected role'}
 			</p>
 		</div>
@@ -45,7 +45,7 @@
 				({$deniedCount}) {_'Denied'}
 			</span>
 		</div>
-	</div>
+	</header>
 
 	{* admin notice *}
 	{if $isAdminRole}
