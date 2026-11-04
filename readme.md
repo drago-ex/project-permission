@@ -1,6 +1,6 @@
 # Drago Project Permission
 
-Component for ACL and permission management in a Drago / Nette project.
+Administration of roles and permissions on top of the static ACL of a Drago / Nette project.
 
 [![PHP version](https://badge.fury.io/ph/drago-ex%2Fproject-permission.svg)](https://badge.fury.io/ph/drago-ex%2Fproject-permission)
 [![Coding Style](https://github.com/drago-ex/project-permission/actions/workflows/coding-style.yml/badge.svg)](https://github.com/drago-ex/project-permission/actions/workflows/coding-style.yml)
@@ -21,102 +21,76 @@ composer require drago-ex/project-permission
 The files are copied into the project by [drago-ex/project-tools](https://github.com/drago-ex/project-tools),
 as set in `extra.drago-tools` of this package's `composer.json`.
 
-## Setup
-
-After installation, run the package migrations, load the provided service configuration from
-`app/Presentation/Backend/Permission/conf.neon`, register the Naja extension from `assets/naja/permission-toggle.js`
-and include styles from `assets/naja/permission-toggle.scss`.
-
-The configuration replaces the one of drago-ex/permission (`src/Permission/conf.neon`): if you included it for static
-permissions, remove that include, otherwise two authorizators are registered.
-
-Roles come from the database, so give the first administrator the `admin` role:
-
-```sql
-INSERT INTO users_roles (user_id, role_id) SELECT 1, id FROM roles WHERE name = 'admin';
-```
-
-Example:
-
-```js
-import naja from 'naja';
-import PermissionToggle from './naja/permission-toggle.js';
-import './naja/permission-toggle.scss';
-
-naja.registerExtension(new PermissionToggle());
-```
-
 ## Database migration
 
 ```bash
 php vendor/bin/migration db:migrate --packages
 ```
 
-The package has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` table it uses.
+The package has `migration-priority` 20, so it runs after `drago-ex/project-auth`, whose `users` and `user_roles`
+tables it uses.
 
-## What it does
+## Assets
 
-- manages **roles**
-- assigns **multiple roles to users**
-- manages **resource + privilege** records
-- allows role permissions to be toggled in the admin UI
-- builds a Nette `Permission` ACL from registered providers and database data
+Register the Naja extension, which saves a privilege of a role right after its switch is changed, in `assets/admin.js`:
 
-The package ships with an admin section for:
+```js
+import PermissionToggle from './naja/permission-toggle.js';
 
-- **Users** - assign roles to existing users
-- **Roles** - create, edit and delete custom roles
-- **Permissions** - allow or deny access for a selected role
-
-The backend module is installed under `App\Presentation\Backend\Permission` and uses the `Backend:Permission`
-ACL resource. Module permissions are registered by `PermissionProvider` classes found in the presentation layer.
-The pages are available as:
-
-```latte
-{link :Backend:Permission:}       {* for the menu: the roles of users, they link to the roles *}
-{link :Backend:Permission:roles}  {* roles and their privileges *}
-{link :Backend:Permission:users}  {* roles of users *}
+registerNajaExtensions(
+	// ...
+	PermissionToggle
+);
 ```
 
-With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui), add the links to its menu (see its README).
+and include its styles in `assets/admin.scss`:
 
-System roles such as `admin`, `user` and `guest` are handled as protected base roles.
-Custom roles inherit `user`, so their users can always sign out and see what a signed-in user sees.
+```scss
+@import 'naja/permission-toggle';
+```
+
+The lists of users and roles come from [drago-ex/datagrid](https://github.com/drago-ex/datagrid); set up its assets in
+`admin.js` and `admin.scss` as its README shows.
+
+## How it works
+
+The base of the permissions is the static ACL of [drago-ex/permission](https://github.com/drago-ex/permission): the roles
+guest, user and admin and the `acl.neon` files of the packages. This package adds what is set in the administration
+on top of it, in `app/Presentation/Backend/Permission/conf.neon`:
+
+- **custom roles** (e.g. `moderator`), which inherit `user`, so their users keep what every signed-in user may,
+- **privileges** of a role on a presenter, also for the base roles `user` and `guest`,
+- **roles of the users**, stored in `user_roles` of [drago-ex/project-auth](https://github.com/drago-ex/project-auth);
+  a user may have more roles.
+
+The privileges offered are read from the code of the presenters by `PrivilegeCatalog` of drago-ex/permission: their pages
+(`default`, `edit`, …) and signals (`delete`, `approveComment`, …). A new page or button of any package shows up without
+any list kept by hand. The list is cached until a file of the presenter directory changes; the roles and privileges
+of the database are cached until the administration changes them.
+
+The administration has three pages:
+
+```latte
+{link :Backend:Permission:}       {* for the menu: the roles of users, or the roles without that privilege *}
+{link :Backend:Permission:users}  {* roles of the users *}
+{link :Backend:Permission:roles}  {* custom roles, a link to their permissions *}
+```
+
+On the permissions page of a role, what the ACL files or a parent role already allow is shown as inherited and locked;
+the administrator is allowed everything. With [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui),
+the pages get their menu item from `Backend/Permission/3.menu.neon`.
 
 ## Security
 
-- System roles (`admin`, `user`, `guest`) cannot be renamed or deleted.
-- Signals and forms are checked by the ACL (`{component}-read` / `{component}-write` on `Backend:Permission`).
-- Whoever may assign roles can assign any role, including `admin`; give `users-write` only to administrators.
-- Without the permission tables, only the rules of the `PermissionProvider` classes apply.
+- The base roles guest, user and admin come from the ACL files and cannot be changed here; the name of a custom role
+  is the key of its privileges and of the user roles, so only its description can be changed.
+- The pages are checked by the privileges `users`, `roles` and `permissions` of `Backend:Permission`, the changes
+  by `edit` and `delete`.
+- Whoever may edit the roles of users can give any role, including `admin`; give `edit` only to administrators.
+- Without the tables (e.g. before the migrations) only the ACL files apply.
 
 ## Database
 
-The package works with these tables:
-
-- `roles`
-- `users_roles`
-- `resources`
-- `authorization`
-
-Seed migrations also add default roles and backend permission resources.
-
-## Roles of users
-
-The roles assigned here are loaded at sign-in by `getRolesByUser()` of
-[drago-ex/project-auth](https://github.com/drago-ex/project-auth#permissions); its README shows the code.
-
-## Privileges of other packages
-
-Packages with their own administration (e.g. project-blog, project-static-page) ship their privileges in
-`migrations-permission/`. Import them by hand, so roles can be given them here:
-
-```bash
-php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-permission
-```
-
-project-backend-ui ships the dashboard (`Backend:Admin`, `default-read`) the same way: give it to a role that should enter
-the administration; without it the role goes to the front page after signing in.
-
-The add, edit and delete buttons follow the `{component}-write` privilege by the `WriteAccess` trait of
-[drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
+- `roles`: the custom roles (name, description)
+- `role_privileges`: role, resource (a presenter) and privilege
+- `user_roles` of drago-ex/project-auth: the roles of the users

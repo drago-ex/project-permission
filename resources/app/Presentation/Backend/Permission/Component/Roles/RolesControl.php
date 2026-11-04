@@ -4,20 +4,23 @@ namespace App\Presentation\Backend\Permission\Component\Roles;
 
 use App\Presentation\Backend\Permission\Component\BaseControl;
 use App\Presentation\Backend\Permission\Component\Factory;
+use App\Presentation\Backend\Permission\RoleRules;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
 use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Drago\Datagrid\Exception\InvalidConfigurationException;
 use Drago\Form\Autocomplete;
-use Drago\Permission\Role;
+use Drago\Permission\Access;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use Nette\Security\Permission;
 use RuntimeException;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
 
+/** The custom roles; the base roles (guest, user, admin) of the ACL neon files are not listed. */
 class RolesControl extends BaseControl
 {
 	public string $permissionsDestination = 'permissions';
@@ -26,6 +29,7 @@ class RolesControl extends BaseControl
 	public function __construct(
 		public Factory $factory,
 		private readonly RolesRepository $rolesRepository,
+		private readonly RoleRules $roleRules,
 	) {
 		parent::__construct($this->factory);
 	}
@@ -39,29 +43,28 @@ class RolesControl extends BaseControl
 	}
 
 
+	/**
+	 * Opens the permissions of the role; that page checks its own privilege.
+	 * @throws Exception
+	 */
+	#[Access]
 	public function handlePermissions(int $id): void
 	{
+		$role = $this->rolesRepository->table->get($id)->record() ?? $this->error();
 		$this->addRedirect($this->permissionsDestination, [
-			'authorization-roleId' => $id,
+			'authorization-role' => $role->name,
 		]);
 	}
 
 
-	/**
-	 * Handles roles edit.
-	 * @throws Exception
-	 */
+	/** @throws Exception */
 	#[Requires(ajax: true)]
 	public function handleEdit(int $id): void
 	{
-		$items = $this->rolesRepository->table->get($id)->record();
-		if ($items === null) {
-			$this->error();
-		}
-
-		$factory = $this->getComponent('roles');
-		$factory->setDefaults($items);
-		$this->setEditMode($factory, $items->name);
+		$role = $this->rolesRepository->table->get($id)->record() ?? $this->error();
+		$form = $this->getComponent('roles');
+		$form->setDefaults($role);
+		$this->setEditMode($form);
 		$this->redrawOffCanvas();
 	}
 
@@ -83,7 +86,6 @@ class RolesControl extends BaseControl
 		$grid->addColumnText('name', 'System name')
 			->setFilterText();
 
-		$writeAllowed = $this->isWriteAllowed();
 		// A click on the row opens the form, the Edit button is then hidden by the grid.
 		$grid->setRowClickAction('edit');
 		$grid->addAction(
@@ -91,16 +93,17 @@ class RolesControl extends BaseControl
 			label: 'Permissions',
 			callback: fn(int $id) => $this->handlePermissions($id),
 			class: 'btn btn-xs btn-secondary',
-		)->setVisible($writeAllowed);
+		)->setVisible($this->isAllowed('permissions'));
 		$grid->addActionEdit(fn(int $id) => $this->handleEdit($id))
-			->setVisible($writeAllowed);
+			->setVisible($this->isAllowed('edit'));
 		$grid->addActionDelete(fn(int $id) => $this->handleDelete($id))
-			->setVisible($writeAllowed);
+			->setVisible($this->isAllowed('delete'));
 
 		return $grid;
 	}
 
 
+	#[Access('edit')]
 	protected function createComponentRoles(): Form
 	{
 		$form = $this->factory->create();
@@ -125,9 +128,8 @@ class RolesControl extends BaseControl
 		$form->onSuccess[] = $this->processRoleForm(...);
 		// errors found on the server (also those added by processRoleForm()) are shown in the open offcanvas
 		$form->onError[] = function (Form $form): void {
-			$role = $this->rolesRepository->table->get((int) $form->getComponent('id')->getValue())->record();
-			if ($role !== null) {
-				$this->setEditMode($form, $role->name);
+			if ((int) $form->getComponent('id')->getValue() > 0) {
+				$this->setEditMode($form);
 			}
 
 			$this->redrawOffCanvas();
@@ -139,41 +141,28 @@ class RolesControl extends BaseControl
 	/** @throws Exception */
 	protected function deleteItem(int $id): void
 	{
-		// Checked again here: the delete form posts the id, so the check when opening the dialog is not enough.
 		$role = $this->rolesRepository->table->get($id)->record();
-		if ($role !== null && $this->isSystemRole($role->name)) {
-			throw new RuntimeException('System role cannot be deleted.', 1);
+		if ($role !== null) {
+			$this->rolesRepository->deleteRole($role->name);
+			$this->roleRules->clean();
 		}
-
-		$this->rolesRepository->table
-			->delete(RolesEntity::PrimaryKey, $id)
-			->execute();
 	}
 
 
 	/** @throws Exception */
 	protected function getItemTitle(int $id): ?string
 	{
-		$role = $this->rolesRepository->table->get($id)->record();
-
-		if ($role !== null && $this->isSystemRole($role->name)) {
-			$this->error('System role cannot be deleted.', 403);
-		}
-
-		return $role?->description;
+		return $this->rolesRepository->table->get($id)->record()?->description;
 	}
 
 
 	/**
-	 * The form edits a role: the name of a system role cannot be changed. Also after a server error,
-	 * when the form is drawn again from the submitted values.
+	 * The form edits a role: its name is the key of the user roles and the privileges, so it cannot be changed.
+	 * Also after a server error, when the form is drawn again from the submitted values.
 	 */
-	private function setEditMode(Form $form, string $name): void
+	private function setEditMode(Form $form): void
 	{
-		if ($this->isSystemRole($name)) {
-			$this->getFormComponent($form, RolesValues::Name)?->setHtmlAttribute('readonly');
-		}
-
+		$this->getFormComponent($form, RolesValues::Name)?->setHtmlAttribute('readonly');
 		$this->getFormComponent($form, 'send')?->setCaption('Edit roles');
 	}
 
@@ -182,15 +171,20 @@ class RolesControl extends BaseControl
 	{
 		try {
 			if ($values->id > 0) {
-				$original = $this->rolesRepository->table->get($values->id)->record();
-				if ($original !== null && $this->isSystemRole($original->name)) {
-					$values->name = $original->name;
-				}
+				// the name is kept, whatever the request sends
+				$original = $this->rolesRepository->table->get($values->id)->record()
+					?? throw new RuntimeException('The role does not exist.', 1);
+				$values->name = $original->name;
+
+			} elseif ($this->isKnownRole($values->name)) {
+				// a base role or a role of the neon files would be shadowed
+				throw new RuntimeException('This role already exists.', 1);
 			}
 
 			$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
 
 			$this->rolesRepository->table->save($values);
+			$this->roleRules->clean();
 			$this->addFlashMessage($message, Alert::Success);
 			$this->addRedraw($this->snippetMessage);
 
@@ -217,8 +211,9 @@ class RolesControl extends BaseControl
 	}
 
 
-	private function isSystemRole(string $name): bool
+	private function isKnownRole(string $name): bool
 	{
-		return in_array($name, [Role::RoleAdmin, Role::RoleUser, Role::RoleGuest], true);
+		$acl = $this->getPresenter()->getUser()->getAuthorizatorIfExists();
+		return $acl instanceof Permission && $acl->hasRole($name);
 	}
 }

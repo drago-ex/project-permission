@@ -12,7 +12,8 @@ class RolesEntity extends Entity
 		ColumnName = 'name',
 		ColumnDescription = 'description';
 
-	public const int ColumnNameSize = 100,
+	/** Equal to UserRoleEntity::ColumnRoleSize of project-auth, which stores the name. */
+	public const int ColumnNameSize = 50,
 		ColumnDescriptionSize = 255;
 
 	public int $id;

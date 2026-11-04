@@ -8,7 +8,8 @@ use Drago\Component\Component;
 use Drago\Component\ModalHandle;
 use Drago\Component\OffcanvasHandle;
 use Drago\Datagrid\DataGrid;
-use Drago\Permission\WriteAccess;
+use Drago\Permission\Access;
+use Drago\Permission\AccessCheck;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Template;
@@ -21,7 +22,7 @@ use Tracy\ILogger;
 abstract class BaseControl extends ExtraControl implements OffcanvasHandle, ModalHandle
 {
 	use Component;
-	use WriteAccess;
+	use AccessCheck;
 
 	public ?string $deleteTitle = null;
 	protected string $snippetMessage = 'message';
@@ -40,11 +41,13 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
 		$template->modalId = $this->getUniqueIdComponent(self::Modal);
 		$template->deleteTitle = $this->deleteTitle;
-		$template->writeAllowed = $this->isWriteAllowed();
+		$template->writeAllowed = $this->isAllowed('edit');
 		return $template;
 	}
 
 
+	/** Only opens the dialog, the page is enough; its form is checked. */
+	#[Access]
 	#[Requires(ajax: true)]
 	public function handleOpenModal(): void
 	{
@@ -52,6 +55,8 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	}
 
 
+	/** Only opens the offcanvas, the page is enough; its form is checked. */
+	#[Access]
 	#[Requires(ajax: true)]
 	public function handleOpenOffcanvas(): void
 	{

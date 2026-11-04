@@ -9,15 +9,23 @@
 "Apply": "Použít"
 "Allowed": "Povoleno"
 "Denied": "Zakázáno"
+"Allowed (inherited)": "Povoleno (zděděno)"
+"Allowed by the ACL or a parent role, change it there.": "Povoleno v ACL nebo nadřazenou rolí, změňte ho tam."
 "permissions": "oprávnění"
 "No permissions found": "Nebyla nalezena žádná oprávnění"
+"Select a role to set its permissions.": "Vyberte roli, jejíž oprávnění chcete nastavit."
 "Administrator role has full access granted by default. These settings have no effect.":
 	"Role administrátora má ve výchozím nastavení povolený plný přístup. Tato nastavení na ni nemají vliv."
 
+# base roles
+"Guest": "Host"
+"Administrator": "Administrátor"
+
 # datagrid actions
 "Add item": "Přidat položku"
-"Manage the users and their roles.": "Spravujte uživatele a jejich role."
-"Manage the roles that are assigned to the users.": "Spravujte role, které se přidělují uživatelům."
+"Assign roles to the users; a user without a role has the role user.": "Přidělujte uživatelům role; uživatel bez role má roli user."
+"Custom roles for the users; the base roles guest, user and admin are set in the ACL.":
+	"Vlastní role pro uživatele; základní role guest, user a admin jsou nastavené v ACL."
 "Edit": "Upravit"
 "Delete": "Smazat"
 "Permissions": "Oprávnění"
@@ -41,14 +49,11 @@
 "Send": "Odeslat"
 "Edit roles": "Upravit role"
 "This role already exists.": "Tato role již existuje."
-"System role cannot be deleted.": "Systémovou roli nelze smazat."
+"The role does not exist.": "Tato role neexistuje."
 
 # user roles form
 "Manage User Roles": "Správa rolí uživatele"
 "Name": "Jméno"
-"Please select a user.": "Vyberte prosím uživatele."
-"Select user": "Vyberte uživatele"
-"Please select a role.": "Vyberte prosím roli."
 "Select role": "Vyberte roli"
 
 # delete modal
@@ -62,13 +67,3 @@
 "Delete successful.": "Záznam byl úspěšně smazán."
 "Unknown status code.": "Neznámý stavový kód."
 "The item could not be deleted.": "Záznam se nepodařilo smazat."
-
-# seeded permissions
-"View roles": "Zobrazit role"
-"Roles management": "Správa rolí"
-"View user roles": "Zobrazit uživatelské role"
-"Assign roles to users": "Přiřazovat role uživatelům"
-"View permissions": "Zobrazit oprávnění"
-"Manage permissions": "Spravovat oprávnění"
-"Allowed (inherited)": "Povoleno (zděděno)"
-"Inherited from a parent role, change it there.": "Zděděno z nadřazené role, změňte ho tam."

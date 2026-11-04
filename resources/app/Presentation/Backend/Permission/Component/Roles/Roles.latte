@@ -37,10 +37,10 @@
 		{_'Roles data'}
 	{/block}
 	{block subtitle}
-		{_'Manage the roles that are assigned to the users.'}
+		{_'Custom roles for the users; the base roles guest, user and admin are set in the ACL.'}
 	{/block}
 	{block buttons}
-		<a n:if="$user->isAllowed('Backend:Permission', 'users-read')" href="{plink :Backend:Permission:users}" class="btn btn-secondary btn-sm">&larr; {_'Users data'}</a>
+		<a n:if="$user->isAllowed('Backend:Permission', 'users')" href="{plink :Backend:Permission:users}" class="btn btn-secondary btn-sm">&larr; {_'Users data'}</a>
 	{/block}
 {/embed}
 

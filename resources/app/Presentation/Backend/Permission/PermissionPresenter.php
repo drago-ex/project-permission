@@ -6,6 +6,7 @@ use App\Presentation\Backend\BackendPresenter;
 use App\Presentation\Backend\Permission\Component\Authorization\AuthorizationControl;
 use App\Presentation\Backend\Permission\Component\Roles\RolesControl;
 use App\Presentation\Backend\Permission\Component\Users\UsersControl;
+use Drago\Permission\Privilege;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
@@ -26,12 +27,12 @@ class PermissionPresenter extends BackendPresenter
 	/**
 	 * The module has no page of its own: its address (the menu link) opens the roles of users, which link to the roles,
 	 * or the roles for a user who may only see those. Here, because Nette checks the requirements before the onStartup
-	 * handlers, where the ACL check (no "default-read") runs; the opened page checks the access itself.
+	 * handlers, where the ACL check (there is no "default" page) runs; the opened page checks the access itself.
 	 */
 	public function checkRequirements(ReflectionClass|ReflectionMethod $element): void
 	{
 		if ($this->getAction() === 'default') {
-			$this->redirect($this->getUser()->isAllowed('Backend:Permission', 'users-read') ? 'users' : 'roles');
+			$this->redirect(Privilege::isAllowed($this->getUser(), 'Backend:Permission', 'users') ? 'users' : 'roles');
 		}
 
 		parent::checkRequirements($element);

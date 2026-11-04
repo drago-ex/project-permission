@@ -1,14 +1,12 @@
 services:
-	permissionFactory:
-		class: App\Presentation\Backend\Permission\PermissionFactory
-		arguments:
-			initializers: tagged(PermissionTag)
-
-	- @permissionFactory::create
+	- App\Presentation\Backend\Permission\RoleRules
+	- App\Presentation\Backend\Permission\PrivilegeList
+	- Drago\Permission\PrivilegeCatalog
 
 
-search:
-	permissions:
-		in: %appDir%/Presentation
-		classes: [PermissionProvider]
-		tags: [PermissionTag]
+# the custom roles and privileges of the administration, on top of the ACL of the acl.neon files
+decorator:
+	# Nette registers the ACL as Authorizator, so a decorator for Permission would not be applied
+	Nette\Security\Authorizator:
+		setup:
+			- @App\Presentation\Backend\Permission\RoleRules::apply(@self)

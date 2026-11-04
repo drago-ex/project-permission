@@ -1,0 +1,10 @@
+# Item of the administration menu of drago-ex/project-backend-ui (without it the parameter is unused; the key lets a later file extend it).
+parameters:
+	sidebar:
+		System:
+			# opens the roles of users (or the roles), so it is shown with either privilege
+			permission:
+				title: Permissions
+				link: 'Permission:'
+				icon: fa-solid fa-gear bell
+				allow: [Backend:Permission, users, roles]

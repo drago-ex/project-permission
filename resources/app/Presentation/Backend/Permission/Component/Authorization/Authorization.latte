@@ -1,6 +1,4 @@
 {templateType App\Presentation\Backend\Permission\Component\Authorization\AuthorizationTemplate}
-{varType array $groupedPermissions}
-{varType bool $isAdminRole}
 
 {snippet permissions}
 
@@ -23,10 +21,11 @@
 					{_'Role'}
 				</label>
 
-				<select name="authorization-roleId" id="role-switch" class="form-select form-select-sm" onchange="this.form.submit()">
-					{foreach $roles as $id => $name}
-						<option value="{$id}" n:attr="selected: $id === $roleId">
-							{$name}
+				<select name="authorization-role" id="role-switch" class="form-select form-select-sm" onchange="this.form.submit()">
+					<option value="" n:attr="selected: $role === ''">{_'Select role'}</option>
+					{foreach $roles as $name => $label}
+						<option value="{$name}" n:attr="selected: $name === $role">
+							{$label}
 						</option>
 					{/foreach}
 				</select>
@@ -55,11 +54,10 @@
 		</div>
 	{/if}
 
-	{* permissions list *}
+	{* permissions list, by presenter *}
 	<div class="card-body">
 		<div class="d-flex flex-column gap-3">
-			{foreach $groupedPermissions as $resource => $items}
-				{varType App\Presentation\Backend\Permission\Component\Authorization\ResourcesEntity[] $items}
+			{foreach $groups as $resource => $items}
 
 				{* resource group *}
 				<div class="overflow-hidden">
@@ -72,55 +70,39 @@
 						</div>
 					</div>
 
-					{* permission items grouped by component prefix *}
-					{var $byComponent = []}
-					{foreach $items as $item}
-						{varType App\Presentation\Backend\Permission\Component\Authorization\ResourcesEntity $item}
-						{var $prefix = explode('-', $item->privilege, 2)[0]}
-						{do $byComponent[$prefix][] = $item}
-					{/foreach}
-
 					<div class="list-group list-group-flush">
-						{foreach $byComponent as $group}
-							{foreach $group as $item}
-								{varType App\Presentation\Backend\Permission\Component\Authorization\ResourcesEntity $item}
-								{var $inputId = "permission-{$roleId}-{$item->id}"}
-								{* a privilege of a parent role (e.g. user) cannot be denied here, it is shown as inherited *}
-								{var $isInherited = isset($inherited[$item->id])}
-								{var $isAllowed = $isAdminRole || $item->access === 'allow' || $isInherited}
-								{var $isLocked = $isAdminRole || $isInherited || !$writeAllowed}
+						{foreach $items as $item}
+							{var $inputId = "permission-{$role}-{$resource}-{$item['privilege']}"}
+							{* a privilege of the neon files or of a parent role cannot be denied here, it is shown as inherited *}
+							{var $isLocked = $isAdminRole || $item['inherited'] || !$writeAllowed}
 
-								<div n:class="'list-group-item', 'authorization-permission-item', 'px-3', $iterator->isLast() ? 'pt-1 pb-3' : 'pt-2 pb-0 border-bottom-0'">
-									<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+							<div n:class="'list-group-item', 'authorization-permission-item', 'px-3', $iterator->isLast() ? 'pt-1 pb-3' : 'pt-2 pb-0 border-bottom-0'">
+								<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
 
-										{* privilege info *}
-										<div class="min-w-0">
-											<div class="d-flex align-items-center gap-2 small">
-												<span class="fw-semibold text-body-emphasis">{_$item->description}</span>
-												<span class="text-body-tertiary ms-1">{_$item->privilege}</span>
-											</div>
-										</div>
-
-										{* permission toggle *}
-										<div class="d-flex align-items-center gap-2 flex-shrink-0">
-											<input
-												type="checkbox"
-												id="{$inputId}"
-												data-naja-history="off"
-												autocomplete="off"
-												data-url="{link togglePermission!, roleId: $roleId, resourceId: $item->id}"
-												n:class="'btn-check', !$isLocked ? 'js-permission-toggle'"
-												n:attr="checked: $isAllowed, disabled: $isLocked">
-
-											<label for="{$inputId}" n:class="'btn', 'btn-sm', 'px-3', 'fw-semibold', 'rounded-pill', $isAllowed ? 'btn-success' : 'btn-danger'"
-												n:attr="title: $isInherited ? ('Inherited from a parent role, change it there.'|translate)">
-												{if $isInherited}{_'Allowed (inherited)'}{elseif $isAllowed}{_'Allowed'}{else}{_'Denied'}{/if}
-											</label>
-										</div>
-
+									{* privilege *}
+									<div class="min-w-0 small">
+										<span class="fw-semibold text-body-emphasis">{$item['privilege']}</span>
 									</div>
+
+									{* permission toggle *}
+									<div class="d-flex align-items-center gap-2 flex-shrink-0">
+										<input
+											type="checkbox"
+											id="{$inputId}"
+											data-naja-history="off"
+											autocomplete="off"
+											data-url="{link togglePermission!, role: $role, resource: $resource, privilege: $item['privilege']}"
+											n:class="'btn-check', !$isLocked ? 'js-permission-toggle'"
+											n:attr="checked: $item['allowed'], disabled: $isLocked">
+
+										<label for="{$inputId}" n:class="'btn', 'btn-sm', 'px-3', 'fw-semibold', 'rounded-pill', $item['allowed'] ? 'btn-success' : 'btn-danger'"
+											n:attr="title: $item['inherited'] ? ('Allowed by the ACL or a parent role, change it there.'|translate)">
+											{if $item['inherited']}{_'Allowed (inherited)'}{elseif $item['allowed']}{_'Allowed'}{else}{_'Denied'}{/if}
+										</label>
+									</div>
+
 								</div>
-							{/foreach}
+							</div>
 						{/foreach}
 					</div>
 				</div>
@@ -129,7 +111,7 @@
 
 				{* empty state *}
 				<div class="px-4 py-5 text-center text-body-secondary bg-body-tertiary border rounded-3">
-					{_'No permissions found'}
+					{if $role === ''}{_'Select a role to set its permissions.'}{else}{_'No permissions found'}{/if}
 				</div>
 
 			{/foreach}

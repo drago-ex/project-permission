@@ -16,12 +16,4 @@ readonly class UserRepository
 	{
 		$this->table = new Table($db, UsersEntity::Table, UsersEntity::PrimaryKey, UsersEntity::class);
 	}
-
-
-	/** @return array<int, string> */
-	public function getAllUsers(): array
-	{
-		return $this->table->read('*')
-			->fetchPairs(UsersEntity::PrimaryKey, UsersEntity::ColumnUsername);
-	}
 }

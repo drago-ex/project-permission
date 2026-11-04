@@ -4,69 +4,58 @@ namespace App\Presentation\Backend\Permission\Component\Authorization;
 
 use Dibi\Connection;
 use Dibi\Exception;
-use Dibi\Fluent;
-use Dibi\Row;
-use Drago\Database\Table;
 
 
+/** The privileges given to the roles in the administration (table role_privileges). */
 readonly class AuthorizationRepository
 {
-	/** @var Table<AuthorizationEntity> */
-	public Table $table;
-
-
-	public function __construct(Connection $db)
-	{
-		$this->table = new Table($db, AuthorizationEntity::Table, AuthorizationEntity::PrimaryKey, AuthorizationEntity::class);
+	public function __construct(
+		private Connection $connection,
+	) {
 	}
 
 
-	public function getAll(): Fluent
+	/**
+	 * The privileges of the role by resource.
+	 * @return array<string, list<string>>
+	 * @throws Exception
+	 */
+	public function getPrivileges(string $role): array
 	{
-		return $this->table->read('*');
-	}
-
-
-	/** @return list<Row> */
-	public function getRolePermissions(int $roleId): array
-	{
-		return $this->table->getConnection()->select("
-				r.id,
-				r.resource,
-				r.privilege,
-				r.description,
-				CASE
-					WHEN a.role_id IS NULL THEN 'deny'
-					ELSE 'allow'
-				END AS access
-			")
-			->from(ResourcesEntity::Table)
-			->as('r')
-			->leftJoin(AuthorizationEntity::Table)
-			->as('a')
-			->on('a.resource_id = r.id AND a.role_id = ?', $roleId)
-			->orderBy('r.resource, r.privilege')
+		$rows = $this->connection->select('*')
+			->from(RolePrivilegeEntity::Table)
+			->where('%n = ?', RolePrivilegeEntity::ColumnRole, $role)
 			->fetchAll();
+
+		$privileges = [];
+		foreach ($rows as $row) {
+			$privileges[(string) $row[RolePrivilegeEntity::ColumnResource]][] = (string) $row[RolePrivilegeEntity::ColumnPrivilege];
+		}
+
+		return $privileges;
 	}
 
 
 	/** @throws Exception */
-	public function allow(int $roleId, int $resourceId): void
+	public function allow(string $role, string $resource, string $privilege): void
 	{
-		$this->table->getConnection()->insert(AuthorizationEntity::Table, [
-			AuthorizationEntity::ColumnRoleId => $roleId,
-			AuthorizationEntity::ColumnResourceId => $resourceId,
+		$this->connection->insert(RolePrivilegeEntity::Table, [
+			RolePrivilegeEntity::ColumnRole => $role,
+			RolePrivilegeEntity::ColumnResource => $resource,
+			RolePrivilegeEntity::ColumnPrivilege => $privilege,
 		])
+			->setFlag('IGNORE')
 			->execute();
 	}
 
 
 	/** @throws Exception */
-	public function deny(int $roleId, int $resourceId): void
+	public function deny(string $role, string $resource, string $privilege): void
 	{
-		$this->table->getConnection()->delete(AuthorizationEntity::Table)
-			->where('%n = ?', AuthorizationEntity::ColumnRoleId, $roleId)
-			->where('%n = ?', AuthorizationEntity::ColumnResourceId, $resourceId)
+		$this->connection->delete(RolePrivilegeEntity::Table)
+			->where('%n = ?', RolePrivilegeEntity::ColumnRole, $role)
+			->where('%n = ?', RolePrivilegeEntity::ColumnResource, $resource)
+			->where('%n = ?', RolePrivilegeEntity::ColumnPrivilege, $privilege)
 			->execute();
 	}
 }

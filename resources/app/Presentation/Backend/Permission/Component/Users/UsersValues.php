@@ -7,16 +7,13 @@ use Drago\Utils\ExtraArrayHash;
 
 class UsersValues extends ExtraArrayHash
 {
-	public const string UserId = 'userId',
+	public const string Id = 'id',
 		UserName = 'userName',
-		RoleId = 'roleId',
-		Id = 'id';
+		Roles = 'roles';
 
-	public ?int $id = null;
+	/** The edited user. */
+	public int $id;
 
-	/** Null in an edit, which shows the user readonly and saves the roles of the id. */
-	public ?int $userId = null;
-
-	/** @var array<int, int> */
-	public array $roleId;
+	/** @var list<string> role names; none leaves the user with the default role "user" */
+	public array $roles = [];
 }

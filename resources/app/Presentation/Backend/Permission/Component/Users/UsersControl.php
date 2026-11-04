@@ -5,19 +5,23 @@ namespace App\Presentation\Backend\Permission\Component\Users;
 use App\Presentation\Backend\Permission\Component\BaseControl;
 use App\Presentation\Backend\Permission\Component\Factory;
 use App\Presentation\Backend\Permission\Component\Roles\RolesRepository;
-use Dibi\DriverException;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
 use Drago\Datagrid\DataGrid;
 use Drago\Datagrid\Exception\InvalidColumnException;
 use Drago\Datagrid\Exception\InvalidConfigurationException;
+use Drago\Permission\Access;
+use Drago\Permission\Role;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\InvalidLinkException;
+use Nette\Security\Permission;
 use Nette\Utils\Html;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
 
+/** The roles of the users: every user is listed, one without a role has the default role "user". */
 class UsersControl extends BaseControl
 {
 	public function __construct(
@@ -42,20 +46,14 @@ class UsersControl extends BaseControl
 	#[Requires(ajax: true)]
 	public function handleEdit(int $id): void
 	{
-		$items = $this->userRolesRepository->getUserRoles($id);
-		$items ?: $this->error();
-
-		$roleId = UsersValues::RoleId;
-		$rolesIdList = array_column($items, $roleId, $roleId);
-
-		$factory = $this->getComponent('users');
-		$factory->setDefaults([
+		$this->getItemTitle($id) ?? $this->error();
+		$form = $this->getComponent('users');
+		$form->setDefaults([
 			UsersValues::Id => $id,
-			UsersValues::UserId => $items[0]->userId,
-			UsersValues::RoleId => $rolesIdList,
+			UsersValues::Roles => $this->userRolesRepository->getRoles($id),
 		]);
 
-		$this->setEditMode($factory);
+		$this->setEditMode($form);
 		$this->redrawOffCanvas();
 	}
 
@@ -77,78 +75,88 @@ class UsersControl extends BaseControl
 		$grid->addColumnText('roles', 'Roles')
 			->setFilterText();
 
-		$writeAllowed = $this->isWriteAllowed();
 		// A click on the row opens the form, the Edit button is then hidden by the grid.
 		$grid->setRowClickAction('edit');
 		$grid->addActionEdit(fn(int $id) => $this->handleEdit($id))
-			->setVisible($writeAllowed);
+			->setVisible($this->isAllowed('edit'));
 		$grid->addActionDelete(fn(int $id) => $this->handleDelete($id))
-			->setVisible($writeAllowed);
+			->setVisible($this->isAllowed('delete'));
 
 		return $grid;
 	}
 
 
+	#[Access('edit')]
 	protected function createComponentUsers(): Form
 	{
 		$form = $this->factory->create();
-		// User names and role descriptions are data, not texts: wrapped in Html they are not translated,
-		// the captions and messages still are.
-		$data = fn(array $items): array => array_map(fn(string $name): Html => Html::el()->setText($name), $items);
 
-		$id = $form->addHidden('id')
-			->setNullable()
+		$form->addHidden(UsersValues::Id)
+			->setRequired()
 			->addRule($form::Integer);
 
-		// an edit saves the roles of the edited id and shows the user readonly instead of the select, which is not sent then
-		$form->addSelect(UsersValues::UserId, 'Name', $data($this->userRepository->getAllUsers()))
-			->setPrompt('Select user')
-			->addConditionOn($id, $form::Blank)
-				->setRequired('Please select a user.');
-
-		// the user of an edit, only shown: omitted from the values, so a changed value is never used
+		// the edited user, only shown: omitted from the values, so a changed value is never used
 		$form->addTextInput(UsersValues::UserName, 'Name')
 			->setReadOnly()
 			->setOmitted();
 
-		$form->addMultiSelect(UsersValues::RoleId, 'Role', $data($this->rolesRepository->getAllRoles()))
-			->setHtmlAttribute('placeholder', $this->translate('Select role'))
-			->setRequired('Please select a role.');
+		// role descriptions are data, not texts: wrapped in Html they are not translated
+		$form->addMultiSelect(UsersValues::Roles, 'Role', array_map(
+			fn(string $label): Html => Html::el()->setText($label),
+			$this->getRoleOptions(),
+		))
+			->setHtmlAttribute('placeholder', $this->translate('Select role'));
 
 		$form->addSubmit('send', 'Send');
 		$form->onSuccess[] = $this->processUserRolesForm(...);
 		// errors found on the server (also those added by processUserRolesForm()) are shown in the open offcanvas
 		$form->onError[] = function (Form $form): void {
-			if ((int) $form->getComponent(UsersValues::Id)->getValue() > 0) {
-				$this->setEditMode($form);
-			}
-
+			$this->setEditMode($form);
 			$this->redrawOffCanvas();
 		};
 		return $form;
 	}
 
 
-	/** @throws Exception */
+	/**
+	 * Takes all roles from the user, who keeps the default role "user".
+	 * @throws Exception
+	 */
 	protected function deleteItem(int $id): void
 	{
-		$this->userRolesRepository->table
-			->delete(UsersRolesEntity::ColumnUserId, $id)
-			->execute();
+		$this->userRolesRepository->setRoles($id, []);
 	}
 
 
 	/** @throws Exception */
 	protected function getItemTitle(int $id): ?string
 	{
-		// The grid lists users, so the id is the user id (see getAllUserRoles()).
 		return $this->userRepository->table->get($id)->record()?->username;
 	}
 
 
 	/**
-	 * The form edits the roles of one user: the template shows the user readonly (the save takes the edited id
-	 * anyway). Also after a server error, when the form is drawn again from the submitted values.
+	 * The roles that can be given, by name: those of the ACL except the guest (custom ones with their description).
+	 * @return array<string, string>
+	 */
+	private function getRoleOptions(): array
+	{
+		$acl = $this->getPresenter()->getUser()->getAuthorizatorIfExists();
+		$descriptions = $this->rolesRepository->getDescriptions();
+		$options = [];
+		foreach ($acl instanceof Permission ? $acl->getRoles() : [] as $role) {
+			if ($role !== Role::Guest) {
+				$options[$role] = $descriptions[$role] ?? $role;
+			}
+		}
+
+		return $options;
+	}
+
+
+	/**
+	 * The form edits the roles of one user, shown readonly. Also after a server error, when the form is drawn again
+	 * from the submitted values.
 	 * @throws Exception
 	 */
 	private function setEditMode(Form $form): void
@@ -159,30 +167,11 @@ class UsersControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws DriverException
-	 * @throws Exception
-	 */
+	/** @throws InvalidLinkException */
 	private function processUserRolesForm(Form $form, UsersValues $values): void
 	{
-		$repository = $this->userRolesRepository;
-
-		// an edit changes the edited user (shown readonly, the select is not sent), never a userId of the request;
-		// a new one has the user required by the form
-		$userId = (int) $values->id > 0 ? (int) $values->id : (int) $values->userId;
-
 		try {
-			$repository->table->transaction(function () use ($repository, $values, $userId): void {
-				$repository->table->delete(UsersRolesEntity::ColumnUserId, $userId)
-					->execute();
-
-				$entity = new UsersRolesEntity;
-				foreach ($values->roleId as $role) {
-					$entity->userId = $userId;
-					$entity->roleId = $role;
-					$repository->table->insert($entity)->execute();
-				}
-			});
+			$this->userRolesRepository->setRoles($values->id, $values->roles);
 
 		} catch (\Throwable $e) {
 			Debugger::log($e, ILogger::EXCEPTION);
@@ -190,8 +179,7 @@ class UsersControl extends BaseControl
 			return;
 		}
 
-		$message = $values->id > 0 ? 'Update successful.' : 'Insert successful.';
-		$this->addFlashMessage($message, Alert::Success);
+		$this->addFlashMessage('Update successful.', Alert::Success);
 		$this->addRedraw($this->snippetMessage);
 
 		$form->reset();

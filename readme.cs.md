@@ -1,6 +1,6 @@
 # Drago Project Permission
 
-Komponenta pro správu ACL a oprávnění v projektu Drago / Nette.
+Správa rolí a oprávnění nad statickým ACL projektu Drago / Nette.
 
 [![PHP version](https://badge.fury.io/ph/drago-ex%2Fproject-permission.svg)](https://badge.fury.io/ph/drago-ex%2Fproject-permission)
 [![Coding Style](https://github.com/drago-ex/project-permission/actions/workflows/coding-style.yml/badge.svg)](https://github.com/drago-ex/project-permission/actions/workflows/coding-style.yml)
@@ -21,102 +21,76 @@ composer require drago-ex/project-permission
 Soubory do projektu kopíruje [drago-ex/project-tools](https://github.com/drago-ex/project-tools)
 podle nastavení v `extra.drago-tools` v `composer.json` tohoto balíčku.
 
-## Nastavení
-
-Po instalaci spusťte migrace balíčku, načtěte dodanou konfiguraci služeb z
-`app/Presentation/Backend/Permission/conf.neon`, zaregistrujte rozšíření Naja z `assets/naja/permission-toggle.js`
-a připojte styly z `assets/naja/permission-toggle.scss`.
-
-Konfigurace nahrazuje konfiguraci drago-ex/permission (`src/Permission/conf.neon`): pokud jste ji připojili pro statická
-oprávnění, toto připojení odeberte, jinak se zaregistrují dva autorizátory.
-
-Role se berou z databáze, proto prvnímu administrátorovi přidělte roli `admin`:
-
-```sql
-INSERT INTO users_roles (user_id, role_id) SELECT 1, id FROM roles WHERE name = 'admin';
-```
-
-Příklad:
-
-```js
-import naja from 'naja';
-import PermissionToggle from './naja/permission-toggle.js';
-import './naja/permission-toggle.scss';
-
-naja.registerExtension(new PermissionToggle());
-```
-
 ## Migrace databáze
 
 ```bash
 php vendor/bin/migration db:migrate --packages
 ```
 
-Balíček má `migration-priority` 20, takže běží po `drago-ex/project-auth`, jehož tabulku `users` používá.
+Balíček má `migration-priority` 20, takže běží po `drago-ex/project-auth`, jehož tabulky `users` a `user_roles`
+používá.
 
-## Co balíček dělá
+## Assety
 
-- spravuje **role**
-- přiřazuje uživatelům **více rolí**
-- spravuje záznamy **zdroj + privilegium**
-- umožňuje v administraci přepínat oprávnění rolí
-- sestavuje Nette ACL `Permission` z registrovaných providerů a dat v databázi
+Zaregistrujte rozšíření Naja, které uloží privilegium role hned po přepnutí jeho přepínače, v `assets/admin.js`:
 
-Balíček obsahuje sekci administrace pro:
+```js
+import PermissionToggle from './naja/permission-toggle.js';
 
-- **Uživatele** - přiřazení rolí existujícím uživatelům
-- **Role** - vytváření, úpravy a mazání vlastních rolí
-- **Oprávnění** - povolení nebo zakázání přístupu vybrané roli
-
-Modul administrace se instaluje do `App\Presentation\Backend\Permission` a používá ACL zdroj
-`Backend:Permission`. Oprávnění modulů registrují třídy `PermissionProvider` nalezené v prezentační vrstvě.
-Stránky jsou dostupné jako:
-
-```latte
-{link :Backend:Permission:}       {* for the menu: the roles of users, they link to the roles *}
-{link :Backend:Permission:roles}  {* roles and their privileges *}
-{link :Backend:Permission:users}  {* roles of users *}
+registerNajaExtensions(
+	// ...
+	PermissionToggle
+);
 ```
 
-S [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui) přidejte odkazy do jeho menu (viz jeho README).
+a vložte jeho styly do `assets/admin.scss`:
 
-Systémové role jako `admin`, `user` a `guest` jsou chráněné základní role.
-Vlastní role dědí z `user`, takže se jejich uživatelé vždy odhlásí a vidí to, co přihlášený uživatel.
+```scss
+@import 'naja/permission-toggle';
+```
+
+Seznamy uživatelů a rolí pocházejí z [drago-ex/datagrid](https://github.com/drago-ex/datagrid); nastavte jeho assety
+v `admin.js` a `admin.scss` podle jeho README.
+
+## Jak to funguje
+
+Základem oprávnění je statické ACL z [drago-ex/permission](https://github.com/drago-ex/permission): role
+guest, user a admin a soubory `acl.neon` balíčků. Tento balíček k nim přidává to, co se nastaví v administraci,
+v `app/Presentation/Backend/Permission/conf.neon`:
+
+- **vlastní role** (např. `moderator`), které dědí z `user`, takže jejich uživatelé smí vše, co každý přihlášený,
+- **privilegia** role nad presenterem, i pro základní role `user` a `guest`,
+- **role uživatelů**, uložené v `user_roles` z [drago-ex/project-auth](https://github.com/drago-ex/project-auth);
+  uživatel může mít víc rolí.
+
+Nabízená privilegia se čtou z kódu presenterů pomocí `PrivilegeCatalog` z drago-ex/permission: jejich stránky
+(`default`, `edit`, …) a signály (`delete`, `approveComment`, …). Nová stránka nebo tlačítko kteréhokoli balíčku se
+objeví bez seznamu udržovaného ručně. Seznam je v cache, dokud se nezmění soubor ve složce presenteru; role
+a privilegia z databáze jsou v cache, dokud je administrace nezmění.
+
+Administrace má tři stránky:
+
+```latte
+{link :Backend:Permission:}       {* do menu: role uživatelů, bez tohoto privilegia role *}
+{link :Backend:Permission:users}  {* role uživatelů *}
+{link :Backend:Permission:roles}  {* vlastní role, odkaz na jejich oprávnění *}
+```
+
+Na stránce oprávnění role je to, co už povolují soubory ACL nebo nadřazená role, zobrazené jako zděděné a zamčené;
+administrátor smí všechno. S [drago-ex/project-backend-ui](https://github.com/drago-ex/project-backend-ui)
+dostanou stránky položku menu z `Backend/Permission/3.menu.neon`.
 
 ## Bezpečnost
 
-- Systémové role (`admin`, `user`, `guest`) nejde přejmenovat ani smazat.
-- Signály a formuláře kontroluje ACL (`{component}-read` / `{component}-write` nad `Backend:Permission`).
-- Kdo smí přiřazovat role, může přiřadit jakoukoli roli včetně `admin`; `users-write` dávejte jen administrátorům.
-- Bez tabulek oprávnění platí jen pravidla tříd `PermissionProvider`.
+- Základní role guest, user a admin pocházejí ze souborů ACL a tady je změnit nejde; název vlastní role je klíčem
+  jejích privilegií i rolí uživatelů, takže změnit jde jen její popis.
+- Stránky se kontrolují privilegii `users`, `roles` a `permissions` nad `Backend:Permission`, změny
+  privilegii `edit` a `delete`.
+- Kdo smí upravovat role uživatelů, může přidělit jakoukoli roli včetně `admin`; `edit` dávejte jen administrátorům.
+- Bez tabulek (např. před migracemi) platí jen soubory ACL.
 
 ## Databáze
 
-Balíček pracuje s těmito tabulkami:
-
-- `roles`
-- `users_roles`
-- `resources`
-- `authorization`
-
-Výchozí migrace přidají také základní role a zdroje oprávnění administrace.
-
-## Role uživatelů
-
-Zde přiřazené role se při přihlášení načítají přes `getRolesByUser()` z
-[drago-ex/project-auth](https://github.com/drago-ex/project-auth#permissions); jeho README ukazuje kód.
-
-## Privilegia ostatních balíčků
-
-Balíčky s vlastní administrací (např. project-blog, project-static-page) dodávají svá privilegia v
-`migrations-permission/`. Naimportujte je ručně, aby je bylo možné zde přidělovat rolím:
-
-```bash
-php vendor/bin/migration db:migrate vendor/drago-ex/project-blog/migrations-permission
-```
-
-Stejně dodává project-backend-ui přehled administrace (`Backend:Admin`, `default-read`): přidělte ho roli, která má vstoupit
-do administrace; bez něj se role po přihlášení dostane na úvodní stránku webu.
-
-Tlačítka pro přidání, úpravu a mazání se řídí privilegiem `{component}-write` přes trait `WriteAccess` z
-[drago-ex/permission](https://github.com/drago-ex/permission#write-buttons).
+- `roles`: vlastní role (název, popis)
+- `role_privileges`: role, zdroj (presenter) a privilegium
+- `user_roles` z drago-ex/project-auth: role uživatelů
