@@ -12,6 +12,10 @@
 "Allowed (inherited)": "Povoleno (zděděno)"
 "Allowed by the ACL or a parent role, change it there.": "Povoleno v ACL nebo nadřazenou rolí, změňte ho tam."
 "permissions": "oprávnění"
+"Presenters": "Prezentery"
+"Page": "Stránka"
+"Action": "Akce"
+"Form": "Formulář"
 "No permissions found": "Nebyla nalezena žádná oprávnění"
 "Select a role to set its permissions.": "Vyberte roli, jejíž oprávnění chcete nastavit."
 "Administrator role has full access granted by default. These settings have no effect.":
@@ -67,3 +71,7 @@
 "Delete successful.": "Záznam byl úspěšně smazán."
 "Unknown status code.": "Neznámý stavový kód."
 "The item could not be deleted.": "Záznam se nepodařilo smazat."
+
+# descriptions of the privileges (permissionLabels in acl.neon)
+"Managing roles, user roles and permissions (adding and editing)": "Správa rolí, rolí uživatelů a oprávnění (přidání a úprava)"
+"Deleting roles and removing the roles of users": "Mazání rolí a odebírání rolí uživatelům"

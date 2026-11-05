@@ -10,7 +10,7 @@ use App\Presentation\Backend\Permission\RoleRules;
 use Dibi\Exception;
 use Drago\Permission\Access;
 use Drago\Permission\Role;
-use Nette\Application\Attributes\Parameter;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\BadRequestException;
 use Nette\Security\Permission;
@@ -24,8 +24,12 @@ use Throwable;
  */
 class AuthorizationControl extends BaseControl
 {
-	#[Parameter]
+	#[Persistent]
 	public ?string $role = null;
+
+	/** The presenter whose privileges are shown; the first one of the ACL when not set. */
+	#[Persistent]
+	public ?string $resource = null;
 
 
 	public function __construct(
@@ -66,24 +70,42 @@ class AuthorizationControl extends BaseControl
 		$template->isAdminRole = $role === Role::Admin;
 
 		foreach ($acl->getResources() as $resource) {
-			foreach ($this->privilegeList->get($resource) as $privilege) {
+			$labels = $this->privilegeList->getLabels($resource);
+			foreach ($this->privilegeList->getSources($resource) as $privilege => $sources) {
+				$privilege = (string) $privilege;
 				$isOwn = in_array($privilege, $own[$resource] ?? [], true);
 				$allowed = $acl->isAllowed($role, $resource, $privilege);
 				$template->groups[$resource][] = [
 					'privilege' => $privilege,
+					'label' => $labels[$privilege] ?? null,
+					'sources' => $sources,
 					'allowed' => $allowed,
 					'own' => $isOwn,
 					'inherited' => $allowed && !$isOwn,
 				];
 				if ($allowed) {
 					$template->allowedCount++;
+					$template->resourceAllowed[$resource] = ($template->resourceAllowed[$resource] ?? 0) + 1;
 				} else {
 					$template->deniedCount++;
 				}
 			}
 		}
 
+		$resources = array_keys($template->groups);
+		$template->resource = in_array($this->resource, $resources, true)
+			? (string) $this->resource
+			: (string) ($resources[0] ?? '');
+
 		$template->render();
+	}
+
+
+	/** Shows the privileges of another presenter; the page is enough. */
+	#[Access]
+	public function handleResource(): void
+	{
+		$this->redrawControl('permissions');
 	}
 
 

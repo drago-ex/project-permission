@@ -20,7 +20,8 @@
 		"drago-ex/project-backend": "^1.0",
 		"drago-ex/datagrid": "^1.0",
 		"nette/caching": "^3.3",
-		"nette/utils": "^4.0"
+		"nette/utils": "^4.0",
+		"tracy/tracy": "^2.10"
 	},
 	"suggest": {
 		"drago-ex/project-backend-ui": "Administration layout; the permissions get their menu item from Backend/Permission/3.menu.neon."

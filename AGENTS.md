@@ -26,9 +26,24 @@ the static ACL of drago-ex/permission. The workspace rules are in `../AGENTS.md`
   `user_roles` of project-auth (`UserRoleEntity`). A custom role's name is immutable (readonly in the edit form,
   kept from the record on save); `RolesRepository::deleteRole()` removes the role, its privileges and its user
   rows in one transaction. A new role the ACL already knows is refused. Packages ship no permission seeds.
-- `PrivilegeList` = `PrivilegeCatalog::getPrivileges()` per ACL resource, cached with `Cache::Files` of all
-  `*.php`/`*.latte` of the presenter directory. A toggle is validated against that list and the ACL roles (not
-  admin) before `allow()`/`deny()` and applied to the live ACL too, so the redrawn snippet is right.
+- `PrivilegeList` caches per ACL resource `PrivilegeCatalog::getSources()` (privileges with the places of the code
+  by kind Page/Signal/Form) and the titles of the page templates (`{block title}{_'…'}{/block}`, read by a regex),
+  with `Cache::Files` of all `*.php`/`*.latte` of the presenter directory. `get()` = the privilege names;
+  `getLabels()` = the parameter `permissionLabels` (merged by Nette from the `acl.neon` files of the packages,
+  `[]` in `conf.neon`, passed as `labels: %permissionLabels%`) over the template titles, untranslated keys.
+  A toggle is validated against `get()` and the ACL roles (not admin) before `allow()`/`deny()` and applied to the
+  live ACL too, so the redrawn snippet is right.
+- Permissions page (`AuthorizationControl`, `Authorization.latte`): two columns, presenters on the left (`nav`
+  without borders, `allowed/total` from `resourceAllowed`), privileges of the selected one on the right. The
+  selected presenter is `#[Persistent] $resource` (role and resource are persistent, so links to `this` such as the language switch keep them) (first one when unknown); the links call `handleResource()`
+  (`#[Access]`, only redraws the snippet `permissions`), the toggle URL carries role and resource. Each privilege
+  shows its labels (`$kinds` maps the PrivilegeCatalog kinds to "Page", "Action", "Form"; the source names are the
+  tooltip). A privilege is one row of a Bootstrap grid: name with labels (`col-md-5 col-xl-4`, so the descriptions
+  line up), the translated description (`col-md`) and the toggle (`col-md-auto`); on small screens they stack.
+- `conf.neon` registers `Drago\Permission\Tracy\RoleSwitchPanel` in `tracy: bar:` (debug mode only), so every project
+  with this package can try its custom roles; hence `tracy/tracy` in `require`.
+- Descriptions in a package's `acl.neon` must quote a text with parentheses: NEON reads `text (…)` as an entity
+  and the whole DI container fails.
 - Permissions page states: `own` (a row of `role_privileges`, toggle), `inherited` (allowed by the ACL files or a
   parent role, locked), denied; admin is all locked. The users page lists every user
   (`COALESCE(GROUP_CONCAT(role), 'user')` in a derived table, so the grid filters and sorts `roles`); the form only

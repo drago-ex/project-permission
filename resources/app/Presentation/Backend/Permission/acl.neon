@@ -1,4 +1,12 @@
 # The administration of roles and permissions; administrators are allowed everything (permission).
+parameters:
+	# descriptions for the permissions page of drago-ex/project-permission
+	permissionLabels:
+		Backend:Permission:
+			edit: 'Managing roles, user roles and permissions (adding and editing)'
+			delete: Deleting roles and removing the roles of users
+
+
 security:
 	resources:
 		Backend:Permission:

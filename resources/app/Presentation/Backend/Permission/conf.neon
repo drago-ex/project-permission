@@ -1,6 +1,13 @@
+# descriptions of privileges for the permissions page; the acl.neon of a package adds its own, e.g.
+# permissionLabels: {Backend:Blog: {edit: Editing articles}}; a page without one shows the title of its
+# template. Quote a description with parentheses, NEON reads `text (…)` as an entity.
+parameters:
+	permissionLabels: []
+
+
 services:
 	- App\Presentation\Backend\Permission\RoleRules
-	- App\Presentation\Backend\Permission\PrivilegeList
+	- App\Presentation\Backend\Permission\PrivilegeList(labels: %permissionLabels%)
 	- Drago\Permission\PrivilegeCatalog
 
 
@@ -10,3 +17,10 @@ decorator:
 	Nette\Security\Authorizator:
 		setup:
 			- @App\Presentation\Backend\Permission\RoleRules::apply(@self)
+
+
+# the Tracy bar switches the roles of the signed-in user to try the application as another role;
+# Nette adds bar panels only in debug mode
+tracy:
+	bar:
+		- Drago\Permission\Tracy\RoleSwitchPanel

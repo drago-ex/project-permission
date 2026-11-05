@@ -15,9 +15,16 @@ class AuthorizationTemplate extends BaseTemplate
 	/**
 	 * The privileges by resource: allowed, own (set here, so it can be toggled) or inherited (allowed by the neon
 	 * files or a parent role, locked here).
-	 * @var array<string, list<array{privilege: string, allowed: bool, own: bool, inherited: bool}>>
+	 * The sources are the places of the code that need the privilege, by kind (PrivilegeCatalog::Page, Signal, Form).
+	 * @var array<string, list<array{privilege: string, label: ?string, sources: array<string, list<string>>, allowed: bool, own: bool, inherited: bool}>>
 	 */
 	public array $groups = [];
+
+	/** The presenter whose privileges are shown. */
+	public string $resource = '';
+
+	/** @var array<string, int> the number of allowed privileges by resource, for the menu */
+	public array $resourceAllowed = [];
 	public int $allowedCount = 0;
 	public int $deniedCount = 0;
 	public bool $isAdminRole = false;

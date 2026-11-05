@@ -62,6 +62,26 @@ The privileges offered are read from the code of the presenters: their pages (`d
 (`delete`, `approveComment`, …), so a new page or button of any package shows up by itself. What the ACL files or
 a parent role already allow is shown as inherited and locked; the administrator is allowed everything.
 
+The permissions page of a role lists the presenters on the left, with the number of allowed privileges, and the
+privileges of the selected one on the right. Each privilege has labels of the places of the code that need it
+(Page, Action, Form; their names on hover) and a description, in one row with its switch.
+
+## Descriptions of Privileges
+
+A package describes its privileges in the `acl.neon` next to its presenter and translates the texts in its own
+translations:
+
+```neon
+parameters:
+	permissionLabels:
+		Backend:Blog:
+			edit: 'Managing articles and categories (adding and editing)'
+			delete: Deleting articles and categories
+```
+
+A page without a description shows the title of its template (`{block title}{_'Articles'}{/block}`). Quote a
+description with parentheses, NEON would read it as an entity. Without this package the parameter is not used.
+
 ```latte
 {link :Backend:Permission:}       {* the menu item: roles of users, or roles without that privilege *}
 {link :Backend:Permission:users}  {* roles of users *}
@@ -78,3 +98,9 @@ The menu item comes from `Backend/Permission/3.menu.neon` with
 - Whoever may edit the roles of users can give any role, including `admin`; give `edit` only to administrators.
 - The base roles come from the ACL files and cannot be changed here. The name of a custom role is its key, so
   only its description can be changed.
+
+## Role Switch in Tracy
+
+In debug mode the Tracy bar has the role switch panel of [drago-ex/permission](https://github.com/drago-ex/permission)
+(registered in `Backend/Permission/conf.neon`): choose a role, custom roles included, to try the application as
+that role without another account; **My roles** brings the real ones back.

@@ -54,68 +54,95 @@
 		</div>
 	{/if}
 
-	{* permissions list, by presenter *}
-	<div class="card-body">
-		<div class="d-flex flex-column gap-3">
-			{foreach $groups as $resource => $items}
+	{* permissions: the presenters on the left, the privileges of the selected one on the right *}
+	{if $groups}
+		<div class="row g-4">
 
-				{* resource group *}
-				<div class="overflow-hidden">
+			{* presenters *}
+			<div class="col-md-3 col-xl-2">
+				<nav class="nav flex-column" aria-label="{_'Presenters'}">
+					{foreach $groups as $name => $items}
+						<a n:href="resource!, role: $role, resource: $name" data-naja-history="off"
+							n:class="'ajax', 'nav-link', 'd-flex', 'justify-content-between', 'align-items-center', 'gap-2', 'px-2', 'py-1', 'rounded', $name === $resource ? 'bg-body-tertiary text-body-emphasis fw-semibold' : 'text-body-secondary'"
+							n:attr="aria-current: $name === $resource ? 'true'">
+							<span class="text-truncate">{$name}</span>
+							<span class="text-body-secondary fw-normal">{$resourceAllowed[$name] ?? 0}/{$items|length}</span>
+						</a>
+					{/foreach}
+				</nav>
+			</div>
 
-					{* resource header *}
-					<div class="authorization-resource-header px-4 py-2 rounded">
-						<div class="fw-semibold text-body-emphasis">{$resource}</div>
-						<div class="small text-body-secondary">
-							{$items|length} {_'permissions'}
-						</div>
+			{* privileges of the selected presenter *}
+			<div class="col-md-9 col-xl-10">
+				{var $items = $groups[$resource]}
+				{var $kinds = [
+					Drago\Permission\PrivilegeCatalog::Page => 'Page',
+					Drago\Permission\PrivilegeCatalog::Signal => 'Action',
+					Drago\Permission\PrivilegeCatalog::Form => 'Form',
+				]}
+
+				{* resource header *}
+				<div class="authorization-resource-header px-4 py-2 mb-2 rounded">
+					<div class="fw-semibold text-body-emphasis">{$resource}</div>
+					<div class="small text-body-secondary">
+						{$items|length} {_'permissions'}
 					</div>
+				</div>
 
-					<div class="list-group list-group-flush">
-						{foreach $items as $item}
-							{var $inputId = "permission-{$role}-{$resource}-{$item['privilege']}"}
-							{* a privilege of the neon files or of a parent role cannot be denied here, it is shown as inherited *}
-							{var $isLocked = $isAdminRole || $item['inherited'] || !$writeAllowed}
+				<div class="list-group list-group-flush">
+					{foreach $items as $item}
+						{var $inputId = "permission-{$role}-{$resource}-{$item['privilege']}"}
+						{* a privilege of the neon files or of a parent role cannot be denied here, it is shown as inherited *}
+						{var $isLocked = $isAdminRole || $item['inherited'] || !$writeAllowed}
 
-							<div n:class="'list-group-item', 'authorization-permission-item', 'px-3', $iterator->isLast() ? 'pt-1 pb-3' : 'pt-2 pb-0 border-bottom-0'">
-								<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+						<div class="list-group-item list-group-item-action authorization-permission-item px-3 py-1 border-0 rounded">
+							{* one line: the privilege with labels of the places of the code that need it (their names on hover),
+								its description and the toggle; the columns line up in every row *}
+							<div class="row g-2 align-items-center">
 
-									{* privilege *}
-									<div class="min-w-0 small">
-										<span class="fw-semibold text-body-emphasis">{$item['privilege']}</span>
-									</div>
-
-									{* permission toggle *}
-									<div class="d-flex align-items-center gap-2 flex-shrink-0">
-										<input
-											type="checkbox"
-											id="{$inputId}"
-											data-naja-history="off"
-											autocomplete="off"
-											data-url="{link togglePermission!, role: $role, resource: $resource, privilege: $item['privilege']}"
-											n:class="'btn-check', !$isLocked ? 'js-permission-toggle'"
-											n:attr="checked: $item['allowed'], disabled: $isLocked">
-
-										<label for="{$inputId}" n:class="'btn', 'btn-sm', 'px-3', 'fw-semibold', 'rounded-pill', $item['allowed'] ? 'btn-success' : 'btn-danger'"
-											n:attr="title: $item['inherited'] ? ('Allowed by the ACL or a parent role, change it there.'|translate)">
-											{if $item['inherited']}{_'Allowed (inherited)'}{elseif $item['allowed']}{_'Allowed'}{else}{_'Denied'}{/if}
-										</label>
-									</div>
-
+								<div class="col-md-5 col-xl-4 d-flex flex-wrap align-items-center gap-2 min-w-0">
+									<span class="fw-semibold text-body-emphasis">{$item['privilege']}</span>
+									{foreach $kinds as $kind => $kindLabel}
+										<span n:ifset="$item['sources'][$kind]" class="badge rounded-pill bg-body-secondary text-body fw-normal"
+											title="{implode(', ', $item['sources'][$kind])}">{_$kindLabel}</span>
+									{/foreach}
 								</div>
+
+								<div class="col-md text-body-secondary min-w-0">
+									{if $item['label'] !== null}{_$item['label']}{/if}
+								</div>
+
+								{* permission toggle *}
+								<div class="col-md-auto d-flex align-items-center gap-2">
+									<input
+										type="checkbox"
+										id="{$inputId}"
+										data-naja-history="off"
+										autocomplete="off"
+										data-url="{link togglePermission!, role: $role, resource: $resource, privilege: $item['privilege']}"
+										n:class="'btn-check', !$isLocked ? 'js-permission-toggle'"
+										n:attr="checked: $item['allowed'], disabled: $isLocked">
+
+									<label for="{$inputId}" n:class="'btn', 'btn-sm', 'px-3', 'fw-semibold', 'rounded-pill', $item['allowed'] ? 'btn-success' : 'btn-danger'"
+										n:attr="title: $item['inherited'] ? ('Allowed by the ACL or a parent role, change it there.'|translate)">
+										{if $item['inherited']}{_'Allowed (inherited)'}{elseif $item['allowed']}{_'Allowed'}{else}{_'Denied'}{/if}
+									</label>
+								</div>
+
 							</div>
-						{/foreach}
-					</div>
+						</div>
+					{/foreach}
 				</div>
-
-			{else}
-
-				{* empty state *}
-				<div class="px-4 py-5 text-center text-body-secondary bg-body-tertiary border rounded-3">
-					{if $role === ''}{_'Select a role to set its permissions.'}{else}{_'No permissions found'}{/if}
-				</div>
-
-			{/foreach}
+			</div>
 		</div>
-	</div>
+
+	{else}
+
+		{* empty state *}
+		<div class="px-4 py-5 text-center text-body-secondary bg-body-tertiary border rounded-3">
+			{if $role === ''}{_'Select a role to set its permissions.'}{else}{_'No permissions found'}{/if}
+		</div>
+
+	{/if}
 
 {/snippet}
