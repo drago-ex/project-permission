@@ -63,6 +63,7 @@
 # delete modal
 "Confirm delete": "Potvrzení smazání"
 "Are you sure you want to delete the item?": "Opravdu chcete tuto položku smazat?"
+"Are you sure you want to delete the chosen items?": "Opravdu chcete smazat vybrané položky?"
 "Confirm": "Potvrdit"
 
 # flash messages and errors
@@ -75,3 +76,4 @@
 # descriptions of the privileges (permissionLabels in acl.neon)
 "Managing roles, user roles and permissions (adding and editing)": "Správa rolí, rolí uživatelů a oprávnění (přidání a úprava)"
 "Deleting roles and removing the roles of users": "Mazání rolí a odebírání rolí uživatelům"
+"Exporting roles and users to CSV": "Export rolí a uživatelů do CSV"

@@ -24,7 +24,8 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	use Component;
 	use AccessCheck;
 
-	public ?string $deleteTitle = null;
+	/** @var list<string> Titles of the items the confirmation dialog asks about */
+	public array $deleteTitles = [];
 	protected string $snippetMessage = 'message';
 
 
@@ -40,7 +41,7 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 		$template->setTranslator($this->translator);
 		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
 		$template->modalId = $this->getUniqueIdComponent(self::Modal);
-		$template->deleteTitle = $this->deleteTitle;
+		$template->deleteTitles = $this->deleteTitles;
 		$template->writeAllowed = $this->isAllowed('edit');
 		return $template;
 	}
@@ -64,17 +65,28 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 	}
 
 
-	/** Opens the confirmation dialog; its form posts the id to delete(). */
+	/**
+	 * Opens the confirmation dialog for the items chosen in the grid (its bulk action "delete"); the form
+	 * of the dialog posts their ids to delete().
+	 * @param array<mixed> $ids
+	 */
 	#[Requires(ajax: true)]
-	public function handleDelete(int $id): void
+	public function handleDelete(array $ids): void
 	{
-		$title = $this->getItemTitle($id);
-		if ($title === null) {
+		$titles = [];
+		foreach ($ids as $id) {
+			$title = is_numeric($id) && (int) $id > 0 ? $this->getItemTitle((int) $id) : null;
+			if ($title !== null) {
+				$titles[(int) $id] = $title;
+			}
+		}
+
+		if ($titles === []) {
 			$this->error();
 		}
 
-		$this->deleteTitle = $title;
-		$this['delete']->setDefaults(['id' => $id]);
+		$this->deleteTitles = array_values($titles);
+		$this['delete']->setDefaults(['ids' => implode(',', array_keys($titles))]);
 		$this->redrawModal();
 	}
 
@@ -120,18 +132,14 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 		$form = $button->getForm();
 
 		try {
-			$this->deleteItem($form->getValues()['id']);
+			foreach (explode(',', (string) $form->getValues()['ids']) as $id) {
+				$this->deleteItem((int) $id);
+			}
 
 			$this->addFlashMessage('Delete successful.', Alert::Success);
 			$this->addRedraw($this->snippetMessage);
 
 			$this->closeComponent();
-
-			$dataGrid = $this->getComponent('dataGrid');
-
-			if ($dataGrid instanceof DataGrid) {
-				$dataGrid->redrawDataGrid();
-			}
 
 		} catch (\Throwable $e) {
 			// Code 1 marks a message meant for the user; anything else is unexpected and gets logged.
@@ -144,6 +152,12 @@ abstract class BaseControl extends ExtraControl implements OffcanvasHandle, Moda
 
 			$this->addFlashMessage($message, Alert::Warning);
 			$this->addRedraw($this->snippetMessage);
+		} finally {
+			// items deleted before an error are gone, so the grid is redrawn in both cases
+			$dataGrid = $this->getComponent('dataGrid');
+			if ($dataGrid instanceof DataGrid) {
+				$dataGrid->redrawDataGrid();
+			}
 		}
 	}
 

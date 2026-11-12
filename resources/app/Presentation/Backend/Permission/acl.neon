@@ -5,6 +5,7 @@ parameters:
 		Backend:Permission:
 			edit: 'Managing roles, user roles and permissions (adding and editing)'
 			delete: Deleting roles and removing the roles of users
+			export: Exporting roles and users to CSV
 
 
 security:

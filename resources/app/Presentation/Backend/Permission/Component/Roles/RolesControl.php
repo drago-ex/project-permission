@@ -77,6 +77,7 @@ class RolesControl extends BaseControl
 	{
 		$grid = new DataGrid;
 		$grid->setTranslator($this->translator);
+		$grid->setFilterMode('inline');
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
@@ -86,18 +87,27 @@ class RolesControl extends BaseControl
 		$grid->addColumnText('name', 'System name')
 			->setFilterText();
 
-		// A click on the row opens the form, the Edit button is then hidden by the grid.
-		$grid->setRowClickAction('edit');
-		$grid->addAction(
+		// The actions stand in the bar under the table and work with the rows chosen by their checkboxes
+		// or by a click anywhere on a row; Edit is for one row.
+		$grid->setRowClickAction('select');
+		$grid->addBulkAction(
 			name: 'permissions',
 			label: 'Permissions',
-			callback: fn(int $id) => $this->handlePermissions($id),
-			class: 'btn btn-xs btn-secondary',
+			callback: fn(array $ids) => $this->handlePermissions($ids[0]),
+			icon: 'bi bi-shield-lock',
+			single: true,
+			// it leads to another page, so the request is not sent by AJAX
+			ajax: false,
 		)->setVisible($this->isAllowed('permissions'));
-		$grid->addActionEdit(fn(int $id) => $this->handleEdit($id))
+		$grid->addBulkActionEdit(fn(int $id) => $this->handleEdit($id))
 			->setVisible($this->isAllowed('edit'));
-		$grid->addActionDelete(fn(int $id) => $this->handleDelete($id))
+		$grid->addBulkActionExport()
+			->setVisible($this->isAllowed('export'));
+		$grid->addBulkActionDelete(fn(array $ids) => $this->handleDelete($ids))
 			->setVisible($this->isAllowed('delete'));
+
+		// "Export" under the table: all rows of the current filters
+		$grid->setExport('roles.csv', button: $this->isAllowed('export'));
 
 		return $grid;
 	}

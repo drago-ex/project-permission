@@ -55,10 +55,13 @@ the static ACL of drago-ex/permission. The workspace rules are in `../AGENTS.md`
 
 ## Permissions
 Privileges of `Backend:Permission`: pages `users`, `roles`, `permissions`; `edit` (forms with `#[Access('edit')]`
-on their factories, toggles, row edit); `delete` (dialog, `delete` form, row delete).
+on their factories, toggles, the bulk action Edit); `delete` (dialog, `delete` form, the bulk action Delete);
+`export` (CSV of roles and users).
 `BaseControl::handleOpenModal/OpenOffcanvas` and `RolesControl::handlePermissions` are `#[Access]` (page enough).
 `BaseControl` uses `AccessCheck`; `$writeAllowed` = `isAllowed('edit')`, grid actions
 `setVisible($this->isAllowed(...))`.
+
+Every grid has inline filters, no row menu and no row click that opens the form: the actions are bulk actions of drago-ex/datagrid in the bar under the table (roles: Permissions [one row, opens the permissions of the role], Edit, Export, Delete; users: Edit, Export, Delete), a click anywhere on a row chooses it (`setRowClickAction('select')`), states are badges that are only read (`setBadges()`). The name of a bulk action is its privilege, and the control has a `handle<Name>()` method the callback calls, so `PrivilegeCatalog` finds the privilege; `export` comes from `DataGrid::handleExport()`. `BaseControl::handleDelete(array $ids)` opens one confirmation for all chosen items (`$deleteTitles`, the hidden field `ids` of the delete form) and `deleteItem()` runs for each.
 
 ## Commands
 ```bash

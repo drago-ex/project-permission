@@ -66,6 +66,7 @@ class UsersControl extends BaseControl
 	{
 		$grid = new DataGrid;
 		$grid->setTranslator($this->translator);
+		$grid->setFilterMode('inline');
 		$grid->setDataSource($this->userRolesRepository->getAllUserRoles())
 			->setPrimaryKey('id');
 
@@ -75,12 +76,18 @@ class UsersControl extends BaseControl
 		$grid->addColumnText('roles', 'Roles')
 			->setFilterText();
 
-		// A click on the row opens the form, the Edit button is then hidden by the grid.
-		$grid->setRowClickAction('edit');
-		$grid->addActionEdit(fn(int $id) => $this->handleEdit($id))
+		// The actions stand in the bar under the table and work with the rows chosen by their checkboxes
+		// or by a click anywhere on a row; Edit is for one row.
+		$grid->setRowClickAction('select');
+		$grid->addBulkActionEdit(fn(int $id) => $this->handleEdit($id))
 			->setVisible($this->isAllowed('edit'));
-		$grid->addActionDelete(fn(int $id) => $this->handleDelete($id))
+		$grid->addBulkActionExport()
+			->setVisible($this->isAllowed('export'));
+		$grid->addBulkActionDelete(fn(array $ids) => $this->handleDelete($ids))
 			->setVisible($this->isAllowed('delete'));
+
+		// "Export" under the table: all rows of the current filters
+		$grid->setExport('users.csv', button: $this->isAllowed('export'));
 
 		return $grid;
 	}
