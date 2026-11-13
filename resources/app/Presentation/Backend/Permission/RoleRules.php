@@ -73,7 +73,8 @@ readonly class RoleRules
 
 
 	/**
-	 * The names of the custom roles and the privileges as [role, resource, privilege].
+	 * The names of the custom roles and the privileges as [role, resource, privilege]. A role that is not active
+	 * stays a role (its users keep what the role user may do), but its own privileges are left out.
 	 * @return array{list<string>, list<array{string, string, string}>}
 	 * @throws Throwable
 	 */
@@ -86,6 +87,13 @@ readonly class RoleRules
 		$privileges = [];
 		$rows = $this->connection->select('*')
 			->from(RolePrivilegeEntity::Table)
+			->where(
+				'%n NOT IN (SELECT %n FROM %n WHERE %n = 0)',
+				RolePrivilegeEntity::ColumnRole,
+				RolesEntity::ColumnName,
+				RolesEntity::Table,
+				RolesEntity::ColumnActive,
+			)
 			->fetchAll();
 
 		foreach ($rows as $row) {

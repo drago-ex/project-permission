@@ -4,12 +4,9 @@
 "Users data": "Uživatelské role"
 
 # authorization overview
-"Setting access for the selected role": "Nastavení přístupů pro vybranou roli"
-"Role": "Role"
-"Apply": "Použít"
 "Allowed": "Povoleno"
 "Denied": "Zakázáno"
-"Allowed (inherited)": "Povoleno (zděděno)"
+"Inherited": "Zděděno"
 "Allowed by the ACL or a parent role, change it there.": "Povoleno v ACL nebo nadřazenou rolí, změňte ho tam."
 "permissions": "oprávnění"
 "Presenters": "Prezentery"
@@ -17,7 +14,6 @@
 "Action": "Akce"
 "Form": "Formulář"
 "No permissions found": "Nebyla nalezena žádná oprávnění"
-"Select a role to set its permissions.": "Vyberte roli, jejíž oprávnění chcete nastavit."
 "Administrator role has full access granted by default. These settings have no effect.":
 	"Role administrátora má ve výchozím nastavení povolený plný přístup. Tato nastavení na ni nemají vliv."
 
@@ -28,28 +24,48 @@
 # datagrid actions
 "Add item": "Přidat položku"
 "Assign roles to the users; a user without a role has the role user.": "Přidělujte uživatelům role; uživatel bez role má roli user."
-"Custom roles for the users; the base roles guest, user and admin are set in the ACL.":
-	"Vlastní role pro uživatele; základní role guest, user a admin jsou nastavené v ACL."
+"Custom roles for the users and what each role may do; the base roles guest, user and admin are set in the ACL.":
+	"Vlastní role pro uživatele a co která role smí; základní role guest, user a admin jsou nastavené v ACL."
+"Base roles": "Základní role"
+"Set the permissions of the role": "Nastavit oprávnění role"
 "Edit": "Upravit"
 "Delete": "Smazat"
 "Permissions": "Oprávnění"
 
 # datagrid columns
-"Role description": "Popis role"
-"System name": "Systémový název"
+"Role": "Role"
+"Slug": "Slug"
+"Users": "Uživatelé"
+"Description": "Popis"
+"State": "Stav"
+"Active": "Aktivní"
+"Inactive": "Neaktivní"
 "User": "Uživatel"
 "Roles": "Role"
+"The role has been activated.": "Role byla aktivována."
+"The role has been deactivated.": "Role byla deaktivována."
 
 # roles form
 "Manage Role": "Správa role"
-"Role name": "Název role"
+"Role name": "Systémový název (slug)"
 "e.g. member, editor": "např. člen, editor"
 "Please enter role name.": "Zadejte prosím název role."
 "Only lowercase letters, numbers and hyphens.": "Použijte pouze malá písmena, číslice a pomlčky."
 "The role name can have at most %d characters.": "Název role může mít nejvýše %d znaků."
-"Description role": "Popis role"
-"Please enter description role.": "Zadejte prosím popis role."
+"Role title": "Název role"
+"e.g. Editor": "např. Redaktor"
+"Please enter the title of the role.": "Zadejte prosím název role."
+"The title can have at most %d characters.": "Název může mít nejvýše %d znaků."
+"What the role is for": "K čemu role slouží"
 "The description can have at most %d characters.": "Popis může mít nejvýše %d znaků."
+"Icon": "Ikona"
+"Person": "Osoba"
+"People": "Lidé"
+"Pencil": "Tužka"
+"Comments": "Komentáře"
+"Eye": "Oko"
+"Star": "Hvězda"
+"Shield": "Štít"
 "Send": "Odeslat"
 "Edit roles": "Upravit role"
 "This role already exists.": "Tato role již existuje."
@@ -74,6 +90,8 @@
 "The item could not be deleted.": "Záznam se nepodařilo smazat."
 
 # descriptions of the privileges (permissionLabels in acl.neon)
+"Viewing the permissions of roles": "Zobrazení oprávnění rolí"
+"Activating and deactivating roles": "Aktivace a deaktivace rolí"
 "Managing roles, user roles and permissions (adding and editing)": "Správa rolí, rolí uživatelů a oprávnění (přidání a úprava)"
 "Deleting roles and removing the roles of users": "Mazání rolí a odebírání rolí uživatelům"
 "Exporting roles and users to CSV": "Export rolí a uživatelů do CSV"

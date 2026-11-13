@@ -22,7 +22,7 @@ where you adapt them.
 
 ## Database
 
-The migrations create the tables `roles` (custom roles with a description) and `role_privileges` (role, resource,
+The migrations create the tables `roles` (custom roles with a title, a description, an icon and a state) and `role_privileges` (role, resource,
 privilege); the roles of users are in `user_roles` of [drago-ex/project-auth](https://github.com/drago-ex/project-auth),
 so the migrations run after it. Run them with `bin/project-setup` of Drago Project or
 `php vendor/bin/migration db:migrate --packages`. Without the tables only the ACL files apply.
@@ -62,8 +62,10 @@ The privileges offered are read from the code of the presenters: their pages (`d
 (`delete`, `approveComment`, …), so a new page or button of any package shows up by itself. What the ACL files or
 a parent role already allow is shown as inherited and locked; the administrator is allowed everything.
 
-The permissions page of a role lists the presenters on the left, with the number of allowed privileges, and the
-privileges of the selected one on the right. Each privilege has labels of the places of the code that need it
+The list of roles shows each role with its icon, its system name, the number of its users, a description and
+its state; the privileges of a role that is not active do not apply. Every role in the list has a shield button, which opens its permissions in a side panel; the base roles
+are in the menu "Base roles" above the list. The panel lists the presenters on the left, with the number of
+allowed privileges, and the privileges of the selected one on the right. Each privilege has labels of the places of the code that need it
 (Page, Action, Form; their names on hover) and a description, in one row with its switch.
 
 ## Descriptions of Privileges
@@ -93,11 +95,11 @@ The menu item comes from `Backend/Permission/3.menu.neon` with
 
 ## Permissions
 
-- The pages are checked by the privileges `users`, `roles` and `permissions` of `Backend:Permission`, the changes
-  by `edit` and `delete`.
+- The pages are checked by the privileges `users` and `roles` of `Backend:Permission`, opening the permissions
+  of a role by `permissions`, its state by `activate`, the changes by `edit` and `delete`.
 - Whoever may edit the roles of users can give any role, including `admin`; give `edit` only to administrators.
 - The base roles come from the ACL files and cannot be changed here. The name of a custom role is its key, so
-  only its description can be changed.
+  it cannot be changed; its title, description and icon can.
 
 ## Role Switch in Tracy
 

@@ -10,7 +10,6 @@ use App\Presentation\Backend\Permission\RoleRules;
 use Dibi\Exception;
 use Drago\Permission\Access;
 use Drago\Permission\Role;
-use Nette\Application\Attributes\Persistent;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\BadRequestException;
 use Nette\Security\Permission;
@@ -18,18 +17,21 @@ use Throwable;
 
 
 /**
- * The privileges of one role: those of every presenter of the ACL, read from the code (PrivilegeList). A privilege
- * set here can be toggled; one allowed by the neon files or a parent role is shown as inherited and locked.
+ * The privileges of one role in an offcanvas of the roles page: those of every presenter of the ACL, read from
+ * the code (PrivilegeList). A privilege set here can be toggled; one allowed by the neon files or a parent role
+ * is shown as inherited and locked. The role and the presenter come with every signal, nothing is kept in the URL.
  * @property-read AuthorizationTemplate $template
  */
 class AuthorizationControl extends BaseControl
 {
-	#[Persistent]
-	public ?string $role = null;
+	/** The base roles of the ACL with their labels (translated); custom roles have their title. */
+	public const array BaseRoles = [Role::Guest => 'Guest', Role::User => 'User', Role::Admin => 'Administrator'];
+
+	/** The role whose privileges are shown; null until a signal opens one. */
+	private ?string $role = null;
 
 	/** The presenter whose privileges are shown; the first one of the ACL when not set. */
-	#[Persistent]
-	public ?string $resource = null;
+	private ?string $resource = null;
 
 
 	public function __construct(
@@ -53,12 +55,13 @@ class AuthorizationControl extends BaseControl
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/Authorization.latte');
 		$template->setTranslator($this->translator);
-		$template->roles = $roles = $this->getRoles();
+		$template->offcanvasId = $this->getUniqueIdComponent(self::Offcanvas);
 		// without the privilege the toggles are shown, but cannot be clicked
 		$template->writeAllowed = $this->isAllowed('edit');
 
+		// the closed offcanvas is empty
 		$role = $this->role;
-		if ($role === null || !isset($roles[$role])) {
+		if ($role === null) {
 			$template->render();
 			return;
 		}
@@ -66,7 +69,7 @@ class AuthorizationControl extends BaseControl
 		$acl = $this->getAcl();
 		$own = $this->authorizationRepository->getPrivileges($role);
 		$template->role = $role;
-		$template->roleName = $roles[$role];
+		$template->roleName = $this->getRoles()[$role];
 		$template->isAdminRole = $role === Role::Admin;
 
 		foreach ($acl->getResources() as $resource) {
@@ -101,29 +104,48 @@ class AuthorizationControl extends BaseControl
 	}
 
 
-	/** Shows the privileges of another presenter; the page is enough. */
-	#[Access]
-	public function handleResource(): void
+	/**
+	 * Opens the privileges of a role (the shield of the roles grid, the menu of the base roles).
+	 * @throws BadRequestException
+	 */
+	#[Access('permissions')]
+	#[Requires(ajax: true)]
+	public function handleOpen(string $role): void
 	{
+		$this->setRole($role);
+		$this->offCanvasComponent('permissions');
+	}
+
+
+	/**
+	 * Shows the privileges of another presenter.
+	 * @throws BadRequestException
+	 */
+	#[Access('permissions')]
+	#[Requires(ajax: true)]
+	public function handleResource(string $role, string $resource): void
+	{
+		$this->setRole($role);
+		$this->resource = $resource;
 		$this->redrawControl('permissions');
 	}
 
 
 	/**
-	 * Allows or denies a privilege of the selected role; only a privilege of the code of a presenter of the ACL.
+	 * Allows or denies a privilege of the role; only a privilege of the code of a presenter of the ACL.
 	 * @throws BadRequestException
 	 * @throws Exception
 	 * @throws Throwable
 	 */
 	#[Access('edit')]
-	#[Requires(ajax: true)]
-	public function handleTogglePermission(string $resource, string $privilege): void
+	#[Requires(methods: 'POST', ajax: true)]
+	public function handleTogglePermission(string $role, string $resource, string $privilege): void
 	{
-		$role = (string) $this->role;
+		$this->setRole($role);
+		$this->resource = $resource;
 		$acl = $this->getAcl();
 		if (
 			$role === Role::Admin
-			|| !isset($this->getRoles()[$role])
 			|| !$acl->hasResource($resource)
 			|| !in_array($privilege, $this->privilegeList->get($resource), true)
 		) {
@@ -155,17 +177,30 @@ class AuthorizationControl extends BaseControl
 
 
 	/**
-	 * The roles of the ACL by name: the base ones with a translated label, the custom ones with their description.
+	 * The role of a signal; only a role of the ACL.
+	 * @throws BadRequestException
+	 */
+	private function setRole(string $role): void
+	{
+		if (!isset($this->getRoles()[$role])) {
+			$this->error();
+		}
+
+		$this->role = $role;
+	}
+
+
+	/**
+	 * The roles of the ACL by name: the base ones with a translated label, the custom ones with their title.
 	 * @return array<string, string>
 	 * @throws BadRequestException
 	 */
 	private function getRoles(): array
 	{
-		$labels = [Role::Guest => 'Guest', Role::User => 'User', Role::Admin => 'Administrator'];
-		$descriptions = $this->rolesRepository->getDescriptions();
+		$titles = $this->rolesRepository->getTitles();
 		$roles = [];
 		foreach ($this->getAcl()->getRoles() as $role) {
-			$roles[$role] = $descriptions[$role] ?? $this->translate($labels[$role] ?? $role);
+			$roles[$role] = $titles[$role] ?? $this->translate(self::BaseRoles[$role] ?? $role);
 		}
 
 		return $roles;

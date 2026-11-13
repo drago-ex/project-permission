@@ -7,9 +7,10 @@ use App\Presentation\Backend\Permission\Component\BaseTemplate;
 
 class AuthorizationTemplate extends BaseTemplate
 {
-	/** @var array<string, string> the roles of the ACL by name, with their labels */
-	public array $roles = [];
+	/** The role whose privileges are shown, empty while the offcanvas is closed. */
 	public string $role = '';
+
+	/** The label of a base role or the title of a custom one. */
 	public string $roleName = '';
 
 	/**

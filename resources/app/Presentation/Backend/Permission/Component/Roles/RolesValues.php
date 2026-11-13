@@ -8,9 +8,15 @@ use Drago\Utils\ExtraArrayHash;
 class RolesValues extends ExtraArrayHash
 {
 	public const string Name = 'name',
-		Description = 'description';
+		Title = 'title',
+		Description = 'description',
+		Icon = 'icon',
+		Active = 'active';
 
 	public ?int $id = null;
 	public string $name;
-	public string $description;
+	public string $title;
+	public ?string $description = null;
+	public string $icon;
+	public bool $active;
 }

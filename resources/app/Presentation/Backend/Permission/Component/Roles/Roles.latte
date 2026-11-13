@@ -1,4 +1,4 @@
-{templateType App\Presentation\Backend\Permission\Component\BaseTemplate}
+{templateType App\Presentation\Backend\Permission\Component\Roles\RolesTemplate}
 {embed '../../../../Accessory/Widget/@offcanvas.latte', offcanvasId: $offcanvasId, size: '61rem'}
 	{block title}{_'Manage Role'}{/block}
 	{block body}
@@ -6,8 +6,11 @@
 			{embed '../../../../Accessory/Widget/@form.latte', class: 'ajax', name: 'roles', najaHistory: 'off'}
 				{import '../../../../Accessory/Widget/@dismiss-button.latte'}
 				{block form}
+					{include input, name: 'title'}
 					{include input, name: 'name'}
 					{include input, name: 'description'}
+					{include input, type: 'select', name: 'icon'}
+					{include checkbox, name: 'active', switch: true}
 					<div class="col-12">
 						{include buttonDismiss, type: 'offcanvas'}
 						{include submit, name: 'send'}
@@ -32,14 +35,28 @@
 	{/block}
 {/embed}
 
-{embed '../@datagrid-heading.latte', addButton: $writeAllowed}
+{* the privileges of a role, opened by the shield of the grid or the menu of the base roles *}
+{control authorization}
+
+{embed '../@datagrid-heading.latte', addButton: $writeAllowed, permissionsAllowed: $permissionsAllowed, baseRoles: $baseRoles}
 	{block title}
 		{_'Roles data'}
 	{/block}
 	{block subtitle}
-		{_'Custom roles for the users; the base roles guest, user and admin are set in the ACL.'}
+		{_'Custom roles for the users and what each role may do; the base roles guest, user and admin are set in the ACL.'}
 	{/block}
 	{block buttons}
+		{* the base roles are not in the table, their privileges open from this menu *}
+		<div n:if="$permissionsAllowed" class="dropdown">
+			<button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+				<i class="bi bi-shield me-1" aria-hidden="true"></i>{_'Base roles'}
+			</button>
+			<ul class="dropdown-menu dropdown-menu-end">
+				<li n:foreach="$baseRoles as $name => $label">
+					<a n:href="authorization:open!, role: $name" class="ajax dropdown-item" data-naja-history="off">{_$label}</a>
+				</li>
+			</ul>
+		</div>
 		<a n:if="$user->isAllowed('Backend:Permission', 'users')" href="{plink :Backend:Permission:users}" class="btn btn-secondary btn-sm">&larr; {_'Users data'}</a>
 	{/block}
 {/embed}

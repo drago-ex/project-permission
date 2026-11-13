@@ -24,21 +24,39 @@ class RolesRepository
 
 
 	/**
-	 * The descriptions of the custom roles by name.
+	 * The titles of the custom roles by name.
 	 * @return array<string, string>
 	 */
-	public function getDescriptions(): array
+	public function getTitles(): array
 	{
 		return $this->table->read('*')
-			->fetchPairs(RolesEntity::ColumnName, RolesEntity::ColumnDescription);
+			->fetchPairs(RolesEntity::ColumnName, RolesEntity::ColumnTitle);
 	}
 
 
-	/** @return ExtraFluent<RolesEntity> */
+	/**
+	 * The roles with the number of their users (users_total), for the grid.
+	 * @return ExtraFluent<RolesEntity>
+	 */
 	public function getRolesFluent(): ExtraFluent
 	{
-		return $this->table->read('*')
+		return $this->table->read(
+			'*, (SELECT COUNT(*) FROM %n ur WHERE ur.%n = %n.%n) AS users_total',
+			UserRoleEntity::Table,
+			UserRoleEntity::ColumnRole,
+			RolesEntity::Table,
+			RolesEntity::ColumnName,
+		)
 			->orderBy(RolesEntity::PrimaryKey, 'DESC');
+	}
+
+
+	/** @throws Exception */
+	public function setActive(int $id, bool $active): void
+	{
+		$this->table->update([RolesEntity::ColumnActive => $active])
+			->where('%n = ?', RolesEntity::PrimaryKey, $id)
+			->execute();
 	}
 
 

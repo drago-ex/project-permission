@@ -3,7 +3,9 @@ parameters:
 	# descriptions for the permissions page of drago-ex/project-permission
 	permissionLabels:
 		Backend:Permission:
+			permissions: Viewing the permissions of roles
 			edit: 'Managing roles, user roles and permissions (adding and editing)'
+			activate: Activating and deactivating roles
 			delete: Deleting roles and removing the roles of users
 			export: Exporting roles and users to CSV
 

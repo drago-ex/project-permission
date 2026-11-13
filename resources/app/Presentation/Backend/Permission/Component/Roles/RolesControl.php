@@ -2,6 +2,7 @@
 
 namespace App\Presentation\Backend\Permission\Component\Roles;
 
+use App\Presentation\Backend\Permission\Component\Authorization\AuthorizationControl;
 use App\Presentation\Backend\Permission\Component\BaseControl;
 use App\Presentation\Backend\Permission\Component\Factory;
 use App\Presentation\Backend\Permission\RoleRules;
@@ -14,22 +15,25 @@ use Drago\Form\Autocomplete;
 use Drago\Permission\Access;
 use Nette\Application\Attributes\Requires;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\InvalidLinkException;
 use Nette\Security\Permission;
+use Nette\Utils\Html;
 use RuntimeException;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
 
-/** The custom roles; the base roles (guest, user, admin) of the ACL neon files are not listed. */
+/**
+ * The custom roles; the base roles (guest, user, admin) of the ACL neon files are not listed. The privileges
+ * of a role open in the offcanvas of the component "authorization".
+ */
 class RolesControl extends BaseControl
 {
-	public string $permissionsDestination = 'permissions';
-
-
 	public function __construct(
 		public Factory $factory,
 		private readonly RolesRepository $rolesRepository,
 		private readonly RoleRules $roleRules,
+		private readonly AuthorizationControl $authorizationControl,
 	) {
 		parent::__construct($this->factory);
 	}
@@ -38,22 +42,28 @@ class RolesControl extends BaseControl
 	public function render(): void
 	{
 		$template = $this->createRender();
+		assert($template instanceof RolesTemplate);
+		$template->permissionsAllowed = $this->isAllowed('permissions');
+		$template->baseRoles = AuthorizationControl::BaseRoles;
 		$template->setFile(__DIR__ . '/Roles.latte');
 		$template->render();
 	}
 
 
 	/**
-	 * Opens the permissions of the role; that page checks its own privilege.
+	 * Activates or deactivates a role (the menu of the state in the grid); the privileges of a role that is not
+	 * active do not apply.
 	 * @throws Exception
+	 * @throws InvalidLinkException
 	 */
-	#[Access]
-	public function handlePermissions(int $id): void
+	#[Requires(methods: 'POST', ajax: true)]
+	public function handleActivate(int $id, bool $active = true): void
 	{
-		$role = $this->rolesRepository->table->get($id)->record() ?? $this->error();
-		$this->addRedirect($this->permissionsDestination, [
-			'authorization-role' => $role->name,
-		]);
+		$this->rolesRepository->setActive($id, $active);
+		$this->roleRules->clean();
+		$this->addFlashMessage($active ? 'The role has been activated.' : 'The role has been deactivated.', Alert::Success);
+		$this->addRedraw($this->snippetMessage);
+		$this['dataGrid']->redrawDataGrid();
 	}
 
 
@@ -81,24 +91,50 @@ class RolesControl extends BaseControl
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
-		$grid->addColumnText('description', 'Role description')
+		$grid->addColumnText(
+			RolesEntity::ColumnTitle,
+			'Role',
+			formatter: fn(mixed $value, array $row): Html => $this->formatRole((string) $value, (string) $row[RolesEntity::ColumnIcon]),
+		)->setFilterText();
+
+		$grid->addColumnText(RolesEntity::ColumnName, 'Slug')
 			->setFilterText();
 
-		$grid->addColumnText('name', 'System name')
+		$grid->addColumnText(
+			'users_total',
+			'Users',
+			formatter: fn(mixed $value): Html => $this->formatUsers((int) $value),
+		);
+
+		// a role has its privileges: the shield opens them in the offcanvas
+		if ($this->isAllowed('permissions')) {
+			$grid->addColumnText(
+				RolesEntity::PrimaryKey,
+				'Permissions',
+				sortable: false,
+				formatter: fn(mixed $value, array $row): Html => $this->formatPermissions((string) $row[RolesEntity::ColumnName]),
+			)->setExportable(false);
+		}
+
+		$grid->addColumnText(RolesEntity::ColumnDescription, 'Description', sortable: false)
 			->setFilterText();
+
+		// the state is a badge that opens a menu of the states; without the privilege it is only read
+		$grid->addColumnText(RolesEntity::ColumnActive, 'State')
+			->setState(
+				'activate',
+				fn(int $id, int|string $active) => $this->handleActivate($id, $active === 1),
+				[
+					1 => ['Active', 'success'],
+					0 => ['Inactive', 'secondary'],
+				],
+				enabled: $this->isAllowed('activate'),
+			)
+			->setFilterSelect([1 => 'Active', 0 => 'Inactive']);
 
 		// The actions stand in the bar under the table and work with the rows chosen by their checkboxes
 		// or by a click anywhere on a row; Edit is for one row.
 		$grid->setRowClickAction('select');
-		$grid->addBulkAction(
-			name: 'permissions',
-			label: 'Permissions',
-			callback: fn(array $ids) => $this->handlePermissions($ids[0]),
-			icon: 'bi bi-shield-lock',
-			single: true,
-			// it leads to another page, so the request is not sent by AJAX
-			ajax: false,
-		)->setVisible($this->isAllowed('permissions'));
 		$grid->addBulkActionEdit(fn(int $id) => $this->handleEdit($id))
 			->setVisible($this->isAllowed('edit'));
 		$grid->addBulkActionExport()
@@ -113,6 +149,14 @@ class RolesControl extends BaseControl
 	}
 
 
+	protected function createComponentAuthorization(): AuthorizationControl
+	{
+		$control = $this->authorizationControl;
+		$control->translator = $this->translator;
+		return $control;
+	}
+
+
 	#[Access('edit')]
 	protected function createComponentRoles(): Form
 	{
@@ -124,11 +168,23 @@ class RolesControl extends BaseControl
 			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9-]+')
 			->addRule($form::MaxLength, 'The role name can have at most %d characters.', RolesEntity::ColumnNameSize);
 
-		$form->addTextInput(RolesValues::Description, 'Description role')
-			->setPlaceholder('Description role')
+		$form->addTextInput(RolesValues::Title, 'Role title')
+			->setPlaceholder('e.g. Editor')
 			->setAutocomplete(Autocomplete::Off)
-			->setRequired('Please enter description role.')
+			->setRequired('Please enter the title of the role.')
+			->addRule($form::MaxLength, 'The title can have at most %d characters.', RolesEntity::ColumnTitleSize);
+
+		$form->addTextInput(RolesValues::Description, 'Description')
+			->setPlaceholder('What the role is for')
+			->setAutocomplete(Autocomplete::Off)
+			->setNullable()
 			->addRule($form::MaxLength, 'The description can have at most %d characters.', RolesEntity::ColumnDescriptionSize);
+
+		$form->addSelect(RolesValues::Icon, 'Icon', array_map(fn(array $icon): string => $icon[0], RolesEntity::Icons))
+			->setDefaultValue(RolesEntity::DefaultIcon);
+
+		$form->addCheckbox(RolesValues::Active, 'Active')
+			->setDefaultValue(true);
 
 		$form->addHidden('id')
 			->setNullable()
@@ -162,7 +218,50 @@ class RolesControl extends BaseControl
 	/** @throws Exception */
 	protected function getItemTitle(int $id): ?string
 	{
-		return $this->rolesRepository->table->get($id)->record()?->description;
+		return $this->rolesRepository->table->get($id)->record()?->title;
+	}
+
+
+	/** The cell of a role in the grid: its icon in its color and its title. */
+	private function formatRole(string $title, string $icon): Html
+	{
+		$color = RolesEntity::Icons[$icon][1] ?? null;
+		if ($color === null) {
+			$icon = RolesEntity::DefaultIcon;
+			$color = RolesEntity::Icons[$icon][1];
+		}
+
+		return Html::el('div', ['class' => 'd-flex align-items-center gap-2'])
+			->addHtml(
+				Html::el('span', ['class' => "avatar rounded-2 theme-$color"])
+					->addHtml(Html::el('i', ['class' => "bi $icon", 'aria-hidden' => 'true'])),
+			)
+			->addHtml(Html::el('span', ['class' => 'fw-semibold text-body-emphasis'])->setText($title));
+	}
+
+
+	/** The cell of the users in the grid: how many users have the role (gray without one). */
+	private function formatUsers(int $count): Html
+	{
+		return Html::el('span', ['class' => 'badge badge-subtle ' . ($count > 0 ? 'theme-primary' : 'theme-secondary')])
+			->addHtml(Html::el('i', ['class' => 'bi bi-person me-1', 'aria-hidden' => 'true']))
+			->addText((string) $count);
+	}
+
+
+	/**
+	 * The cell of the permissions in the grid: a shield that opens the privileges of the role.
+	 * @throws InvalidLinkException
+	 */
+	private function formatPermissions(string $role): Html
+	{
+		return Html::el('a', [
+			'href' => $this->link('authorization:open!', ['role' => $role]),
+			'class' => 'ajax btn btn-xs btn-icon btn-subtle theme-primary',
+			'data-naja-history' => 'off',
+			'data-tooltip' => true,
+			'aria-label' => $this->translate('Set the permissions of the role'),
+		])->addHtml(Html::el('i', ['class' => 'bi bi-shield', 'aria-hidden' => 'true']));
 	}
 
 

@@ -143,17 +143,17 @@ class UsersControl extends BaseControl
 
 
 	/**
-	 * The roles that can be given, by name: those of the ACL except the guest (custom ones with their description).
+	 * The roles that can be given, by name: those of the ACL except the guest (custom ones with their title).
 	 * @return array<string, string>
 	 */
 	private function getRoleOptions(): array
 	{
 		$acl = $this->getPresenter()->getUser()->getAuthorizatorIfExists();
-		$descriptions = $this->rolesRepository->getDescriptions();
+		$titles = $this->rolesRepository->getTitles();
 		$options = [];
 		foreach ($acl instanceof Permission ? $acl->getRoles() : [] as $role) {
 			if ($role !== Role::Guest) {
-				$options[$role] = $descriptions[$role] ?? $role;
+				$options[$role] = $titles[$role] ?? $role;
 			}
 		}
 
