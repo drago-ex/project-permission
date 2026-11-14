@@ -21,7 +21,8 @@ export default class PermissionToggle {
 						{
 							history: input.dataset.najaHistory !== 'off',
 						},
-					);
+						// the list is drawn again with the new state, so the focus goes back to the same switch
+					).then(() => document.getElementById(input.id)?.focus({ preventScroll: true }), () => {});
 				});
 			});
 		};

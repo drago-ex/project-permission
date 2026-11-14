@@ -6,5 +6,5 @@ parameters:
 			permission:
 				title: Permissions
 				link: 'Permission:'
-				icon: fa-solid fa-gear bell
+				icon: bi bi-shield-lock bell
 				allow: [Backend:Permission, users, roles]
