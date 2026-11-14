@@ -35,18 +35,12 @@ class RolesRepository
 
 
 	/**
-	 * The roles with the number of their users (users_total), for the grid.
+	 * The roles for the grid, the newest first.
 	 * @return ExtraFluent<RolesEntity>
 	 */
 	public function getRolesFluent(): ExtraFluent
 	{
-		return $this->table->read(
-			'*, (SELECT COUNT(*) FROM %n ur WHERE ur.%n = %n.%n) AS users_total',
-			UserRoleEntity::Table,
-			UserRoleEntity::ColumnRole,
-			RolesEntity::Table,
-			RolesEntity::ColumnName,
-		)
+		return $this->table->read('*')
 			->orderBy(RolesEntity::PrimaryKey, 'DESC');
 	}
 

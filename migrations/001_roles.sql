@@ -9,7 +9,6 @@ CREATE TABLE roles (
     name VARCHAR(50) NOT NULL,
     title VARCHAR(100) NOT NULL,
     description VARCHAR(255) NULL,
-    icon VARCHAR(30) NOT NULL DEFAULT 'bi-person',
     active TINYINT(1) NOT NULL DEFAULT 1,
     CONSTRAINT uq_roles_name UNIQUE (name)
 )

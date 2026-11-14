@@ -5,7 +5,7 @@ project-auth): the administration of custom roles, role privileges and user role
 the static ACL of drago-ex/permission. The workspace rules are in `../AGENTS.md`; dependencies are in `composer.json`.
 
 ## Layout
-- `migrations/`: `roles(id, name UNIQUE VARCHAR(50), title, description NULL, icon, active)` (custom roles only; id only for the datagrid; the name is the slug and the key, the title is what the administration shows)
+- `migrations/`: `roles(id, name UNIQUE VARCHAR(50), title, description NULL, active)` (custom roles only; id only for the datagrid; the name is the slug and the key, the title is what the administration shows)
   and `role_privileges(role, resource, privilege)`.
 - `resources/app/Presentation/Backend/Permission`: `PermissionPresenter`, `RoleRules`, `PrivilegeList`,
   `conf.neon`, `3.menu.neon`, `acl.neon`, `Translate/cs.neon`; `Component/Users`, `Component/Roles` and
@@ -41,17 +41,16 @@ the static ACL of drago-ex/permission. The workspace rules are in `../AGENTS.md`
   (`AuthorizationControl::BaseRoles`). Nothing is persistent: `handleOpen(role)`, `handleResource(role, resource)` (both
   `#[Access('permissions')]`) and `handleTogglePermission(role, resource, privilege)` (`#[Access('edit')]`, POST) get the role and the presenter
   with every signal, `setRole()` refuses a role the ACL does not know, and each redraws only the snippet `permissions` inside the offcanvas
-  (the closed offcanvas renders empty). Two columns: presenters on the left (`nav-list`, `allowed/total` from `resourceAllowed`), privileges
-  of the selected one on the right (the first one when unknown). Each privilege shows its labels (`$kinds` maps the PrivilegeCatalog kinds to
-  "Page", "Action", "Form"; the source names are the tooltip), the translated description under them and the toggle.
+  (the closed offcanvas renders empty). Two columns: presenters on the left (`nav-list`, `allowed/total` from `resourceAllowed`, `col-md-4 col-lg-3`), privileges
+  of the selected one on the right (the first one when unknown). Each privilege is one line: its name, the translated description and its labels
+  (`$kinds` maps the PrivilegeCatalog kinds to "Page", "Action", "Form"), then the toggle. The labels have no tooltip with the names of the methods: they mean nothing
+  to an administrator who sets roles.
 - `conf.neon` registers `Drago\Permission\Tracy\RoleSwitchPanel` in `tracy: bar:` (debug mode only), so every project
   with this package can try its custom roles; hence `tracy/tracy` in `require`.
 - Descriptions in a package's `acl.neon` must quote a text with parentheses: NEON reads `text (…)` as an entity
   and the whole DI container fails.
-- Roles grid (the columns of the user's design): Role (`formatRole()`: the icon in an `avatar rounded-2 theme-<color>` and the title), Slug (`name`),
-  Users (`users_total`, a subquery of `getRolesFluent()` on `user_roles`, a subtle badge with a person, gray for 0), Permissions (the shield), Description
-  and State. `RolesEntity::Icons` is the fixed list of icons a role can have (Bootstrap Icons class => [label, theme color]), a select of the form;
-  an unknown icon falls back to `DefaultIcon`. The state is `setState('activate')` → `handleActivate()` (own privilege `activate`): a role that is
+- Roles grid: Role (the title as plain text), Slug (`name`), Permissions (the shield), Description and State. A role has no icon and the
+  grid no count of users, so it stays short. The state is `setState('activate')` → `handleActivate()` (own privilege `activate`): a role that is
   not active stays a role of the ACL (its users keep what `user` may do), but `RoleRules::loadRules()` leaves its privileges out.
 - States of a privilege in the offcanvas: `own` (a row of `role_privileges`, toggle), `inherited` (allowed by the ACL files or a
   parent role, locked), denied; admin is all locked. The users page lists every user

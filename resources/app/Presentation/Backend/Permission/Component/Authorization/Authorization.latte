@@ -32,7 +32,7 @@
 				<div class="row g-4">
 
 					{* presenters: a list in a box (nav-list of the compostrap module settings), the allowed of all on the right *}
-					<div class="col-md-4">
+					<div class="col-md-4 col-lg-3">
 						<nav class="nav-list nav-list-box" aria-label="{_'Presenters'}">
 							{foreach $groups as $name => $items}
 								<a n:href="resource!, role: $role, resource: $name" data-naja-history="off"
@@ -46,7 +46,7 @@
 					</div>
 
 					{* privileges of the selected presenter *}
-					<div class="col-md-8">
+					<div class="col-md-8 col-lg-9">
 						{var $items = $groups[$resource]}
 						{* the kinds of places of the code that need a privilege, each with its color *}
 						{var $kinds = [
@@ -64,18 +64,15 @@
 							{foreach $items as $item}
 								{var $inputId = "permission-{$role}-{$resource}-{$item['privilege']}"}
 
-								{* one row: the privilege with labels of the places of the code that need it (their names in
-								   the tooltip), its description and the switch *}
+								{* one row: the privilege, its description and labels of the kinds of places of the code that
+								   need it on one line, then the switch *}
 								<div class="setting-row">
-									<div class="setting-row-text">
-										<div class="d-flex flex-wrap align-items-center gap-2">
-											<span class="fw-medium text-body-emphasis">{$item['privilege']}</span>
-											{foreach $kinds as $kind => [$kindLabel, $kindColor]}
-												<span n:ifset="$item['sources'][$kind]" class="badge badge-subtle theme-{$kindColor}"
-													data-tooltip aria-label="{_$kindLabel}: {implode(', ', $item['sources'][$kind])}">{_$kindLabel}</span>
-											{/foreach}
-										</div>
-										<div n:if="$item['label'] !== null" class="text-body-secondary">{_$item['label']}</div>
+									<div class="setting-row-text d-flex flex-wrap align-items-center column-gap-2 row-gap-1">
+										<span class="fw-medium text-body-emphasis">{$item['privilege']}</span>
+										<span n:if="$item['label'] !== null" class="text-body-secondary">{_$item['label']}</span>
+										{foreach $kinds as $kind => [$kindLabel, $kindColor]}
+											<span n:ifset="$item['sources'][$kind]" class="badge badge-subtle theme-{$kindColor}">{_$kindLabel}</span>
+										{/foreach}
 									</div>
 
 									{if $item['inherited']}

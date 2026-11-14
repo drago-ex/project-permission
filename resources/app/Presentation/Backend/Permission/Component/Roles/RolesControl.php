@@ -91,20 +91,11 @@ class RolesControl extends BaseControl
 		$grid->setDataSource($this->rolesRepository->getRolesFluent())
 			->setPrimaryKey('id');
 
-		$grid->addColumnText(
-			RolesEntity::ColumnTitle,
-			'Role',
-			formatter: fn(mixed $value, array $row): Html => $this->formatRole((string) $value, (string) $row[RolesEntity::ColumnIcon]),
-		)->setFilterText();
+		$grid->addColumnText(RolesEntity::ColumnTitle, 'Role')
+			->setFilterText();
 
 		$grid->addColumnText(RolesEntity::ColumnName, 'Slug')
 			->setFilterText();
-
-		$grid->addColumnText(
-			'users_total',
-			'Users',
-			formatter: fn(mixed $value): Html => $this->formatUsers((int) $value),
-		);
 
 		// a role has its privileges: the shield opens them in the offcanvas
 		if ($this->isAllowed('permissions')) {
@@ -165,7 +156,7 @@ class RolesControl extends BaseControl
 			->setPlaceholder('e.g. member, editor')
 			->setAutocomplete(Autocomplete::Off)
 			->setRequired('Please enter role name.')
-			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9-]+')
+			->addRule($form::Pattern, 'Only lowercase letters, numbers and hyphens.', '[a-z0-9\-]+')
 			->addRule($form::MaxLength, 'The role name can have at most %d characters.', RolesEntity::ColumnNameSize);
 
 		$form->addTextInput(RolesValues::Title, 'Role title')
@@ -179,9 +170,6 @@ class RolesControl extends BaseControl
 			->setAutocomplete(Autocomplete::Off)
 			->setNullable()
 			->addRule($form::MaxLength, 'The description can have at most %d characters.', RolesEntity::ColumnDescriptionSize);
-
-		$form->addSelect(RolesValues::Icon, 'Icon', array_map(fn(array $icon): string => $icon[0], RolesEntity::Icons))
-			->setDefaultValue(RolesEntity::DefaultIcon);
 
 		$form->addCheckbox(RolesValues::Active, 'Active')
 			->setDefaultValue(true);
@@ -219,33 +207,6 @@ class RolesControl extends BaseControl
 	protected function getItemTitle(int $id): ?string
 	{
 		return $this->rolesRepository->table->get($id)->record()?->title;
-	}
-
-
-	/** The cell of a role in the grid: its icon in its color and its title. */
-	private function formatRole(string $title, string $icon): Html
-	{
-		$color = RolesEntity::Icons[$icon][1] ?? null;
-		if ($color === null) {
-			$icon = RolesEntity::DefaultIcon;
-			$color = RolesEntity::Icons[$icon][1];
-		}
-
-		return Html::el('div', ['class' => 'd-flex align-items-center gap-2'])
-			->addHtml(
-				Html::el('span', ['class' => "avatar rounded-2 theme-$color"])
-					->addHtml(Html::el('i', ['class' => "bi $icon", 'aria-hidden' => 'true'])),
-			)
-			->addHtml(Html::el('span', ['class' => 'fw-semibold text-body-emphasis'])->setText($title));
-	}
-
-
-	/** The cell of the users in the grid: how many users have the role (gray without one). */
-	private function formatUsers(int $count): Html
-	{
-		return Html::el('span', ['class' => 'badge badge-subtle ' . ($count > 0 ? 'theme-primary' : 'theme-secondary')])
-			->addHtml(Html::el('i', ['class' => 'bi bi-person me-1', 'aria-hidden' => 'true']))
-			->addText((string) $count);
 	}
 
 
