@@ -76,11 +76,13 @@ class UsersControl extends BaseControl
 		$grid->addColumnText('roles', 'Roles')
 			->setFilterText();
 
-		// The actions stand in the bar under the table and work with the rows chosen by their checkboxes
-		// or by a click anywhere on a row; Edit is for one row.
-		$grid->setRowClickAction('select');
-		$grid->addBulkActionEdit(fn(int $id) => $this->handleEdit($id))
+		// A row has a menu of three dots with Edit and Delete of that row; the bar under the table works with the rows
+		// chosen by their checkboxes or by a click anywhere on a row.
+		$grid->addActionEdit(fn(int $id) => $this->handleEdit($id))
 			->setVisible($this->isAllowed('edit'));
+		$grid->addActionDelete(fn(int $id) => $this->handleDelete([$id]))
+			->setVisible($this->isAllowed('delete'));
+		$grid->setRowClickAction('select');
 		$grid->addBulkActionExport()
 			->setVisible($this->isAllowed('export'));
 		$grid->addBulkActionDelete(fn(array $ids) => $this->handleDelete($ids))

@@ -25,14 +25,11 @@ readonly class PrivilegeList
 	private Cache $cache;
 
 
-	/**
-	 * @param array<string, array<string, string>> $labels descriptions of privileges by resource, the parameter
-	 * permissionLabels of the acl.neon files of the packages
-	 */
 	public function __construct(
 		private PrivilegeCatalog $catalog,
 		private IPresenterFactory $presenterFactory,
 		Storage $storage,
+		/** @var array<string, array<string, string>> descriptions of privileges by resource, permissionLabels of the acl.neon files */
 		private array $labels = [],
 	) {
 		$this->cache = new Cache($storage, 'permission.privilegeList');

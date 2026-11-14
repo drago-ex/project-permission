@@ -63,13 +63,13 @@ the static ACL of drago-ex/permission. The workspace rules are in `../AGENTS.md`
 
 ## Permissions
 Privileges of `Backend:Permission`: pages `users`, `roles`; `permissions` (opening the permissions of a role) and `activate` (the state of a role), both described in `acl.neon`; `edit` (forms with `#[Access('edit')]`
-on their factories, toggles, the bulk action Edit); `delete` (dialog, `delete` form, the bulk action Delete);
+on their factories, toggles, the Edit of the row menu); `delete` (dialog, `delete` form, the Delete of the row menu and of the bar);
 `export` (CSV of roles and users).
 `BaseControl::handleOpenModal/OpenOffcanvas` are `#[Access]` (page enough).
 `BaseControl` uses `AccessCheck`; `$writeAllowed` = `isAllowed('edit')`, grid actions
 `setVisible($this->isAllowed(...))`.
 
-Every grid has inline filters, no row menu and no row click that opens the form: the actions are bulk actions of drago-ex/datagrid in the bar under the table (roles and users: Edit, Export, Delete), a click anywhere on a row chooses it (`setRowClickAction('select')`), states are badges that are only read (`setBadges()`). The name of a bulk action is its privilege, and the control has a `handle<Name>()` method the callback calls, so `PrivilegeCatalog` finds the privilege; `export` comes from `DataGrid::handleExport()`. `BaseControl::handleDelete(array $ids)` opens one confirmation for all chosen items (`$deleteTitles`, the hidden field `ids` of the delete form) and `deleteItem()` runs for each.
+Every grid has inline filters and no row click that opens the form: a row has a menu of three dots (row actions of drago-ex/datagrid, `addActionEdit()` and `addActionDelete()`, the latter calls `handleDelete([$id])`), the bar under the table has the bulk actions (roles and users: Export, Delete), a click anywhere on a row chooses it (`setRowClickAction('select')`), states are badges that are only read (`setBadges()`). The name of a row or bulk action is its privilege, and the control has a `handle<Name>()` method the callback calls, so `PrivilegeCatalog` finds the privilege; `export` comes from `DataGrid::handleExport()`. `BaseControl::handleDelete(array $ids)` opens one confirmation for all chosen items (`$deleteTitles`, the hidden field `ids` of the delete form) and `deleteItem()` runs for each.
 
 ## Commands
 ```bash
