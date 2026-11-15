@@ -17,9 +17,9 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\Security\Permission;
 use Nette\Utils\Html;
+use Throwable;
 use Tracy\Debugger;
 use Tracy\ILogger;
-use Throwable;
 
 
 /** The roles of the users: every user is listed, one without a role has the default role "user". */

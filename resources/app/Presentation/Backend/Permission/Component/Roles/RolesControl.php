@@ -19,9 +19,9 @@ use Nette\Application\UI\InvalidLinkException;
 use Nette\Security\Permission;
 use Nette\Utils\Html;
 use RuntimeException;
+use Throwable;
 use Tracy\Debugger;
 use Tracy\ILogger;
-use Throwable;
 
 
 /**
