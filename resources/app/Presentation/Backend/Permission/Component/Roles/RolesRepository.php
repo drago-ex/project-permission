@@ -8,6 +8,7 @@ use Dibi\Connection;
 use Dibi\Exception;
 use Drago\Database\ExtraFluent;
 use Drago\Database\Table;
+use Throwable;
 
 
 /** The custom roles (table roles); the base roles live in the ACL neon files. */
@@ -57,6 +58,7 @@ class RolesRepository
 	/**
 	 * Deletes the role with its privileges and takes it from the users, in one transaction.
 	 * @throws Exception
+	 * @throws Throwable
 	 */
 	public function deleteRole(string $name): void
 	{

@@ -19,6 +19,7 @@ use Nette\Security\Permission;
 use Nette\Utils\Html;
 use Tracy\Debugger;
 use Tracy\ILogger;
+use Throwable;
 
 
 /** The roles of the users: every user is listed, one without a role has the default role "user". */
@@ -130,6 +131,7 @@ class UsersControl extends BaseControl
 	/**
 	 * Takes all roles from the user, who keeps the default role "user".
 	 * @throws Exception
+	 * @throws Throwable
 	 */
 	protected function deleteItem(int $id): void
 	{
@@ -176,7 +178,10 @@ class UsersControl extends BaseControl
 	}
 
 
-	/** @throws InvalidLinkException */
+	/**
+	 * @throws InvalidLinkException
+	 * @throws Throwable
+	 */
 	private function processUserRolesForm(Form $form, UsersValues $values): void
 	{
 		try {

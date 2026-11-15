@@ -21,6 +21,7 @@ use Nette\Utils\Html;
 use RuntimeException;
 use Tracy\Debugger;
 use Tracy\ILogger;
+use Throwable;
 
 
 /**
@@ -194,7 +195,10 @@ class RolesControl extends BaseControl
 	}
 
 
-	/** @throws Exception */
+	/**
+	 * @throws Exception
+	 * @throws Throwable
+	 */
 	protected function deleteItem(int $id): void
 	{
 		$role = $this->rolesRepository->table->get($id)->record();

@@ -7,6 +7,7 @@ use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;
 use Drago\Permission\Role;
+use Throwable;
 
 
 /** The roles of the users, in the table user_roles of drago-ex/project-auth. */
@@ -60,6 +61,7 @@ readonly class UserRolesRepository
 	 * Replaces the roles of the user, in one transaction; no role leaves the user with the default role "user".
 	 * @param list<string> $roles
 	 * @throws Exception
+	 * @throws Throwable
 	 */
 	public function setRoles(int $userId, array $roles): void
 	{
