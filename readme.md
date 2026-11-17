@@ -9,6 +9,7 @@ buttons of the administration, and the roles of users, on top of the ACL of the 
 ## Requirements
 
 - PHP >= 8.3, < 9
+- MySQL or MariaDB
 - [Drago Project](https://github.com/drago-ex/project)
 
 ## Installation
@@ -18,14 +19,21 @@ composer require drago-ex/project-permission
 ```
 
 [Project Tools](https://github.com/drago-ex/project-tools) copies the files of the package into the project,
-where you adapt them.
+where you adapt them. Add its scripts and styles as [Assets](#assets) shows and build the assets again
+(`npm run vite:build`).
 
 ## Database
 
 The migrations create the tables `roles` (custom roles with a title, a description and a state) and `role_privileges` (role, resource,
 privilege); the roles of users are in `user_roles` of [drago-ex/project-auth](https://github.com/drago-ex/project-auth),
-so the migrations run after it. Run them with `bin/project-setup` of Drago Project or
-`php vendor/bin/migration db:migrate --packages`. Without the tables only the ACL files apply.
+so the migrations run after it:
+
+```bash
+php vendor/bin/migration db:migrate --packages
+```
+
+The tables start empty; without custom roles and privileges only the ACL files apply. `bin/project-setup` of Drago
+Project runs the migrations for you.
 
 ## Assets
 
